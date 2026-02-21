@@ -79,6 +79,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install frontend dependencies
+        run: cd web && npm ci
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
