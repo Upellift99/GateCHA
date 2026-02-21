@@ -1,0 +1,21 @@
+services:
+  gatecha:
+    build: .
+    image: gatecha:latest
+    container_name: gatecha
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - gatecha_data:/app/data
+    environment:
+      - GATECHA_LISTEN_ADDR=:8080
+      - GATECHA_DB_PATH=/app/data/gatecha.db
+      - GATECHA_ADMIN_PASSWORD=${GATECHA_ADMIN_PASSWORD:-changeme}
+      - GATECHA_SECRET_KEY=${GATECHA_SECRET_KEY:-}
+      # - GATECHA_LOG_LEVEL=info
+      # - GATECHA_CLEANUP_INTERVAL=10
+      # - GATECHA_CORS_ALLOW_ALL=false
+
+volumes:
+  gatecha_data:

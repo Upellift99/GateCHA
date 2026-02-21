@@ -1,0 +1,94 @@
+package api
+
+import (
+	"database/sql"
+	"encoding/base64"
+	"encoding/json"
+	"net/http"
+	"time"
+
+	"github.com/Upellift99/GateCHA/internal/altcha"
+	"github.com/Upellift99/GateCHA/internal/models"
+
+	lib "github.com/altcha-org/altcha-lib-go"
+)
+
+type VerifyHandler struct {
+	DB *sql.DB
+}
+
+type verifyRequest struct {
+	Payload string `json:"payload"`
+}
+
+type verifyResponse struct {
+	OK    bool   `json:"ok"`
+	Error string `json:"error,omitempty"`
+}
+
+func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	key := GetAPIKeyFromContext(r)
+	if key == nil {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "missing API key"})
+		return
+	}
+
+	var req verifyRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, verifyResponse{OK: false, Error: "invalid request body"})
+		return
+	}
+
+	if req.Payload == "" {
+		writeJSON(w, http.StatusBadRequest, verifyResponse{OK: false, Error: "missing payload"})
+		return
+	}
+
+	// Decode payload to extract challenge hash for replay check
+	decoded, err := base64.StdEncoding.DecodeString(req.Payload)
+	if err != nil {
+		_ = models.IncrementVerificationsFail(h.DB, key.ID)
+		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload encoding"})
+		return
+	}
+
+	var payload lib.Payload
+	if err := json.Unmarshal(decoded, &payload); err != nil {
+		_ = models.IncrementVerificationsFail(h.DB, key.ID)
+		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload format"})
+		return
+	}
+
+	// Verify the solution
+	ok, err := altcha.VerifyPayload(key.HMACSecret, req.Payload)
+	if err != nil {
+		_ = models.IncrementVerificationsFail(h.DB, key.ID)
+		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "verification failed"})
+		return
+	}
+
+	if !ok {
+		_ = models.IncrementVerificationsFail(h.DB, key.ID)
+		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid_solution"})
+		return
+	}
+
+	// Check replay
+	consumed, err := models.IsConsumed(h.DB, payload.Challenge)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, verifyResponse{OK: false, Error: "internal error"})
+		return
+	}
+	if consumed {
+		_ = models.IncrementVerificationsFail(h.DB, key.ID)
+		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "already_used"})
+		return
+	}
+
+	// Mark as consumed
+	expiresAt := time.Now().Add(time.Duration(key.ExpireSeconds) * time.Second)
+	_ = models.MarkConsumed(h.DB, payload.Challenge, key.ID, expiresAt)
+	_ = models.IncrementVerificationsOK(h.DB, key.ID)
+
+	writeJSON(w, http.StatusOK, verifyResponse{OK: true})
+}

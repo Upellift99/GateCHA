@@ -1,0 +1,72 @@
+name: Go
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build frontend (for embed)
+        run: |
+          cd web
+          npm ci
+          npm run build
+          cd ..
+          cp -r web/dist internal/dashboard/dist
+
+      - name: Verify Go build
+        run: go build ./cmd/gatecha/
+
+      - name: Run Go tests
+        run: go test ./...
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build frontend (for embed)
+        run: |
+          cd web
+          npm ci
+          npm run build
+          cd ..
+          cp -r web/dist internal/dashboard/dist
+
+      - name: Run go vet
+        run: go vet ./...
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: cd web && npm ci
+
+      - name: Type check
+        run: cd web && npx vue-tsc -b
+
+      - name: Build
+        run: cd web && npm run build
