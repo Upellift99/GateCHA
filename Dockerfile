@@ -21,6 +21,7 @@ RUN apk add --no-cache ca-certificates tzdata
 RUN adduser -D -h /app gatecha
 WORKDIR /app
 COPY --from=backend /gatecha .
+RUN mkdir -p /app/data && chown gatecha:gatecha /app/data
 USER gatecha
 EXPOSE 8080
 VOLUME ["/app/data"]
