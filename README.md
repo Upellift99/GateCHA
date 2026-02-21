@@ -24,8 +24,8 @@ GateCHA is an open-source alternative to [ALTCHA Sentinel](https://altcha.org/do
 ### Docker Compose (recommended)
 
 ```bash
-git clone https://github.com/Upellift99/GateCHA.git
-cd GateCHA
+mkdir -p /opt/docker/GateCHA && cd /opt/docker/GateCHA
+wget https://raw.githubusercontent.com/Upellift99/GateCHA/refs/heads/main/docker-compose.yml
 docker compose up -d
 ```
 
@@ -37,13 +37,15 @@ Open `http://localhost:8080` and log in with `admin` / `changeme`.
 docker run -d -p 8080:8080 \
   -v gatecha_data:/app/data \
   -e GATECHA_ADMIN_PASSWORD=your-password \
-  ghcr.io/upellift99/gatecha:latest
+  ghcr.io/upellift99/gatecha:main
 ```
 
 ### From Source
 
 ```bash
-# Prerequisites: Go 1.22+, Node.js 20+
+# Prerequisites: Go 1.24+, Node.js 20+
+git clone https://github.com/Upellift99/GateCHA.git
+cd GateCHA
 make build
 ./gatecha
 ```
