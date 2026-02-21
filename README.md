@@ -43,7 +43,7 @@ docker run -d -p 8080:8080 \
 ### From Source
 
 ```bash
-# Prerequisites: Go 1.24+, Node.js 20+
+# Prerequisites: Go 1.26+, Node.js 20+
 git clone https://github.com/Upellift99/GateCHA.git
 cd GateCHA
 make build
