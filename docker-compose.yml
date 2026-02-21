@@ -1,6 +1,6 @@
 services:
   gatecha:
-    image: ghcr.io/upellift99/gatecha:main
+    image: ghcr.io/upellift99/gatecha:latest
     container_name: gatecha
     restart: unless-stopped
     ports:

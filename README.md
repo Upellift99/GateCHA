@@ -37,7 +37,7 @@ Open `http://localhost:8080` and log in with `admin` / `changeme`.
 docker run -d -p 8080:8080 \
   -v gatecha_data:/app/data \
   -e GATECHA_ADMIN_PASSWORD=your-password \
-  ghcr.io/upellift99/gatecha:main
+  ghcr.io/upellift99/gatecha:latest
 ```
 
 ### From Source
