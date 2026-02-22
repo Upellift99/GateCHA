@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useApiKeysStore } from '../stores/apikeys'
+import { useStatsStore } from '../stores/stats'
 
 const store = useApiKeysStore()
+const statsStore = useStatsStore()
+
+function getKeyStat(keyId: number, field: 'challenges_issued' | 'verifications_ok' | 'verifications_fail'): number {
+  const summary = statsStore.keysSummary[String(keyId)]
+  return summary ? summary[field] : 0
+}
 
 onMounted(() => {
   store.fetchKeys()
+  statsStore.fetchKeysSummary()
 })
 </script>
 
@@ -35,16 +43,20 @@ onMounted(() => {
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Key ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Domain</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Challenges</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Verified</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Failed</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
           <tr v-for="key in store.keys" :key="key.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ key.name || '-' }}</td>
-            <td class="px-6 py-4 text-sm text-gray-500 font-mono">{{ key.key_id }}</td>
+            <td class="px-6 py-4">
+              <div class="text-sm font-medium text-gray-900">{{ key.name || '-' }}</div>
+              <div class="text-xs text-gray-400 font-mono">{{ key.key_id }}</div>
+            </td>
             <td class="px-6 py-4 text-sm text-gray-500">{{ key.domain || '*' }}</td>
             <td class="px-6 py-4">
               <span
@@ -53,6 +65,15 @@ onMounted(() => {
               >
                 {{ key.enabled ? 'Active' : 'Disabled' }}
               </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-right font-medium text-indigo-600">
+              {{ getKeyStat(key.id, 'challenges_issued').toLocaleString() }}
+            </td>
+            <td class="px-6 py-4 text-sm text-right font-medium text-green-600">
+              {{ getKeyStat(key.id, 'verifications_ok').toLocaleString() }}
+            </td>
+            <td class="px-6 py-4 text-sm text-right font-medium text-red-600">
+              {{ getKeyStat(key.id, 'verifications_fail').toLocaleString() }}
             </td>
             <td class="px-6 py-4 text-right space-x-3">
               <router-link :to="`/keys/${key.id}`" class="text-indigo-600 hover:text-indigo-800 text-sm">

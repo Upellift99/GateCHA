@@ -17,9 +17,17 @@ export interface StatsOverview {
   daily: DailyStat[]
 }
 
+export interface KeyStatsSummary {
+  api_key_id: number
+  challenges_issued: number
+  verifications_ok: number
+  verifications_fail: number
+}
+
 export const useStatsStore = defineStore('stats', () => {
   const overview = ref<StatsOverview | null>(null)
   const keyStats = ref<DailyStat[]>([])
+  const keysSummary = ref<Record<string, KeyStatsSummary>>({})
 
   async function fetchOverview(days = 30) {
     const { data } = await api.get(`/stats/overview?days=${days}`)
@@ -31,5 +39,10 @@ export const useStatsStore = defineStore('stats', () => {
     keyStats.value = data.days
   }
 
-  return { overview, keyStats, fetchOverview, fetchKeyStats }
+  async function fetchKeysSummary() {
+    const { data } = await api.get('/stats/keys-summary')
+    keysSummary.value = data.keys
+  }
+
+  return { overview, keyStats, keysSummary, fetchOverview, fetchKeyStats, fetchKeysSummary }
 })

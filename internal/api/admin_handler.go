@@ -197,6 +197,23 @@ func (h *AdminHandler) RotateSecret(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"hmac_secret": newSecret})
 }
 
+// GET /api/admin/stats/keys-summary
+func (h *AdminHandler) KeysStatsSummary(w http.ResponseWriter, r *http.Request) {
+	summary, err := models.GetAllKeysStatsSummary(h.DB)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch stats summary"})
+		return
+	}
+
+	// Convert map to a JSON-friendly structure keyed by string IDs
+	result := make(map[string]models.KeyStatsSummary)
+	for id, s := range summary {
+		result[strconv.FormatInt(id, 10)] = s
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{"keys": result})
+}
+
 // GET /api/admin/stats/overview
 func (h *AdminHandler) StatsOverview(w http.ResponseWriter, r *http.Request) {
 	days := 30

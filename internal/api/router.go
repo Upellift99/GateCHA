@@ -47,6 +47,7 @@ func NewRouter(db *sql.DB, secretKey string, corsAllowAll bool) http.Handler {
 
 			// Statistics
 			r.Get("/stats/overview", adminHandler.StatsOverview)
+			r.Get("/stats/keys-summary", adminHandler.KeysStatsSummary)
 			r.Get("/stats/keys/{id}", adminHandler.KeyStats)
 		})
 	})
