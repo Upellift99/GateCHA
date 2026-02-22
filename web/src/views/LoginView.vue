@@ -63,11 +63,11 @@ async function handleLogin() {
 <template>
   <div class="h-screen overflow-hidden flex items-center justify-center bg-gray-50">
     <div class="w-full max-w-sm">
-      <div class="bg-white shadow rounded-lg p-8">
-        <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">GateCHA</h1>
-        <p class="text-sm text-center text-gray-500 mb-6">Sign in to your dashboard</p>
+      <div class="bg-white shadow rounded-lg p-6">
+        <h1 class="text-2xl font-bold text-center text-gray-900 mb-2">GateCHA</h1>
+        <p class="text-sm text-center text-gray-500 mb-4">Sign in to your dashboard</p>
 
-        <form @submit.prevent="handleLogin" class="space-y-4">
+        <form @submit.prevent="handleLogin" class="space-y-3">
           <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
             {{ error }}
           </div>
