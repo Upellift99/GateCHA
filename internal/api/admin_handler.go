@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -53,8 +54,14 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 		}
 		valid, err := altcha.VerifyPayload(key.HMACSecret, req.AltchaPayload)
 		if err != nil || !valid {
+			if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
+				slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
+			}
 			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid captcha"})
 			return
+		}
+		if err := models.IncrementVerificationsOK(h.DB, key.ID); err != nil {
+			slog.Error("failed to increment verifications_ok", "error", err, "api_key_id", key.ID)
 		}
 	}
 

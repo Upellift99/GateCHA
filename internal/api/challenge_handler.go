@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"log/slog"
 	"net/http"
 
 	"github.com/Upellift99/GateCHA/internal/altcha"
@@ -25,7 +26,9 @@ func (h *ChallengeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = models.IncrementChallengesIssued(h.DB, key.ID)
+	if err := models.IncrementChallengesIssued(h.DB, key.ID); err != nil {
+		slog.Error("failed to increment challenges_issued", "error", err, "api_key_id", key.ID)
+	}
 
 	writeJSON(w, http.StatusOK, challenge)
 }
