@@ -61,7 +61,7 @@ async function handleLogin() {
 </script>
 
 <template>
-  <div class="h-screen overflow-hidden flex items-start justify-center pt-[15vh] bg-gray-50">
+  <div class="h-screen overflow-hidden flex items-start justify-center pt-[10vh] bg-gray-50">
     <div class="w-full max-w-sm">
       <div class="bg-white shadow rounded-lg p-6">
         <h1 class="text-2xl font-bold text-center text-gray-900 mb-2">GateCHA</h1>
