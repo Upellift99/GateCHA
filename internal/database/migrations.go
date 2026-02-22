@@ -54,4 +54,10 @@ CREATE TABLE IF NOT EXISTS daily_stats (
 );
 
 CREATE INDEX IF NOT EXISTS idx_daily_stats_key_date ON daily_stats(api_key_id, date);
+
+CREATE TABLE IF NOT EXISTS settings (
+    key        TEXT NOT NULL PRIMARY KEY,
+    value      TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 `

@@ -17,9 +17,15 @@ func NewRouter(db *sql.DB, secretKey string, corsAllowAll bool) http.Handler {
 	r.Use(chiMiddleware.RealIP)
 	r.Use(CORSMiddleware(corsAllowAll))
 
+	publicHandler := &PublicHandler{DB: db}
 	challengeHandler := &ChallengeHandler{DB: db}
 	verifyHandler := &VerifyHandler{DB: db}
 	adminHandler := &AdminHandler{DB: db, SecretKey: secretKey}
+
+	// Public endpoints (no auth, used by login page)
+	r.Route("/api/public", func(r chi.Router) {
+		r.Get("/login-config", publicHandler.LoginConfig)
+	})
 
 	// Public API (API key auth)
 	r.Route("/api/v1", func(r chi.Router) {
@@ -36,6 +42,8 @@ func NewRouter(db *sql.DB, secretKey string, corsAllowAll bool) http.Handler {
 			r.Use(AdminAuthMiddleware(secretKey))
 			r.Get("/me", adminHandler.Me)
 			r.Post("/change-password", adminHandler.ChangePassword)
+			r.Get("/settings", adminHandler.GetSettings)
+			r.Put("/settings", adminHandler.UpdateSettings)
 
 			// API Keys CRUD
 			r.Get("/keys", adminHandler.ListKeys)

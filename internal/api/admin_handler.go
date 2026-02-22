@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Upellift99/GateCHA/internal/altcha"
 	"github.com/Upellift99/GateCHA/internal/auth"
 	"github.com/Upellift99/GateCHA/internal/models"
 	"github.com/go-chi/chi/v5"
@@ -19,8 +20,9 @@ type AdminHandler struct {
 // POST /api/admin/login
 func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
+		Username      string `json:"username"`
+		Password      string `json:"password"`
+		AltchaPayload string `json:"altcha_payload"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
@@ -31,6 +33,29 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil || !ok {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
 		return
+	}
+
+	// Verify ALTCHA payload if login CAPTCHA is enabled
+	captchaEnabled, err := models.GetLoginCaptchaEnabled(h.DB)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+		return
+	}
+	if captchaEnabled {
+		if req.AltchaPayload == "" {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "captcha required"})
+			return
+		}
+		key, err := models.EnsureLoginCaptchaAPIKey(h.DB)
+		if err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+			return
+		}
+		valid, err := altcha.VerifyPayload(key.HMACSecret, req.AltchaPayload)
+		if err != nil || !valid {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid captcha"})
+			return
+		}
 	}
 
 	token, expiresAt, err := auth.GenerateJWT(req.Username, h.SecretKey)
@@ -292,4 +317,47 @@ func (h *AdminHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, map[string]string{"status": "password changed"})
+}
+
+// GET /api/admin/settings
+func (h *AdminHandler) GetSettings(w http.ResponseWriter, r *http.Request) {
+	enabled, err := models.GetLoginCaptchaEnabled(h.DB)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch settings"})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"login_captcha_enabled": enabled,
+	})
+}
+
+// PUT /api/admin/settings
+func (h *AdminHandler) UpdateSettings(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		LoginCaptchaEnabled *bool `json:"login_captcha_enabled"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		return
+	}
+
+	if req.LoginCaptchaEnabled != nil {
+		val := "false"
+		if *req.LoginCaptchaEnabled {
+			val = "true"
+			if _, err := models.EnsureLoginCaptchaAPIKey(h.DB); err != nil {
+				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to init captcha key"})
+				return
+			}
+		}
+		if err := models.SetSetting(h.DB, models.SettingLoginCaptchaEnabled, val); err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update settings"})
+			return
+		}
+	}
+
+	enabled, _ := models.GetLoginCaptchaEnabled(h.DB)
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"login_captcha_enabled": enabled,
+	})
 }

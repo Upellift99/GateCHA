@@ -6,8 +6,12 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('gatecha_token') || '')
   const isAuthenticated = computed(() => !!token.value)
 
-  async function login(username: string, password: string) {
-    const { data } = await api.post('/login', { username, password })
+  async function login(username: string, password: string, altchaPayload?: string) {
+    const body: Record<string, string> = { username, password }
+    if (altchaPayload) {
+      body.altcha_payload = altchaPayload
+    }
+    const { data } = await api.post('/login', body)
     token.value = data.token
     localStorage.setItem('gatecha_token', data.token)
   }

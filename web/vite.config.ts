@@ -3,7 +3,16 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [vue(), tailwindcss()],
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag === 'altcha-widget',
+        },
+      },
+    }),
+    tailwindcss(),
+  ],
   server: {
     proxy: {
       '/api': 'http://localhost:8080',

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import api from '../lib/api'
+import { useSettingsStore } from '../stores/settings'
 
 const currentPassword = ref('')
 const newPassword = ref('')
@@ -38,10 +39,28 @@ async function handleSubmit() {
     loading.value = false
   }
 }
+
+const settingsStore = useSettingsStore()
+const settingsError = ref('')
+
+onMounted(() => {
+  settingsStore.fetchSettings()
+})
+
+async function toggleCaptcha(event: Event) {
+  const checked = (event.target as HTMLInputElement).checked
+  settingsError.value = ''
+  try {
+    await settingsStore.updateSettings({ login_captcha_enabled: checked })
+  } catch {
+    settingsError.value = 'Failed to update setting.'
+    await settingsStore.fetchSettings()
+  }
+}
 </script>
 
 <template>
-  <div class="max-w-xl">
+  <div class="max-w-xl space-y-8">
     <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
 
     <form @submit.prevent="handleSubmit" class="bg-white shadow rounded-lg p-6 space-y-4">
@@ -88,5 +107,37 @@ async function handleSubmit() {
         {{ loading ? 'Saving...' : 'Change Password' }}
       </button>
     </form>
+
+    <div class="bg-white shadow rounded-lg p-6 space-y-4">
+      <h2 class="text-lg font-medium text-gray-900">Security</h2>
+
+      <div v-if="settingsError" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
+        {{ settingsError }}
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-700">Login CAPTCHA</p>
+          <p class="text-xs text-gray-500 mt-0.5">
+            Require an ALTCHA proof-of-work challenge before signing in.
+          </p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            class="sr-only peer"
+            :checked="settingsStore.settings.login_captcha_enabled"
+            :disabled="settingsStore.loading"
+            @change="toggleCaptcha"
+          />
+          <div class="w-11 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer
+                      peer-checked:after:translate-x-full peer-checked:after:border-white
+                      after:content-[''] after:absolute after:top-0.5 after:left-[2px]
+                      after:bg-white after:border-gray-300 after:border after:rounded-full
+                      after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600
+                      peer-disabled:opacity-50"></div>
+        </label>
+      </div>
+    </div>
   </div>
 </template>

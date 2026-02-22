@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import 'altcha'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import axios from 'axios'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -11,11 +13,44 @@ const password = ref('')
 const error = ref('')
 const loading = ref(false)
 
+const captchaRequired = ref(false)
+const challengeUrl = ref('')
+const altchaPayload = ref('')
+const altchaVerified = ref(false)
+
+onMounted(async () => {
+  try {
+    const { data } = await axios.get('/api/public/login-config')
+    captchaRequired.value = data.captcha_required
+    if (data.challenge_url) {
+      challengeUrl.value = data.challenge_url
+    }
+  } catch {
+    captchaRequired.value = false
+  }
+})
+
+function onAltchaStateChange(event: Event) {
+  const detail = (event as CustomEvent).detail
+  if (detail?.state === 'verified') {
+    altchaPayload.value = detail.payload ?? ''
+    altchaVerified.value = true
+  } else {
+    altchaPayload.value = ''
+    altchaVerified.value = false
+  }
+}
+
+const canSubmit = computed(() => {
+  if (captchaRequired.value && !altchaVerified.value) return false
+  return true
+})
+
 async function handleLogin() {
   error.value = ''
   loading.value = true
   try {
-    await authStore.login(username.value, password.value)
+    await authStore.login(username.value, password.value, altchaPayload.value || undefined)
     router.push('/')
   } catch {
     error.value = 'Invalid credentials'
@@ -59,9 +94,17 @@ async function handleLogin() {
             />
           </div>
 
+          <div v-if="captchaRequired && challengeUrl">
+            <altcha-widget
+              :challengeurl="challengeUrl"
+              @statechange="onAltchaStateChange"
+              style="--altcha-max-width: 100%;"
+            ></altcha-widget>
+          </div>
+
           <button
             type="submit"
-            :disabled="loading"
+            :disabled="loading || !canSubmit"
             class="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             {{ loading ? 'Signing in...' : 'Sign in' }}
