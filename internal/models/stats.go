@@ -24,8 +24,8 @@ type StatsOverview struct {
 func IncrementChallengesIssued(db *sql.DB, apiKeyID int64) error {
 	date := time.Now().UTC().Format("2006-01-02")
 	_, err := db.Exec(`
-		INSERT INTO daily_stats (api_key_id, date, challenges_issued)
-		VALUES (?, ?, 1)
+		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
+		VALUES (?, ?, 1, 0, 0)
 		ON CONFLICT(api_key_id, date)
 		DO UPDATE SET challenges_issued = challenges_issued + 1
 	`, apiKeyID, date)
@@ -35,8 +35,8 @@ func IncrementChallengesIssued(db *sql.DB, apiKeyID int64) error {
 func IncrementVerificationsOK(db *sql.DB, apiKeyID int64) error {
 	date := time.Now().UTC().Format("2006-01-02")
 	_, err := db.Exec(`
-		INSERT INTO daily_stats (api_key_id, date, verifications_ok)
-		VALUES (?, ?, 1)
+		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
+		VALUES (?, ?, 0, 1, 0)
 		ON CONFLICT(api_key_id, date)
 		DO UPDATE SET verifications_ok = verifications_ok + 1
 	`, apiKeyID, date)
@@ -46,8 +46,8 @@ func IncrementVerificationsOK(db *sql.DB, apiKeyID int64) error {
 func IncrementVerificationsFail(db *sql.DB, apiKeyID int64) error {
 	date := time.Now().UTC().Format("2006-01-02")
 	_, err := db.Exec(`
-		INSERT INTO daily_stats (api_key_id, date, verifications_fail)
-		VALUES (?, ?, 1)
+		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
+		VALUES (?, ?, 0, 0, 1)
 		ON CONFLICT(api_key_id, date)
 		DO UPDATE SET verifications_fail = verifications_fail + 1
 	`, apiKeyID, date)
@@ -71,7 +71,7 @@ func GetStatsOverview(db *sql.DB, days int) (*StatsOverview, error) {
 	}
 
 	rows, err := db.Query(`
-		SELECT date, SUM(challenges_issued), SUM(verifications_ok), SUM(verifications_fail)
+		SELECT date, COALESCE(SUM(challenges_issued), 0), COALESCE(SUM(verifications_ok), 0), COALESCE(SUM(verifications_fail), 0)
 		FROM daily_stats
 		WHERE date >= date('now', ?)
 		GROUP BY date
@@ -129,7 +129,7 @@ func GetAllKeysStatsSummary(db *sql.DB) (map[int64]KeyStatsSummary, error) {
 
 func GetKeyStats(db *sql.DB, apiKeyID int64, days int) ([]DailyStat, error) {
 	rows, err := db.Query(`
-		SELECT date, challenges_issued, verifications_ok, verifications_fail
+		SELECT date, COALESCE(challenges_issued, 0), COALESCE(verifications_ok, 0), COALESCE(verifications_fail, 0)
 		FROM daily_stats
 		WHERE api_key_id = ? AND date >= date('now', ?)
 		ORDER BY date DESC

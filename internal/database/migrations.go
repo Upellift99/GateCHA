@@ -3,7 +3,19 @@ package database
 import "database/sql"
 
 func RunMigrations(db *sql.DB) error {
-	_, err := db.Exec(schema)
+	if _, err := db.Exec(schema); err != nil {
+		return err
+	}
+	// Fix any NULL counter values from a previous bug.
+	_, err := db.Exec(`
+		UPDATE daily_stats SET
+			challenges_issued  = COALESCE(challenges_issued, 0),
+			verifications_ok   = COALESCE(verifications_ok, 0),
+			verifications_fail = COALESCE(verifications_fail, 0)
+		WHERE challenges_issued IS NULL
+		   OR verifications_ok IS NULL
+		   OR verifications_fail IS NULL
+	`)
 	return err
 }
 
