@@ -13,9 +13,41 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+const (
+	errInvalidRequest = "invalid request"
+	errInvalidKeyID   = "invalid key ID"
+	errKeyNotFound    = "key not found"
+)
+
 type AdminHandler struct {
 	DB        *sql.DB
 	SecretKey string
+}
+
+// verifyLoginCaptcha validates the ALTCHA captcha payload during login.
+// Returns true if the captcha is valid, false otherwise (response is already written).
+func (h *AdminHandler) verifyLoginCaptcha(w http.ResponseWriter, payload string) bool {
+	key, err := models.EnsureLoginCaptchaAPIKey(h.DB)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
+		return false
+	}
+	if payload == "" {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "captcha required"})
+		return false
+	}
+	valid, err := altcha.VerifyPayload(key.HMACSecret, payload)
+	if err != nil || !valid {
+		if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
+			slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
+		}
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid captcha"})
+		return false
+	}
+	if err := models.IncrementVerificationsOK(h.DB, key.ID); err != nil {
+		slog.Error("failed to increment verifications_ok", "error", err, "api_key_id", key.ID)
+	}
+	return true
 }
 
 // POST /api/admin/login
@@ -26,7 +58,7 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 		AltchaPayload string `json:"altcha_payload"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
 		return
 	}
 
@@ -36,33 +68,13 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify ALTCHA payload if login CAPTCHA is enabled
 	captchaEnabled, err := models.GetLoginCaptchaEnabled(h.DB)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
 		return
 	}
-	if captchaEnabled {
-		if req.AltchaPayload == "" {
-			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "captcha required"})
-			return
-		}
-		key, err := models.EnsureLoginCaptchaAPIKey(h.DB)
-		if err != nil {
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
-			return
-		}
-		valid, err := altcha.VerifyPayload(key.HMACSecret, req.AltchaPayload)
-		if err != nil || !valid {
-			if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
-				slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
-			}
-			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid captcha"})
-			return
-		}
-		if err := models.IncrementVerificationsOK(h.DB, key.ID); err != nil {
-			slog.Error("failed to increment verifications_ok", "error", err, "api_key_id", key.ID)
-		}
+	if captchaEnabled && !h.verifyLoginCaptcha(w, req.AltchaPayload) {
+		return
 	}
 
 	token, expiresAt, err := auth.GenerateJWT(req.Username, h.SecretKey)
@@ -105,7 +117,7 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		Algorithm     string `json:"algorithm"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
 		return
 	}
 
@@ -122,13 +134,13 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) GetKey(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid key ID"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
 		return
 	}
 
 	key, err := models.GetAPIKeyByID(h.DB, id)
 	if err != nil {
-		writeJSON(w, http.StatusNotFound, map[string]string{"error": "key not found"})
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": errKeyNotFound})
 		return
 	}
 
@@ -139,7 +151,7 @@ func (h *AdminHandler) GetKey(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid key ID"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
 		return
 	}
 
@@ -152,13 +164,13 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 		Enabled       *bool  `json:"enabled"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
 		return
 	}
 
 	existing, err := models.GetAPIKeyByID(h.DB, id)
 	if err != nil {
-		writeJSON(w, http.StatusNotFound, map[string]string{"error": "key not found"})
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": errKeyNotFound})
 		return
 	}
 
@@ -187,7 +199,14 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 		enabled = *req.Enabled
 	}
 
-	if err := models.UpdateAPIKey(h.DB, id, name, domain, maxNumber, expireSeconds, algorithm, enabled); err != nil {
+	if err := models.UpdateAPIKey(h.DB, id, models.UpdateAPIKeyParams{
+		Name:          name,
+		Domain:        domain,
+		MaxNumber:     maxNumber,
+		ExpireSeconds: expireSeconds,
+		Algorithm:     algorithm,
+		Enabled:       enabled,
+	}); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update key"})
 		return
 	}
@@ -200,7 +219,7 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) DeleteKey(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid key ID"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
 		return
 	}
 
@@ -216,7 +235,7 @@ func (h *AdminHandler) DeleteKey(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) RotateSecret(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid key ID"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
 		return
 	}
 
@@ -268,7 +287,7 @@ func (h *AdminHandler) StatsOverview(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) KeyStats(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid key ID"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
 		return
 	}
 
@@ -281,7 +300,7 @@ func (h *AdminHandler) KeyStats(w http.ResponseWriter, r *http.Request) {
 
 	key, err := models.GetAPIKeyByID(h.DB, id)
 	if err != nil {
-		writeJSON(w, http.StatusNotFound, map[string]string{"error": "key not found"})
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": errKeyNotFound})
 		return
 	}
 
@@ -308,7 +327,7 @@ func (h *AdminHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		NewPassword     string `json:"new_password"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
 		return
 	}
 
@@ -344,7 +363,7 @@ func (h *AdminHandler) UpdateSettings(w http.ResponseWriter, r *http.Request) {
 		LoginCaptchaEnabled *bool `json:"login_captcha_enabled"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
 		return
 	}
 

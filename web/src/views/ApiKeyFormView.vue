@@ -84,8 +84,9 @@ async function handleSubmit() {
       <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+        <label for="key-name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
         <input
+          id="key-name"
           v-model="form.name"
           type="text"
           placeholder="My Website"
@@ -94,8 +95,9 @@ async function handleSubmit() {
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Domain</label>
+        <label for="key-domain" class="block text-sm font-medium text-gray-700 mb-1">Domain</label>
         <input
+          id="key-domain"
           v-model="form.domain"
           type="text"
           placeholder="example.com (leave empty for any)"
@@ -106,8 +108,9 @@ async function handleSubmit() {
 
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty (maxNumber)</label>
+          <label for="key-max-number" class="block text-sm font-medium text-gray-700 mb-1">Difficulty (maxNumber)</label>
           <input
+            id="key-max-number"
             v-model.number="form.max_number"
             type="number"
             min="1000"
@@ -117,8 +120,9 @@ async function handleSubmit() {
           <p class="mt-1 text-xs text-gray-500">Higher = harder. 100,000 ~ 0.5s</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Challenge TTL (seconds)</label>
+          <label for="key-expire-seconds" class="block text-sm font-medium text-gray-700 mb-1">Challenge TTL (seconds)</label>
           <input
+            id="key-expire-seconds"
             v-model.number="form.expire_seconds"
             type="number"
             min="60"
@@ -129,8 +133,9 @@ async function handleSubmit() {
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Algorithm</label>
+        <label for="key-algorithm" class="block text-sm font-medium text-gray-700 mb-1">Algorithm</label>
         <select
+          id="key-algorithm"
           v-model="form.algorithm"
           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >

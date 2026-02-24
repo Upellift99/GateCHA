@@ -49,7 +49,7 @@ async function toggleEnabled() {
 
 const challengeUrl = computed(() => {
   if (!key.value) return ''
-  return `${window.location.origin}/api/v1/challenge?apiKey=${key.value.key_id}`
+  return `${globalThis.location.origin}/api/v1/challenge?apiKey=${key.value.key_id}`
 })
 
 const widgetSnippet = computed(() => {

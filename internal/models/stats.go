@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const dateFormatYMD = "2006-01-02"
+
 type DailyStat struct {
 	Date              string `json:"date"`
 	ChallengesIssued  int    `json:"challenges_issued"`
@@ -14,15 +16,15 @@ type DailyStat struct {
 }
 
 type StatsOverview struct {
-	TotalChallenges       int         `json:"total_challenges"`
-	TotalVerificationsOK  int         `json:"total_verifications_ok"`
-	TotalVerificationsFail int        `json:"total_verifications_fail"`
-	ActiveKeys            int         `json:"active_keys"`
-	Daily                 []DailyStat `json:"daily"`
+	TotalChallenges        int         `json:"total_challenges"`
+	TotalVerificationsOK   int         `json:"total_verifications_ok"`
+	TotalVerificationsFail int         `json:"total_verifications_fail"`
+	ActiveKeys             int         `json:"active_keys"`
+	Daily                  []DailyStat `json:"daily"`
 }
 
 func IncrementChallengesIssued(db *sql.DB, apiKeyID int64) error {
-	date := time.Now().UTC().Format("2006-01-02")
+	date := time.Now().UTC().Format(dateFormatYMD)
 	_, err := db.Exec(`
 		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
 		VALUES (?, ?, 1, 0, 0)
@@ -33,7 +35,7 @@ func IncrementChallengesIssued(db *sql.DB, apiKeyID int64) error {
 }
 
 func IncrementVerificationsOK(db *sql.DB, apiKeyID int64) error {
-	date := time.Now().UTC().Format("2006-01-02")
+	date := time.Now().UTC().Format(dateFormatYMD)
 	_, err := db.Exec(`
 		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
 		VALUES (?, ?, 0, 1, 0)
@@ -44,7 +46,7 @@ func IncrementVerificationsOK(db *sql.DB, apiKeyID int64) error {
 }
 
 func IncrementVerificationsFail(db *sql.DB, apiKeyID int64) error {
-	date := time.Now().UTC().Format("2006-01-02")
+	date := time.Now().UTC().Format(dateFormatYMD)
 	_, err := db.Exec(`
 		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
 		VALUES (?, ?, 0, 0, 1)

@@ -70,8 +70,9 @@ async function toggleCaptcha(event: Event) {
       <div v-if="success" class="bg-green-50 text-green-700 px-4 py-3 rounded text-sm">{{ success }}</div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+        <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
         <input
+          id="currentPassword"
           v-model="currentPassword"
           type="password"
           required
@@ -80,8 +81,9 @@ async function toggleCaptcha(event: Event) {
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
         <input
+          id="newPassword"
           v-model="newPassword"
           type="password"
           required
@@ -90,8 +92,9 @@ async function toggleCaptcha(event: Event) {
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
         <input
+          id="confirmPassword"
           v-model="confirmPassword"
           type="password"
           required
@@ -122,8 +125,9 @@ async function toggleCaptcha(event: Event) {
             Require an ALTCHA proof-of-work challenge before signing in.
           </p>
         </div>
-        <label class="relative inline-flex items-center cursor-pointer">
+        <label for="loginCaptchaToggle" class="relative inline-flex items-center cursor-pointer">
           <input
+            id="loginCaptchaToggle"
             type="checkbox"
             class="sr-only peer"
             :checked="settingsStore.settings.login_captcha_enabled"

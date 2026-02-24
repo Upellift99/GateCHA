@@ -14,6 +14,8 @@ import (
 	lib "github.com/altcha-org/altcha-lib-go"
 )
 
+const logMsgFailIncrement = "failed to increment verifications_fail"
+
 type VerifyHandler struct {
 	DB *sql.DB
 }
@@ -25,6 +27,12 @@ type verifyRequest struct {
 type verifyResponse struct {
 	OK    bool   `json:"ok"`
 	Error string `json:"error,omitempty"`
+}
+
+func (h *VerifyHandler) recordFail(apiKeyID int64) {
+	if err := models.IncrementVerificationsFail(h.DB, apiKeyID); err != nil {
+		slog.Error(logMsgFailIncrement, "error", err, "api_key_id", apiKeyID)
+	}
 }
 
 func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -50,18 +58,14 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Decode payload to extract challenge hash for replay check
 	decoded, err := base64.StdEncoding.DecodeString(req.Payload)
 	if err != nil {
-		if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
-			slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
-		}
+		h.recordFail(key.ID)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload encoding"})
 		return
 	}
 
 	var payload lib.Payload
 	if err := json.Unmarshal(decoded, &payload); err != nil {
-		if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
-			slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
-		}
+		h.recordFail(key.ID)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload format"})
 		return
 	}
@@ -69,17 +73,13 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Verify the solution
 	ok, err := altcha.VerifyPayload(key.HMACSecret, req.Payload)
 	if err != nil {
-		if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
-			slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
-		}
+		h.recordFail(key.ID)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "verification failed"})
 		return
 	}
 
 	if !ok {
-		if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
-			slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
-		}
+		h.recordFail(key.ID)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid_solution"})
 		return
 	}
@@ -92,9 +92,7 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if consumed {
-		if err := models.IncrementVerificationsFail(h.DB, key.ID); err != nil {
-			slog.Error("failed to increment verifications_fail", "error", err, "api_key_id", key.ID)
-		}
+		h.recordFail(key.ID)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "already_used"})
 		return
 	}

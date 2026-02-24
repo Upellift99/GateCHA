@@ -11,48 +11,58 @@ import (
 	"github.com/Upellift99/GateCHA/internal/models"
 )
 
+const bearerPrefix = "Bearer "
+
 type contextKey string
 
 const apiKeyContextKey contextKey = "apiKey"
 
+func authenticateAPIKey(db *sql.DB, w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
+	keyID := r.URL.Query().Get("apiKey")
+	if keyID == "" {
+		authHeader := r.Header.Get("Authorization")
+		if strings.HasPrefix(authHeader, bearerPrefix) {
+			keyID = strings.TrimPrefix(authHeader, bearerPrefix)
+		}
+	}
+
+	if keyID == "" || !strings.HasPrefix(keyID, "gk_") {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "missing or invalid API key"})
+		return nil, false
+	}
+
+	key, err := models.GetAPIKeyByKeyID(db, keyID)
+	if err != nil {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid API key"})
+		return nil, false
+	}
+
+	if !key.Enabled {
+		writeJSON(w, http.StatusForbidden, map[string]string{"error": "API key is disabled"})
+		return nil, false
+	}
+
+	if key.Domain != "" {
+		origin := r.Header.Get("Origin")
+		referer := r.Header.Get("Referer")
+		if origin != "" && !matchDomain(origin, key.Domain) && !matchDomain(referer, key.Domain) {
+			writeJSON(w, http.StatusForbidden, map[string]string{"error": "domain not allowed"})
+			return nil, false
+		}
+	}
+
+	ctx := context.WithValue(r.Context(), apiKeyContextKey, key)
+	return r.WithContext(ctx), true
+}
+
 func APIKeyMiddleware(db *sql.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			keyID := r.URL.Query().Get("apiKey")
-			if keyID == "" {
-				authHeader := r.Header.Get("Authorization")
-				if strings.HasPrefix(authHeader, "Bearer ") {
-					keyID = strings.TrimPrefix(authHeader, "Bearer ")
-				}
-			}
-
-			if keyID == "" || !strings.HasPrefix(keyID, "gk_") {
-				writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "missing or invalid API key"})
+			req, ok := authenticateAPIKey(db, w, r)
+			if !ok {
 				return
 			}
-
-			key, err := models.GetAPIKeyByKeyID(db, keyID)
-			if err != nil {
-				writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid API key"})
-				return
-			}
-
-			if !key.Enabled {
-				writeJSON(w, http.StatusForbidden, map[string]string{"error": "API key is disabled"})
-				return
-			}
-
-			if key.Domain != "" {
-				origin := r.Header.Get("Origin")
-				referer := r.Header.Get("Referer")
-				if origin != "" && !matchDomain(origin, key.Domain) && !matchDomain(referer, key.Domain) {
-					writeJSON(w, http.StatusForbidden, map[string]string{"error": "domain not allowed"})
-					return
-				}
-			}
-
-			ctx := context.WithValue(r.Context(), apiKeyContextKey, key)
-			next.ServeHTTP(w, r.WithContext(ctx))
+			next.ServeHTTP(w, req)
 		})
 	}
 }
@@ -62,21 +72,26 @@ func GetAPIKeyFromContext(r *http.Request) *models.APIKey {
 	return key
 }
 
+func authenticateAdmin(secretKey string, w http.ResponseWriter, r *http.Request) bool {
+	authHeader := r.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, bearerPrefix) {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "missing authorization"})
+		return false
+	}
+	token := strings.TrimPrefix(authHeader, bearerPrefix)
+	if _, err := auth.ValidateJWT(token, secretKey); err != nil {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid or expired token"})
+		return false
+	}
+	return true
+}
+
 func AdminAuthMiddleware(secretKey string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			if !strings.HasPrefix(authHeader, "Bearer ") {
-				writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "missing authorization"})
+			if !authenticateAdmin(secretKey, w, r) {
 				return
 			}
-			token := strings.TrimPrefix(authHeader, "Bearer ")
-			claims, err := auth.ValidateJWT(token, secretKey)
-			if err != nil {
-				writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid or expired token"})
-				return
-			}
-			_ = claims
 			next.ServeHTTP(w, r)
 		})
 	}

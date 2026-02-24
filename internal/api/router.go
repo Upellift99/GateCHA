@@ -9,6 +9,8 @@ import (
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
+const keysIDRoute = "/keys/{id}"
+
 func NewRouter(db *sql.DB, secretKey string, corsAllowAll bool) http.Handler {
 	r := chi.NewRouter()
 
@@ -48,10 +50,10 @@ func NewRouter(db *sql.DB, secretKey string, corsAllowAll bool) http.Handler {
 			// API Keys CRUD
 			r.Get("/keys", adminHandler.ListKeys)
 			r.Post("/keys", adminHandler.CreateKey)
-			r.Get("/keys/{id}", adminHandler.GetKey)
-			r.Put("/keys/{id}", adminHandler.UpdateKey)
-			r.Delete("/keys/{id}", adminHandler.DeleteKey)
-			r.Post("/keys/{id}/rotate-secret", adminHandler.RotateSecret)
+			r.Get(keysIDRoute, adminHandler.GetKey)
+			r.Put(keysIDRoute, adminHandler.UpdateKey)
+			r.Delete(keysIDRoute, adminHandler.DeleteKey)
+			r.Post(keysIDRoute+"/rotate-secret", adminHandler.RotateSecret)
 
 			// Statistics
 			r.Get("/stats/overview", adminHandler.StatsOverview)

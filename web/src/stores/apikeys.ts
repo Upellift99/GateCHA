@@ -16,6 +16,11 @@ export interface APIKey {
   updated_at: string
 }
 
+async function rotateSecret(id: number) {
+  const { data } = await api.post(`/keys/${id}/rotate-secret`)
+  return data.hmac_secret as string
+}
+
 export const useApiKeysStore = defineStore('apikeys', () => {
   const keys = ref<APIKey[]>([])
   const loading = ref(false)
@@ -50,11 +55,6 @@ export const useApiKeysStore = defineStore('apikeys', () => {
   async function deleteKey(id: number) {
     await api.delete(`/keys/${id}`)
     await fetchKeys()
-  }
-
-  async function rotateSecret(id: number) {
-    const { data } = await api.post(`/keys/${id}/rotate-secret`)
-    return data.hmac_secret as string
   }
 
   return { keys, loading, fetchKeys, createKey, getKey, updateKey, deleteKey, rotateSecret }

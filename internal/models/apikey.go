@@ -22,6 +22,16 @@ type APIKey struct {
 	UpdatedAt     string `json:"updated_at"`
 }
 
+// UpdateAPIKeyParams holds the fields for updating an API key.
+type UpdateAPIKeyParams struct {
+	Name          string
+	Domain        string
+	MaxNumber     int64
+	ExpireSeconds int
+	Algorithm     string
+	Enabled       bool
+}
+
 func GenerateKeyID() (string, error) {
 	b := make([]byte, 12)
 	if _, err := rand.Read(b); err != nil {
@@ -135,16 +145,16 @@ func ListAPIKeys(db *sql.DB) ([]APIKey, error) {
 	return keys, nil
 }
 
-func UpdateAPIKey(db *sql.DB, id int64, name, domain string, maxNumber int64, expireSeconds int, algorithm string, enabled bool) error {
+func UpdateAPIKey(db *sql.DB, id int64, params UpdateAPIKeyParams) error {
 	enabledInt := 0
-	if enabled {
+	if params.Enabled {
 		enabledInt = 1
 	}
 	now := time.Now().UTC().Format(time.RFC3339)
 	_, err := db.Exec(`
 		UPDATE api_keys SET name = ?, domain = ?, max_number = ?, expire_seconds = ?, algorithm = ?, enabled = ?, updated_at = ?
 		WHERE id = ?
-	`, name, domain, maxNumber, expireSeconds, algorithm, enabledInt, now, id)
+	`, params.Name, params.Domain, params.MaxNumber, params.ExpireSeconds, params.Algorithm, enabledInt, now, id)
 	return err
 }
 

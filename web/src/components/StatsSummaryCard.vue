@@ -15,11 +15,13 @@ const colorClasses: Record<string, string> = {
 
 <template>
   <div class="bg-white shadow rounded-lg p-6">
-    <dt class="text-sm font-medium text-gray-500">{{ label }}</dt>
-    <dd class="mt-2">
-      <span :class="colorClasses[color]" class="text-3xl font-bold">
-        {{ value.toLocaleString() }}
-      </span>
-    </dd>
+    <dl>
+      <dt class="text-sm font-medium text-gray-500">{{ label }}</dt>
+      <dd class="mt-2">
+        <span :class="colorClasses[color]" class="text-3xl font-bold">
+          {{ value.toLocaleString() }}
+        </span>
+      </dd>
+    </dl>
   </div>
 </template>
