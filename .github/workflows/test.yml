@@ -31,6 +31,12 @@ jobs:
       - name: Run Go tests with coverage
         run: go test -coverprofile=coverage.out ./...
 
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.out
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -78,6 +84,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
 
       - name: Install frontend dependencies
         run: cd web && npm ci
