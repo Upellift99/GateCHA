@@ -28,8 +28,8 @@ jobs:
       - name: Verify Go build
         run: go build ./cmd/gatecha/
 
-      - name: Run Go tests
-        run: go test ./...
+      - name: Run Go tests with coverage
+        run: go test -coverprofile=coverage.out ./...
 
   lint:
     runs-on: ubuntu-latest

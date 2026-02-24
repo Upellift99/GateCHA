@@ -120,12 +120,12 @@ async function toggleCaptcha(event: Event) {
 
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-700">Login CAPTCHA</p>
+          <label for="loginCaptchaToggle" class="text-sm font-medium text-gray-700">Login CAPTCHA</label>
           <p class="text-xs text-gray-500 mt-0.5">
             Require an ALTCHA proof-of-work challenge before signing in.
           </p>
         </div>
-        <label for="loginCaptchaToggle" class="relative inline-flex items-center cursor-pointer">
+        <div class="relative inline-flex items-center cursor-pointer">
           <input
             id="loginCaptchaToggle"
             type="checkbox"
@@ -140,7 +140,7 @@ async function toggleCaptcha(event: Event) {
                       after:bg-white after:border-gray-300 after:border after:rounded-full
                       after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600
                       peer-disabled:opacity-50"></div>
-        </label>
+        </div>
       </div>
     </div>
   </div>

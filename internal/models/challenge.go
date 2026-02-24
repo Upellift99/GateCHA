@@ -23,7 +23,7 @@ func MarkConsumed(db *sql.DB, challenge string, apiKeyID int64, expiresAt time.T
 }
 
 func CleanupExpired(db *sql.DB) (int64, error) {
-	result, err := db.Exec(`DELETE FROM consumed_challenges WHERE expires_at < datetime('now')`)
+	result, err := db.Exec(`DELETE FROM consumed_challenges WHERE datetime(expires_at) < datetime('now')`)
 	if err != nil {
 		return 0, err
 	}
