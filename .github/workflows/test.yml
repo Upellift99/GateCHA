@@ -31,11 +31,39 @@ jobs:
       - name: Run Go tests with coverage
         run: go test -coverprofile=coverage.out ./...
 
-      - name: Upload coverage report
+      - name: Upload Go coverage report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: go-coverage
           path: coverage.out
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: cd web && npm ci
+
+      - name: Type check
+        run: cd web && npx vue-tsc -b
+
+      - name: Run tests with coverage
+        run: cd web && npx vitest run --coverage
+
+      - name: Build
+        run: cd web && npm run build
+
+      - name: Upload frontend coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: web/coverage/lcov.info
 
   lint:
     runs-on: ubuntu-latest
@@ -58,25 +86,6 @@ jobs:
       - name: Run go vet
         run: go vet ./...
 
-  frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install dependencies
-        run: cd web && npm ci
-
-      - name: Type check
-        run: cd web && npx vue-tsc -b
-
-      - name: Build
-        run: cd web && npm run build
-
   sonarqube:
     runs-on: ubuntu-latest
     needs: [test, lint, frontend]
@@ -85,10 +94,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download coverage report
+      - name: Download Go coverage report
         uses: actions/download-artifact@v4
         with:
-          name: coverage-report
+          name: go-coverage
+
+      - name: Download frontend coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage
+          path: web/coverage
 
       - name: Install frontend dependencies
         run: cd web && npm ci
