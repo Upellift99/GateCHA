@@ -97,10 +97,11 @@ func GetStatsOverview(db *sql.DB, days int) (*StatsOverview, error) {
 
 // KeyStatsSummary holds all-time totals for a single API key.
 type KeyStatsSummary struct {
-	APIKeyID          int64 `json:"api_key_id"`
-	ChallengesIssued  int   `json:"challenges_issued"`
-	VerificationsOK   int   `json:"verifications_ok"`
-	VerificationsFail int   `json:"verifications_fail"`
+	APIKeyID          int64  `json:"api_key_id"`
+	ChallengesIssued  int    `json:"challenges_issued"`
+	VerificationsOK   int    `json:"verifications_ok"`
+	VerificationsFail int    `json:"verifications_fail"`
+	LastUsedAt        string `json:"last_used_at"`
 }
 
 // GetAllKeysStatsSummary returns all-time totals grouped by API key ID.
@@ -109,7 +110,8 @@ func GetAllKeysStatsSummary(db *sql.DB) (map[int64]KeyStatsSummary, error) {
 		SELECT api_key_id,
 		       COALESCE(SUM(challenges_issued), 0),
 		       COALESCE(SUM(verifications_ok), 0),
-		       COALESCE(SUM(verifications_fail), 0)
+		       COALESCE(SUM(verifications_fail), 0),
+		       COALESCE(MAX(date), '')
 		FROM daily_stats
 		GROUP BY api_key_id
 	`)
@@ -121,7 +123,7 @@ func GetAllKeysStatsSummary(db *sql.DB) (map[int64]KeyStatsSummary, error) {
 	result := make(map[int64]KeyStatsSummary)
 	for rows.Next() {
 		var s KeyStatsSummary
-		if err := rows.Scan(&s.APIKeyID, &s.ChallengesIssued, &s.VerificationsOK, &s.VerificationsFail); err != nil {
+		if err := rows.Scan(&s.APIKeyID, &s.ChallengesIssued, &s.VerificationsOK, &s.VerificationsFail, &s.LastUsedAt); err != nil {
 			return nil, err
 		}
 		result[s.APIKeyID] = s

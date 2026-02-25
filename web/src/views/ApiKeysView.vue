@@ -6,13 +6,24 @@ import { useStatsStore } from '../stores/stats'
 const store = useApiKeysStore()
 const statsStore = useStatsStore()
 
-type SortColumn = 'name' | 'domain' | 'enabled' | 'challenges' | 'verified' | 'failed'
+type SortColumn = 'name' | 'domain' | 'enabled' | 'challenges' | 'verified' | 'failed' | 'lastUsed'
 const sortColumn = ref<SortColumn>('name')
 const sortDirection = ref<'asc' | 'desc'>('asc')
 
 function getKeyStat(keyId: number, field: 'challenges_issued' | 'verifications_ok' | 'verifications_fail'): number {
   const summary = statsStore.keysSummary[String(keyId)]
   return summary ? summary[field] : 0
+}
+
+function getLastUsed(keyId: number): string {
+  const summary = statsStore.keysSummary[String(keyId)]
+  return summary ? summary.last_used_at : ''
+}
+
+function formatLastUsed(keyId: number): string {
+  const date = getLastUsed(keyId)
+  if (!date) return 'Never'
+  return new Date(date + 'T00:00:00Z').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
 function toggleSort(column: SortColumn) {
@@ -42,6 +53,8 @@ const sortedKeys = computed(() => {
         return dir * (getKeyStat(a.id, 'verifications_ok') - getKeyStat(b.id, 'verifications_ok'))
       case 'failed':
         return dir * (getKeyStat(a.id, 'verifications_fail') - getKeyStat(b.id, 'verifications_fail'))
+      case 'lastUsed':
+        return dir * (getLastUsed(a.id) || '').localeCompare(getLastUsed(b.id) || '')
       default:
         return 0
     }
@@ -121,6 +134,13 @@ onMounted(() => {
               Failed
               <span v-if="sortColumn === 'failed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
+            <th
+              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              @click="toggleSort('lastUsed')"
+            >
+              Last Used
+              <span v-if="sortColumn === 'lastUsed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+            </th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
           </tr>
         </thead>
@@ -147,6 +167,9 @@ onMounted(() => {
             </td>
             <td class="px-6 py-4 text-sm text-right font-medium text-red-600">
               {{ getKeyStat(key.id, 'verifications_fail').toLocaleString() }}
+            </td>
+            <td class="px-6 py-4 text-sm text-right text-gray-500">
+              {{ formatLastUsed(key.id) }}
             </td>
             <td class="px-6 py-4 text-right space-x-3">
               <router-link :to="`/keys/${key.id}`" class="text-indigo-600 hover:text-indigo-800 text-sm">

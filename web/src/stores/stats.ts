@@ -22,6 +22,7 @@ export interface KeyStatsSummary {
   challenges_issued: number
   verifications_ok: number
   verifications_fail: number
+  last_used_at: string
 }
 
 export const useStatsStore = defineStore('stats', () => {
