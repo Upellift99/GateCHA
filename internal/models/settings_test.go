@@ -1,15 +1,16 @@
-package models
+package models_test
 
 import (
 	"testing"
 
+	"github.com/Upellift99/GateCHA/internal/models"
 	"github.com/Upellift99/GateCHA/internal/testutil"
 )
 
 func TestGetSetting_NotFound(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	val, err := GetSetting(db, "nonexistent")
+	val, err := models.GetSetting(db, "nonexistent")
 	if err != nil {
 		t.Fatalf("GetSetting failed: %v", err)
 	}
@@ -21,11 +22,11 @@ func TestGetSetting_NotFound(t *testing.T) {
 func TestSetAndGetSetting(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	if err := SetSetting(db, "test_key", "test_value"); err != nil {
+	if err := models.SetSetting(db, "test_key", "test_value"); err != nil {
 		t.Fatalf("SetSetting failed: %v", err)
 	}
 
-	val, err := GetSetting(db, "test_key")
+	val, err := models.GetSetting(db, "test_key")
 	if err != nil {
 		t.Fatalf("GetSetting failed: %v", err)
 	}
@@ -37,10 +38,10 @@ func TestSetAndGetSetting(t *testing.T) {
 func TestSetSetting_Upsert(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	SetSetting(db, "key", "original")
-	SetSetting(db, "key", "updated")
+	models.SetSetting(db, "key", "original")
+	models.SetSetting(db, "key", "updated")
 
-	val, _ := GetSetting(db, "key")
+	val, _ := models.GetSetting(db, "key")
 	if val != "updated" {
 		t.Errorf("expected 'updated', got %q", val)
 	}
@@ -49,7 +50,7 @@ func TestSetSetting_Upsert(t *testing.T) {
 func TestGetLoginCaptchaEnabled_Default(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	enabled, err := GetLoginCaptchaEnabled(db)
+	enabled, err := models.GetLoginCaptchaEnabled(db)
 	if err != nil {
 		t.Fatalf("GetLoginCaptchaEnabled failed: %v", err)
 	}
@@ -61,9 +62,9 @@ func TestGetLoginCaptchaEnabled_Default(t *testing.T) {
 func TestGetLoginCaptchaEnabled_True(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	SetSetting(db, SettingLoginCaptchaEnabled, "true")
+	models.SetSetting(db, models.SettingLoginCaptchaEnabled, "true")
 
-	enabled, _ := GetLoginCaptchaEnabled(db)
+	enabled, _ := models.GetLoginCaptchaEnabled(db)
 	if !enabled {
 		t.Error("expected true after setting")
 	}
@@ -72,7 +73,7 @@ func TestGetLoginCaptchaEnabled_True(t *testing.T) {
 func TestEnsureLoginCaptchaAPIKey(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	key, err := EnsureLoginCaptchaAPIKey(db)
+	key, err := models.EnsureLoginCaptchaAPIKey(db)
 	if err != nil {
 		t.Fatalf("EnsureLoginCaptchaAPIKey failed: %v", err)
 	}
@@ -81,7 +82,7 @@ func TestEnsureLoginCaptchaAPIKey(t *testing.T) {
 	}
 
 	// Second call should return same key
-	key2, err := EnsureLoginCaptchaAPIKey(db)
+	key2, err := models.EnsureLoginCaptchaAPIKey(db)
 	if err != nil {
 		t.Fatalf("EnsureLoginCaptchaAPIKey (2nd) failed: %v", err)
 	}
@@ -93,11 +94,11 @@ func TestEnsureLoginCaptchaAPIKey(t *testing.T) {
 func TestEnsureLoginCaptchaAPIKey_RecreatesAfterDeletion(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	key, _ := EnsureLoginCaptchaAPIKey(db)
-	DeleteAPIKey(db, key.ID)
+	key, _ := models.EnsureLoginCaptchaAPIKey(db)
+	models.DeleteAPIKey(db, key.ID)
 
 	// Should create a new key
-	key2, err := EnsureLoginCaptchaAPIKey(db)
+	key2, err := models.EnsureLoginCaptchaAPIKey(db)
 	if err != nil {
 		t.Fatalf("EnsureLoginCaptchaAPIKey after deletion failed: %v", err)
 	}

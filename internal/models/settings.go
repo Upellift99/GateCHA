@@ -1,11 +1,20 @@
 package models
 
 import (
-	"database/sql"
 	"errors"
 	"strconv"
 	"time"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
+
+// Setting holds a key-value configuration entry.
+type Setting struct {
+	Key       string    `gorm:"primaryKey;size:64" json:"key"`
+	Value     string    `gorm:"not null;default:''" json:"value"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
 const (
 	SettingLoginCaptchaEnabled  = "login_captcha_enabled"
@@ -14,35 +23,33 @@ const (
 
 // GetSetting retrieves a single setting value by key.
 // Returns ("", nil) if the key does not exist.
-func GetSetting(db *sql.DB, key string) (string, error) {
-	var value string
-	err := db.QueryRow(`SELECT value FROM settings WHERE key = ?`, key).Scan(&value)
-	if errors.Is(err, sql.ErrNoRows) {
+func GetSetting(db *gorm.DB, key string) (string, error) {
+	var s Setting
+	// Map-form Where quotes the column name per dialect, avoiding MySQL's reserved word "key".
+	err := db.Where(map[string]any{"key": key}).First(&s).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return "", nil
 	}
-	return value, err
+	return s.Value, err
 }
 
 // SetSetting upserts a setting value.
-func SetSetting(db *sql.DB, key, value string) error {
-	now := time.Now().UTC().Format(time.RFC3339)
-	_, err := db.Exec(`
-		INSERT INTO settings (key, value, updated_at)
-		VALUES (?, ?, ?)
-		ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
-	`, key, value, now)
-	return err
+func SetSetting(db *gorm.DB, key, value string) error {
+	return db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "key"}},
+		DoUpdates: clause.AssignmentColumns([]string{"value", "updated_at"}),
+	}).Create(&Setting{Key: key, Value: value, UpdatedAt: time.Now()}).Error
 }
 
 // GetLoginCaptchaEnabled returns whether the login CAPTCHA is enabled.
-func GetLoginCaptchaEnabled(db *sql.DB) (bool, error) {
+func GetLoginCaptchaEnabled(db *gorm.DB) (bool, error) {
 	v, err := GetSetting(db, SettingLoginCaptchaEnabled)
 	return v == "true", err
 }
 
 // EnsureLoginCaptchaAPIKey returns the existing login CAPTCHA API key,
 // or creates a dedicated one if none exists yet.
-func EnsureLoginCaptchaAPIKey(db *sql.DB) (*APIKey, error) {
+func EnsureLoginCaptchaAPIKey(db *gorm.DB) (*APIKey, error) {
 	idStr, err := GetSetting(db, SettingLoginCaptchaAPIKeyID)
 	if err != nil {
 		return nil, err

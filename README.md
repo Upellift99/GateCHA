@@ -16,8 +16,9 @@ GateCHA is an open-source alternative to [ALTCHA Sentinel](https://altcha.org/do
 - **Replay Protection** - Consumed challenges are tracked and rejected on reuse
 - **Statistics Dashboard** - Track challenges issued, verifications (success/fail), per key, per day
 - **Single Binary** - Vue.js dashboard embedded in the Go binary via `go:embed`
-- **Docker Ready** - One container, SQLite embedded, zero external dependencies
-- **Lightweight** - ~15MB Docker image, ~3MB binary
+- **Multi-Database** - SQLite (default, embedded) or MySQL via `GATECHA_DB_DRIVER`
+- **Docker Ready** - One container, zero external dependencies (SQLite mode)
+- **Lightweight** - ~23MB Docker image, ~14MB binary
 
 ## Quick Start
 
@@ -120,6 +121,8 @@ if resp.json().get('ok'):
 | `GATECHA_LOG_LEVEL` | `info` | Log level |
 | `GATECHA_CLEANUP_INTERVAL` | `10` | Cleanup interval (minutes) |
 | `GATECHA_CORS_ALLOW_ALL` | `false` | Allow CORS from any origin |
+| `GATECHA_DB_DRIVER` | `sqlite` | Database driver (`sqlite` or `mysql`) |
+| `GATECHA_DB_DSN` | *(empty)* | MySQL DSN (e.g. `user:pass@tcp(host:3306)/dbname?parseTime=true`) |
 
 ## License
 

@@ -2,24 +2,26 @@ package models
 
 import (
 	"crypto/rand"
-	"database/sql"
 	"encoding/hex"
 	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
 
+// APIKey represents a site-specific API key used to generate and verify ALTCHA challenges.
 type APIKey struct {
-	ID            int64  `json:"id"`
-	KeyID         string `json:"key_id"`
-	HMACSecret    string `json:"hmac_secret,omitempty"`
-	Name          string `json:"name"`
-	Domain        string `json:"domain"`
-	MaxNumber     int64  `json:"max_number"`
-	ExpireSeconds int    `json:"expire_seconds"`
-	Algorithm     string `json:"algorithm"`
-	Enabled       bool   `json:"enabled"`
-	CreatedAt     string `json:"created_at"`
-	UpdatedAt     string `json:"updated_at"`
+	ID            int64     `gorm:"primaryKey;autoIncrement" json:"id"`
+	KeyID         string    `gorm:"not null;uniqueIndex;size:32" json:"key_id"`
+	HMACSecret    string    `gorm:"not null" json:"hmac_secret,omitempty"`
+	Name          string    `gorm:"not null;default:''" json:"name"`
+	Domain        string    `gorm:"not null;default:''" json:"domain"`
+	MaxNumber     int64     `gorm:"not null;default:100000" json:"max_number"`
+	ExpireSeconds int       `gorm:"not null;default:300" json:"expire_seconds"`
+	Algorithm     string    `gorm:"not null;default:'SHA-256'" json:"algorithm"`
+	Enabled       bool      `gorm:"not null;default:true" json:"enabled"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 // UpdateAPIKeyParams holds the fields for updating an API key.
@@ -48,7 +50,7 @@ func GenerateHMACSecret() (string, error) {
 	return hex.EncodeToString(b), nil
 }
 
-func CreateAPIKey(db *sql.DB, name, domain string, maxNumber int64, expireSeconds int, algorithm string) (*APIKey, error) {
+func CreateAPIKey(db *gorm.DB, name, domain string, maxNumber int64, expireSeconds int, algorithm string) (*APIKey, error) {
 	keyID, err := GenerateKeyID()
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate key ID: %w", err)
@@ -69,18 +71,7 @@ func CreateAPIKey(db *sql.DB, name, domain string, maxNumber int64, expireSecond
 		algorithm = "SHA-256"
 	}
 
-	now := time.Now().UTC().Format(time.RFC3339)
-	result, err := db.Exec(`
-		INSERT INTO api_keys (key_id, hmac_secret, name, domain, max_number, expire_seconds, algorithm, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, keyID, hmacSecret, name, domain, maxNumber, expireSeconds, algorithm, now, now)
-	if err != nil {
-		return nil, fmt.Errorf("failed to insert API key: %w", err)
-	}
-
-	id, _ := result.LastInsertId()
-	return &APIKey{
-		ID:            id,
+	key := &APIKey{
 		KeyID:         keyID,
 		HMACSecret:    hmacSecret,
 		Name:          name,
@@ -89,88 +80,57 @@ func CreateAPIKey(db *sql.DB, name, domain string, maxNumber int64, expireSecond
 		ExpireSeconds: expireSeconds,
 		Algorithm:     algorithm,
 		Enabled:       true,
-		CreatedAt:     now,
-		UpdatedAt:     now,
-	}, nil
+	}
+	if err := db.Create(key).Error; err != nil {
+		return nil, fmt.Errorf("failed to insert API key: %w", err)
+	}
+	return key, nil
 }
 
-func GetAPIKeyByKeyID(db *sql.DB, keyID string) (*APIKey, error) {
-	var k APIKey
-	var enabled int
-	err := db.QueryRow(`
-		SELECT id, key_id, hmac_secret, name, domain, max_number, expire_seconds, algorithm, enabled, created_at, updated_at
-		FROM api_keys WHERE key_id = ?
-	`, keyID).Scan(&k.ID, &k.KeyID, &k.HMACSecret, &k.Name, &k.Domain, &k.MaxNumber, &k.ExpireSeconds, &k.Algorithm, &enabled, &k.CreatedAt, &k.UpdatedAt)
+func GetAPIKeyByKeyID(db *gorm.DB, keyID string) (*APIKey, error) {
+	var key APIKey
+	err := db.Where("key_id = ?", keyID).First(&key).Error
 	if err != nil {
 		return nil, err
 	}
-	k.Enabled = enabled == 1
-	return &k, nil
+	return &key, nil
 }
 
-func GetAPIKeyByID(db *sql.DB, id int64) (*APIKey, error) {
-	var k APIKey
-	var enabled int
-	err := db.QueryRow(`
-		SELECT id, key_id, hmac_secret, name, domain, max_number, expire_seconds, algorithm, enabled, created_at, updated_at
-		FROM api_keys WHERE id = ?
-	`, id).Scan(&k.ID, &k.KeyID, &k.HMACSecret, &k.Name, &k.Domain, &k.MaxNumber, &k.ExpireSeconds, &k.Algorithm, &enabled, &k.CreatedAt, &k.UpdatedAt)
+func GetAPIKeyByID(db *gorm.DB, id int64) (*APIKey, error) {
+	var key APIKey
+	err := db.First(&key, id).Error
 	if err != nil {
 		return nil, err
 	}
-	k.Enabled = enabled == 1
-	return &k, nil
+	return &key, nil
 }
 
-func ListAPIKeys(db *sql.DB) ([]APIKey, error) {
-	rows, err := db.Query(`
-		SELECT id, key_id, hmac_secret, name, domain, max_number, expire_seconds, algorithm, enabled, created_at, updated_at
-		FROM api_keys ORDER BY created_at DESC
-	`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
+func ListAPIKeys(db *gorm.DB) ([]APIKey, error) {
 	var keys []APIKey
-	for rows.Next() {
-		var k APIKey
-		var enabled int
-		if err := rows.Scan(&k.ID, &k.KeyID, &k.HMACSecret, &k.Name, &k.Domain, &k.MaxNumber, &k.ExpireSeconds, &k.Algorithm, &enabled, &k.CreatedAt, &k.UpdatedAt); err != nil {
-			return nil, err
-		}
-		k.Enabled = enabled == 1
-		keys = append(keys, k)
-	}
-	return keys, nil
+	return keys, db.Order("created_at desc").Find(&keys).Error
 }
 
-func UpdateAPIKey(db *sql.DB, id int64, params UpdateAPIKeyParams) error {
-	enabledInt := 0
-	if params.Enabled {
-		enabledInt = 1
-	}
-	now := time.Now().UTC().Format(time.RFC3339)
-	_, err := db.Exec(`
-		UPDATE api_keys SET name = ?, domain = ?, max_number = ?, expire_seconds = ?, algorithm = ?, enabled = ?, updated_at = ?
-		WHERE id = ?
-	`, params.Name, params.Domain, params.MaxNumber, params.ExpireSeconds, params.Algorithm, enabledInt, now, id)
-	return err
+func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
+	return db.Model(&APIKey{}).Where("id = ?", id).Updates(map[string]any{
+		"name":           params.Name,
+		"domain":         params.Domain,
+		"max_number":     params.MaxNumber,
+		"expire_seconds": params.ExpireSeconds,
+		"algorithm":      params.Algorithm,
+		"enabled":        params.Enabled,
+	}).Error
 }
 
-func DeleteAPIKey(db *sql.DB, id int64) error {
-	_, err := db.Exec(`DELETE FROM api_keys WHERE id = ?`, id)
-	return err
+func DeleteAPIKey(db *gorm.DB, id int64) error {
+	return db.Delete(&APIKey{}, id).Error
 }
 
-func RotateHMACSecret(db *sql.DB, id int64) (string, error) {
+func RotateHMACSecret(db *gorm.DB, id int64) (string, error) {
 	secret, err := GenerateHMACSecret()
 	if err != nil {
 		return "", err
 	}
-	now := time.Now().UTC().Format(time.RFC3339)
-	_, err = db.Exec(`UPDATE api_keys SET hmac_secret = ?, updated_at = ? WHERE id = ?`, secret, now, id)
-	if err != nil {
+	if err := db.Model(&APIKey{}).Where("id = ?", id).Update("hmac_secret", secret).Error; err != nil {
 		return "", err
 	}
 	return secret, nil

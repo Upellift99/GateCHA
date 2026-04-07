@@ -11,24 +11,28 @@ import (
 
 type Config struct {
 	ListenAddr      string
+	DBDriver        string
 	DBPath          string
+	DBDSN           string
 	SecretKey       string
 	AdminUsername   string
 	AdminPassword   string
 	LogLevel        string
 	CleanupInterval time.Duration
-	CORSAllowAll   bool
+	CORSAllowAll    bool
 }
 
 func Load() (*Config, error) {
 	cfg := &Config{
-		ListenAddr:      envOrDefault("GATECHA_LISTEN_ADDR", ":8080"),
-		DBPath:          envOrDefault("GATECHA_DB_PATH", "./data/gatecha.db"),
-		SecretKey:       os.Getenv("GATECHA_SECRET_KEY"),
-		AdminUsername:   envOrDefault("GATECHA_ADMIN_USERNAME", "admin"),
-		AdminPassword:   os.Getenv("GATECHA_ADMIN_PASSWORD"),
-		LogLevel:        envOrDefault("GATECHA_LOG_LEVEL", "info"),
-		CORSAllowAll:    envOrDefault("GATECHA_CORS_ALLOW_ALL", "false") == "true",
+		ListenAddr:    envOrDefault("GATECHA_LISTEN_ADDR", ":8080"),
+		DBDriver:      envOrDefault("GATECHA_DB_DRIVER", "sqlite"),
+		DBPath:        envOrDefault("GATECHA_DB_PATH", "./data/gatecha.db"),
+		DBDSN:         os.Getenv("GATECHA_DB_DSN"),
+		SecretKey:     os.Getenv("GATECHA_SECRET_KEY"),
+		AdminUsername: envOrDefault("GATECHA_ADMIN_USERNAME", "admin"),
+		AdminPassword: os.Getenv("GATECHA_ADMIN_PASSWORD"),
+		LogLevel:      envOrDefault("GATECHA_LOG_LEVEL", "info"),
+		CORSAllowAll:  envOrDefault("GATECHA_CORS_ALLOW_ALL", "false") == "true",
 	}
 
 	intervalStr := envOrDefault("GATECHA_CLEANUP_INTERVAL", "10")

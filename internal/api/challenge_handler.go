@@ -1,16 +1,16 @@
 package api
 
 import (
-	"database/sql"
 	"log/slog"
 	"net/http"
 
 	"github.com/Upellift99/GateCHA/internal/altcha"
 	"github.com/Upellift99/GateCHA/internal/models"
+	"gorm.io/gorm"
 )
 
 type ChallengeHandler struct {
-	DB *sql.DB
+	DB *gorm.DB
 }
 
 func (h *ChallengeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

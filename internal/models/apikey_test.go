@@ -1,14 +1,15 @@
-package models
+package models_test
 
 import (
 	"strings"
 	"testing"
 
+	"github.com/Upellift99/GateCHA/internal/models"
 	"github.com/Upellift99/GateCHA/internal/testutil"
 )
 
 func TestGenerateKeyID(t *testing.T) {
-	id, err := GenerateKeyID()
+	id, err := models.GenerateKeyID()
 	if err != nil {
 		t.Fatalf("GenerateKeyID failed: %v", err)
 	}
@@ -19,14 +20,14 @@ func TestGenerateKeyID(t *testing.T) {
 		t.Errorf("expected length 27, got %d", len(id))
 	}
 
-	id2, _ := GenerateKeyID()
+	id2, _ := models.GenerateKeyID()
 	if id == id2 {
 		t.Error("expected unique key IDs")
 	}
 }
 
 func TestGenerateHMACSecret(t *testing.T) {
-	secret, err := GenerateHMACSecret()
+	secret, err := models.GenerateHMACSecret()
 	if err != nil {
 		t.Fatalf("GenerateHMACSecret failed: %v", err)
 	}
@@ -38,7 +39,7 @@ func TestGenerateHMACSecret(t *testing.T) {
 func TestCreateAPIKey(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	key, err := CreateAPIKey(db, "Test Key", "example.com", 50000, 600, "SHA-256")
+	key, err := models.CreateAPIKey(db, "Test Key", "example.com", 50000, 600, "SHA-256")
 	if err != nil {
 		t.Fatalf("CreateAPIKey failed: %v", err)
 	}
@@ -71,7 +72,7 @@ func TestCreateAPIKey(t *testing.T) {
 func TestCreateAPIKey_Defaults(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	key, err := CreateAPIKey(db, "Default Key", "", 0, 0, "")
+	key, err := models.CreateAPIKey(db, "Default Key", "", 0, 0, "")
 	if err != nil {
 		t.Fatalf("CreateAPIKey failed: %v", err)
 	}
@@ -88,9 +89,9 @@ func TestCreateAPIKey_Defaults(t *testing.T) {
 
 func TestGetAPIKeyByKeyID(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	created, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	created, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 
-	found, err := GetAPIKeyByKeyID(db, created.KeyID)
+	found, err := models.GetAPIKeyByKeyID(db, created.KeyID)
 	if err != nil {
 		t.Fatalf("GetAPIKeyByKeyID failed: %v", err)
 	}
@@ -102,7 +103,7 @@ func TestGetAPIKeyByKeyID(t *testing.T) {
 func TestGetAPIKeyByKeyID_NotFound(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	_, err := GetAPIKeyByKeyID(db, "gk_nonexistent")
+	_, err := models.GetAPIKeyByKeyID(db, "gk_nonexistent")
 	if err == nil {
 		t.Error("expected error for nonexistent key")
 	}
@@ -110,9 +111,9 @@ func TestGetAPIKeyByKeyID_NotFound(t *testing.T) {
 
 func TestGetAPIKeyByID(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	created, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	created, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 
-	found, err := GetAPIKeyByID(db, created.ID)
+	found, err := models.GetAPIKeyByID(db, created.ID)
 	if err != nil {
 		t.Fatalf("GetAPIKeyByID failed: %v", err)
 	}
@@ -124,7 +125,7 @@ func TestGetAPIKeyByID(t *testing.T) {
 func TestGetAPIKeyByID_NotFound(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	_, err := GetAPIKeyByID(db, 99999)
+	_, err := models.GetAPIKeyByID(db, 99999)
 	if err == nil {
 		t.Error("expected error for nonexistent ID")
 	}
@@ -133,7 +134,7 @@ func TestGetAPIKeyByID_NotFound(t *testing.T) {
 func TestListAPIKeys(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 
-	keys, err := ListAPIKeys(db)
+	keys, err := models.ListAPIKeys(db)
 	if err != nil {
 		t.Fatalf("ListAPIKeys failed: %v", err)
 	}
@@ -141,10 +142,10 @@ func TestListAPIKeys(t *testing.T) {
 		t.Errorf("expected 0 keys, got %d", len(keys))
 	}
 
-	CreateAPIKey(db, "Key 1", "", 0, 0, "")
-	CreateAPIKey(db, "Key 2", "", 0, 0, "")
+	models.CreateAPIKey(db, "Key 1", "", 0, 0, "")
+	models.CreateAPIKey(db, "Key 2", "", 0, 0, "")
 
-	keys, err = ListAPIKeys(db)
+	keys, err = models.ListAPIKeys(db)
 	if err != nil {
 		t.Fatalf("ListAPIKeys failed: %v", err)
 	}
@@ -155,9 +156,9 @@ func TestListAPIKeys(t *testing.T) {
 
 func TestUpdateAPIKey(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	created, _ := CreateAPIKey(db, "Original", "old.com", 10000, 100, "SHA-256")
+	created, _ := models.CreateAPIKey(db, "Original", "old.com", 10000, 100, "SHA-256")
 
-	err := UpdateAPIKey(db, created.ID, UpdateAPIKeyParams{
+	err := models.UpdateAPIKey(db, created.ID, models.UpdateAPIKeyParams{
 		Name:          "Updated",
 		Domain:        "new.com",
 		MaxNumber:     200000,
@@ -169,7 +170,7 @@ func TestUpdateAPIKey(t *testing.T) {
 		t.Fatalf("UpdateAPIKey failed: %v", err)
 	}
 
-	updated, _ := GetAPIKeyByID(db, created.ID)
+	updated, _ := models.GetAPIKeyByID(db, created.ID)
 	if updated.Name != "Updated" {
 		t.Errorf("expected name 'Updated', got %q", updated.Name)
 	}
@@ -192,14 +193,14 @@ func TestUpdateAPIKey(t *testing.T) {
 
 func TestDeleteAPIKey(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	created, _ := CreateAPIKey(db, "ToDelete", "", 0, 0, "")
+	created, _ := models.CreateAPIKey(db, "ToDelete", "", 0, 0, "")
 
-	err := DeleteAPIKey(db, created.ID)
+	err := models.DeleteAPIKey(db, created.ID)
 	if err != nil {
 		t.Fatalf("DeleteAPIKey failed: %v", err)
 	}
 
-	_, err = GetAPIKeyByID(db, created.ID)
+	_, err = models.GetAPIKeyByID(db, created.ID)
 	if err == nil {
 		t.Error("expected error after deletion")
 	}
@@ -207,10 +208,10 @@ func TestDeleteAPIKey(t *testing.T) {
 
 func TestRotateHMACSecret(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	created, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	created, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 	oldSecret := created.HMACSecret
 
-	newSecret, err := RotateHMACSecret(db, created.ID)
+	newSecret, err := models.RotateHMACSecret(db, created.ID)
 	if err != nil {
 		t.Fatalf("RotateHMACSecret failed: %v", err)
 	}
@@ -218,7 +219,7 @@ func TestRotateHMACSecret(t *testing.T) {
 		t.Error("expected new secret to differ from old")
 	}
 
-	updated, _ := GetAPIKeyByID(db, created.ID)
+	updated, _ := models.GetAPIKeyByID(db, created.ID)
 	if updated.HMACSecret != newSecret {
 		t.Error("expected stored secret to match returned secret")
 	}
