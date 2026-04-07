@@ -114,15 +114,14 @@ if resp.json().get('ok'):
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `GATECHA_LISTEN_ADDR` | `:8080` | Listen address |
-| `GATECHA_DB_PATH` | `./data/gatecha.db` | SQLite database path |
+| `GATECHA_DB_DRIVER` | `sqlite` | Database driver (`sqlite` or `mysql`) |
+| `GATECHA_DB_DSN` | `./data/gatecha.db` | Database DSN — file path for SQLite, connection string for MySQL (e.g. `user:pass@tcp(host:3306)/dbname?parseTime=true`) |
 | `GATECHA_SECRET_KEY` | *(auto-generated)* | JWT signing secret |
 | `GATECHA_ADMIN_USERNAME` | `admin` | Admin username |
 | `GATECHA_ADMIN_PASSWORD` | *(auto-generated)* | Admin password |
 | `GATECHA_LOG_LEVEL` | `info` | Log level |
 | `GATECHA_CLEANUP_INTERVAL` | `10` | Cleanup interval (minutes) |
 | `GATECHA_CORS_ALLOW_ALL` | `false` | Allow CORS from any origin |
-| `GATECHA_DB_DRIVER` | `sqlite` | Database driver (`sqlite` or `mysql`) |
-| `GATECHA_DB_DSN` | *(empty)* | MySQL DSN (e.g. `user:pass@tcp(host:3306)/dbname?parseTime=true`) |
 
 ## License
 

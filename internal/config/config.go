@@ -12,7 +12,6 @@ import (
 type Config struct {
 	ListenAddr      string
 	DBDriver        string
-	DBPath          string
 	DBDSN           string
 	SecretKey       string
 	AdminUsername   string
@@ -26,8 +25,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		ListenAddr:    envOrDefault("GATECHA_LISTEN_ADDR", ":8080"),
 		DBDriver:      envOrDefault("GATECHA_DB_DRIVER", "sqlite"),
-		DBPath:        envOrDefault("GATECHA_DB_PATH", "./data/gatecha.db"),
-		DBDSN:         os.Getenv("GATECHA_DB_DSN"),
+		DBDSN:         envOrDefault("GATECHA_DB_DSN", "./data/gatecha.db"),
 		SecretKey:     os.Getenv("GATECHA_SECRET_KEY"),
 		AdminUsername: envOrDefault("GATECHA_ADMIN_USERNAME", "admin"),
 		AdminPassword: os.Getenv("GATECHA_ADMIN_PASSWORD"),

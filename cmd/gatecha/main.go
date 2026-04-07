@@ -29,12 +29,7 @@ func main() {
 
 	slog.Info("starting GateCHA", "listen", cfg.ListenAddr, "db_driver", cfg.DBDriver)
 
-	dsn := cfg.DBPath
-	if cfg.DBDriver == "mysql" {
-		dsn = cfg.DBDSN
-	}
-
-	db, err := database.Open(cfg.DBDriver, dsn)
+	db, err := database.Open(cfg.DBDriver, cfg.DBDSN)
 	if err != nil {
 		slog.Error("failed to open database", "error", err)
 		os.Exit(1)

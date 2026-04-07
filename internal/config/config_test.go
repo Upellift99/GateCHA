@@ -8,7 +8,7 @@ import (
 
 func TestLoad_Defaults(t *testing.T) {
 	os.Unsetenv("GATECHA_LISTEN_ADDR")
-	os.Unsetenv("GATECHA_DB_PATH")
+	os.Unsetenv("GATECHA_DB_DSN")
 	os.Unsetenv("GATECHA_SECRET_KEY")
 	os.Unsetenv("GATECHA_ADMIN_USERNAME")
 	os.Unsetenv("GATECHA_ADMIN_PASSWORD")
@@ -24,8 +24,8 @@ func TestLoad_Defaults(t *testing.T) {
 	if cfg.ListenAddr != ":8080" {
 		t.Errorf("expected :8080, got %s", cfg.ListenAddr)
 	}
-	if cfg.DBPath != "./data/gatecha.db" {
-		t.Errorf("expected default DB path, got %s", cfg.DBPath)
+	if cfg.DBDSN != "./data/gatecha.db" {
+		t.Errorf("expected default DBDSN, got %s", cfg.DBDSN)
 	}
 	if cfg.AdminUsername != "admin" {
 		t.Errorf("expected admin, got %s", cfg.AdminUsername)
@@ -49,7 +49,7 @@ func TestLoad_Defaults(t *testing.T) {
 
 func TestLoad_CustomEnv(t *testing.T) {
 	t.Setenv("GATECHA_LISTEN_ADDR", ":9090")
-	t.Setenv("GATECHA_DB_PATH", "/tmp/test.db")
+	t.Setenv("GATECHA_DB_DSN", "/tmp/test.db")
 	t.Setenv("GATECHA_SECRET_KEY", "my-secret")
 	t.Setenv("GATECHA_ADMIN_USERNAME", "superadmin")
 	t.Setenv("GATECHA_ADMIN_PASSWORD", "my-password")
@@ -65,8 +65,8 @@ func TestLoad_CustomEnv(t *testing.T) {
 	if cfg.ListenAddr != ":9090" {
 		t.Errorf("expected :9090, got %s", cfg.ListenAddr)
 	}
-	if cfg.DBPath != "/tmp/test.db" {
-		t.Errorf("expected /tmp/test.db, got %s", cfg.DBPath)
+	if cfg.DBDSN != "/tmp/test.db" {
+		t.Errorf("expected /tmp/test.db, got %s", cfg.DBDSN)
 	}
 	if cfg.SecretKey != "my-secret" {
 		t.Errorf("expected my-secret, got %s", cfg.SecretKey)
