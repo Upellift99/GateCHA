@@ -18,7 +18,10 @@ services:
       start_period: 30s
 
   gatecha:
-    build: .
+    build:
+      context: .
+      args:
+        BUILD_TAGS: mysql
     container_name: gatecha
     restart: unless-stopped
     ports:

@@ -2,37 +2,45 @@ package database
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
+	"sort"
 	"time"
 
-	"github.com/glebarez/sqlite"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-// Open opens a database connection for the given driver and DSN and runs migrations.
+// dialectorEntry holds a factory function for a GORM dialector and a flag
+// indicating whether the driver supports multiple concurrent connections.
+type dialectorEntry struct {
+	open      func(dsn string) (gorm.Dialector, error)
+	multiConn bool
+}
+
+// dialectors is populated by init() functions in the per-dialect files
+// (dialect_sqlite.go, dialect_mysql.go, …).
+var dialectors = map[string]dialectorEntry{}
+
+// Open opens a database connection for the given driver and DSN.
 //
-// driver: "sqlite" or "mysql"
-// dsn:    file path for SQLite; connection string for MySQL
+// Which drivers are available depends on the build tags used at compile time:
+//   - "sqlite" is always available
+//   - "mysql"  is available when built with -tags mysql
 //
 // MySQL DSN example: "user:pass@tcp(host:3306)/dbname?parseTime=true&charset=utf8mb4&loc=UTC"
 func Open(driver, dsn string) (*gorm.DB, error) {
-	var dialector gorm.Dialector
-
-	switch driver {
-	case "sqlite":
-		dir := filepath.Dir(dsn)
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			return nil, fmt.Errorf("failed to create data directory: %w", err)
+	entry, ok := dialectors[driver]
+	if !ok {
+		supported := make([]string, 0, len(dialectors))
+		for k := range dialectors {
+			supported = append(supported, k)
 		}
-		// Append WAL mode and foreign key enforcement pragmas.
-		dialector = sqlite.Open(dsn + "?_pragma=journal_mode(WAL)&_pragma=foreign_keys(1)")
-	case "mysql":
-		dialector = mysql.Open(dsn)
-	default:
-		return nil, fmt.Errorf("unsupported DB driver %q: must be \"sqlite\" or \"mysql\"", driver)
+		sort.Strings(supported)
+		return nil, fmt.Errorf("unsupported DB driver %q (built-in drivers: %v)", driver, supported)
+	}
+
+	dialector, err := entry.open(dsn)
+	if err != nil {
+		return nil, err
 	}
 
 	db, err := gorm.Open(dialector, &gorm.Config{
@@ -47,12 +55,12 @@ func Open(driver, dsn string) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to get underlying sql.DB: %w", err)
 	}
 
-	if driver == "sqlite" {
-		sqlDB.SetMaxOpenConns(1)
-	} else {
+	if entry.multiConn {
 		sqlDB.SetMaxOpenConns(25)
 		sqlDB.SetMaxIdleConns(5)
 		sqlDB.SetConnMaxLifetime(5 * time.Minute)
+	} else {
+		sqlDB.SetMaxOpenConns(1)
 	}
 
 	if err := sqlDB.Ping(); err != nil {

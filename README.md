@@ -16,9 +16,9 @@ GateCHA is an open-source alternative to [ALTCHA Sentinel](https://altcha.org/do
 - **Replay Protection** - Consumed challenges are tracked and rejected on reuse
 - **Statistics Dashboard** - Track challenges issued, verifications (success/fail), per key, per day
 - **Single Binary** - Vue.js dashboard embedded in the Go binary via `go:embed`
-- **Multi-Database** - SQLite (default, embedded) or MySQL via `GATECHA_DB_DRIVER`
+- **Multi-Database** - SQLite by default; MySQL available in the `mysql` build variant
 - **Docker Ready** - One container, zero external dependencies (SQLite mode)
-- **Lightweight** - ~23MB Docker image, ~15MB binary
+- **Lightweight** - ~23.8MB Docker image, ~14.2MB binary (SQLite); ~24.2MB / ~14.5MB with MySQL support
 
 ## Quick Start
 
@@ -47,7 +47,8 @@ docker run -d -p 8080:8080 \
 # Prerequisites: Go 1.26+, Node.js 20+
 git clone https://github.com/Upellift99/GateCHA.git
 cd GateCHA
-make build
+make build        # SQLite only (default)
+make build-mysql  # with MySQL support
 ./gatecha
 ```
 
@@ -109,12 +110,33 @@ if resp.json().get('ok'):
 | `GET` | `/api/admin/stats/keys/:id` | Per-key statistics |
 | `GET` | `/healthz` | Health check |
 
+## MySQL Support
+
+The default build is SQLite-only for a lightweight single-binary deployment. MySQL support is compiled in only when explicitly requested.
+
+**Build locally with MySQL support:**
+```bash
+make build-mysql
+```
+
+**Docker image with MySQL support:**
+```bash
+docker build --build-arg BUILD_TAGS=mysql -t gatecha:mysql .
+```
+
+**Docker Compose with MySQL:**
+```bash
+docker compose -f docker-compose.mysql.yml up -d
+```
+
+> **Note for contributors:** When updating Go dependencies while working on MySQL support, run `go mod tidy -tags mysql` instead of plain `go mod tidy` to preserve the MySQL driver in `go.mod`.
+
 ## Configuration
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `GATECHA_LISTEN_ADDR` | `:8080` | Listen address |
-| `GATECHA_DB_DRIVER` | `sqlite` | Database driver (`sqlite` or `mysql`) |
+| `GATECHA_DB_DRIVER` | `sqlite` | Database driver: `sqlite` always available; `mysql` requires the mysql build variant |
 | `GATECHA_DB_DSN` | `./data/gatecha.db` | Database DSN — file path for SQLite, connection string for MySQL (e.g. `user:pass@tcp(host:3306)/dbname?parseTime=true`) |
 | `GATECHA_SECRET_KEY` | *(auto-generated)* | JWT signing secret |
 | `GATECHA_ADMIN_USERNAME` | `admin` | Admin username |

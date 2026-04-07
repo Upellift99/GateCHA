@@ -117,12 +117,15 @@ jobs:
           cd ..
           cp -r web/dist internal/dashboard/dist
 
+      - name: Verify MySQL build
+        run: go build -tags mysql ./cmd/gatecha/
+
       - name: Run MySQL integration tests
         env:
           GATECHA_TEST_MYSQL_DSN: "root:root@tcp(localhost:3306)/gatecha_test?parseTime=true&charset=utf8mb4&loc=UTC"
         # -p 1: run packages sequentially — MySQL tests share one database,
         # concurrent packages would race on schema creation/deletion.
-        run: go test -p 1 ./...
+        run: go test -tags mysql -p 1 ./...
 
   sonarqube:
     runs-on: ubuntu-latest
