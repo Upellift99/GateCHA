@@ -18,7 +18,7 @@ GateCHA is an open-source alternative to [ALTCHA Sentinel](https://altcha.org/do
 - **Single Binary** - Vue.js dashboard embedded in the Go binary via `go:embed`
 - **Multi-Database** - SQLite (default, embedded) or MySQL via `GATECHA_DB_DRIVER`
 - **Docker Ready** - One container, zero external dependencies (SQLite mode)
-- **Lightweight** - ~23MB Docker image, ~14MB binary
+- **Lightweight** - ~23MB Docker image, ~15MB binary
 
 ## Quick Start
 
