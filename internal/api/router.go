@@ -1,17 +1,17 @@
 package api
 
 import (
-	"database/sql"
 	"net/http"
 
 	"github.com/Upellift99/GateCHA/internal/dashboard"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	"gorm.io/gorm"
 )
 
 const keysIDRoute = "/keys/{id}"
 
-func NewRouter(db *sql.DB, secretKey string, corsAllowAll bool) http.Handler {
+func NewRouter(db *gorm.DB, secretKey string, corsAllowAll bool) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(chiMiddleware.Logger)
@@ -64,7 +64,8 @@ func NewRouter(db *sql.DB, secretKey string, corsAllowAll bool) http.Handler {
 
 	// Health check
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		if err := db.Ping(); err != nil {
+		sqlDB, err := db.DB()
+		if err != nil || sqlDB.Ping() != nil {
 			writeJSON(w, http.StatusServiceUnavailable, map[string]string{"status": "unhealthy"})
 			return
 		}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -16,6 +15,7 @@ import (
 	"github.com/Upellift99/GateCHA/internal/config"
 	"github.com/Upellift99/GateCHA/internal/database"
 	"github.com/Upellift99/GateCHA/internal/models"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -27,14 +27,29 @@ func main() {
 
 	setupLogger(cfg.LogLevel)
 
-	slog.Info("starting GateCHA", "listen", cfg.ListenAddr)
+	slog.Info("starting GateCHA", "listen", cfg.ListenAddr, "db_driver", cfg.DBDriver)
 
-	db, err := database.Open(cfg.DBPath)
+	db, err := database.Open(cfg.DBDriver, cfg.DBDSN)
 	if err != nil {
 		slog.Error("failed to open database", "error", err)
 		os.Exit(1)
 	}
-	defer db.Close()
+	defer func() {
+		if sqlDB, err := db.DB(); err == nil {
+			sqlDB.Close()
+		}
+	}()
+
+	if err := database.RunMigrations(db,
+		&models.AdminUser{},
+		&models.APIKey{},
+		&models.ConsumedChallenge{},
+		&models.DailyStat{},
+		&models.Setting{},
+	); err != nil {
+		slog.Error("failed to run migrations", "error", err)
+		os.Exit(1)
+	}
 
 	if err := auth.EnsureAdminUser(db, cfg.AdminUsername, cfg.AdminPassword); err != nil {
 		slog.Error("failed to ensure admin user", "error", err)
@@ -78,7 +93,7 @@ func main() {
 	}
 }
 
-func cleanupWorker(ctx context.Context, db *sql.DB, interval time.Duration) {
+func cleanupWorker(ctx context.Context, db *gorm.DB, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {

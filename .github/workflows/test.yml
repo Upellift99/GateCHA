@@ -86,6 +86,47 @@ jobs:
       - name: Run go vet
         run: go vet ./...
 
+  test-mysql:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gatecha_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Build frontend (for embed)
+        run: |
+          cd web
+          npm ci
+          npm run build
+          cd ..
+          cp -r web/dist internal/dashboard/dist
+
+      - name: Verify MySQL build
+        run: go build -tags mysql ./cmd/gatecha/
+
+      - name: Run MySQL integration tests
+        env:
+          GATECHA_TEST_MYSQL_DSN: "root:root@tcp(localhost:3306)/gatecha_test?parseTime=true&charset=utf8mb4&loc=UTC"
+        # -p 1: run packages sequentially — MySQL tests share one database,
+        # concurrent packages would race on schema creation/deletion.
+        run: go test -tags mysql -p 1 ./...
+
   sonarqube:
     runs-on: ubuntu-latest
     needs: [test, lint, frontend]
