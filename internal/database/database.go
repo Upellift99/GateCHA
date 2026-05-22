@@ -45,6 +45,10 @@ func Open(driver, dsn string) (*gorm.DB, error) {
 
 	db, err := gorm.Open(dialector, &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
+		// Store all auto-managed timestamps (CreatedAt/UpdatedAt/...) in UTC so
+		// that string-based datetime comparisons in SQLite are correct
+		// regardless of the server's local timezone.
+		NowFunc: func() time.Time { return time.Now().UTC() },
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)

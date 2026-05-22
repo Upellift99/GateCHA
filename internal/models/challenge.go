@@ -28,7 +28,10 @@ func MarkConsumed(db *gorm.DB, challenge string, apiKeyID int64, expiresAt time.
 		Create(&ConsumedChallenge{
 			Challenge: challenge,
 			APIKeyID:  apiKeyID,
-			ExpiresAt: expiresAt,
+			// Normalize to UTC: SQLite compares datetimes as strings, so a local
+			// timezone offset would break the expires_at < now comparison in
+			// CleanupExpired on non-UTC servers.
+			ExpiresAt: expiresAt.UTC(),
 		}).Error
 }
 
