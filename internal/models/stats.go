@@ -1,98 +1,31 @@
 package models
 
 import (
-	"database/sql"
-	"fmt"
 	"time"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 const dateFormatYMD = "2006-01-02"
 
+// DailyStat holds per-key per-day counters.
 type DailyStat struct {
-	Date              string `json:"date"`
-	ChallengesIssued  int    `json:"challenges_issued"`
-	VerificationsOK   int    `json:"verifications_ok"`
-	VerificationsFail int    `json:"verifications_fail"`
+	ID                int64  `gorm:"primaryKey;autoIncrement" json:"-"`
+	APIKeyID          int64  `gorm:"not null;uniqueIndex:idx_key_date" json:"api_key_id"`
+	Date              string `gorm:"not null;uniqueIndex:idx_key_date;size:10" json:"date"`
+	ChallengesIssued  int    `gorm:"not null;default:0" json:"challenges_issued"`
+	VerificationsOK   int    `gorm:"not null;default:0" json:"verifications_ok"`
+	VerificationsFail int    `gorm:"not null;default:0" json:"verifications_fail"`
 }
 
+// StatsOverview holds aggregated statistics for the dashboard.
 type StatsOverview struct {
 	TotalChallenges        int         `json:"total_challenges"`
 	TotalVerificationsOK   int         `json:"total_verifications_ok"`
 	TotalVerificationsFail int         `json:"total_verifications_fail"`
 	ActiveKeys             int         `json:"active_keys"`
 	Daily                  []DailyStat `json:"daily"`
-}
-
-func IncrementChallengesIssued(db *sql.DB, apiKeyID int64) error {
-	date := time.Now().UTC().Format(dateFormatYMD)
-	_, err := db.Exec(`
-		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
-		VALUES (?, ?, 1, 0, 0)
-		ON CONFLICT(api_key_id, date)
-		DO UPDATE SET challenges_issued = challenges_issued + 1
-	`, apiKeyID, date)
-	return err
-}
-
-func IncrementVerificationsOK(db *sql.DB, apiKeyID int64) error {
-	date := time.Now().UTC().Format(dateFormatYMD)
-	_, err := db.Exec(`
-		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
-		VALUES (?, ?, 0, 1, 0)
-		ON CONFLICT(api_key_id, date)
-		DO UPDATE SET verifications_ok = verifications_ok + 1
-	`, apiKeyID, date)
-	return err
-}
-
-func IncrementVerificationsFail(db *sql.DB, apiKeyID int64) error {
-	date := time.Now().UTC().Format(dateFormatYMD)
-	_, err := db.Exec(`
-		INSERT INTO daily_stats (api_key_id, date, challenges_issued, verifications_ok, verifications_fail)
-		VALUES (?, ?, 0, 0, 1)
-		ON CONFLICT(api_key_id, date)
-		DO UPDATE SET verifications_fail = verifications_fail + 1
-	`, apiKeyID, date)
-	return err
-}
-
-func GetStatsOverview(db *sql.DB, days int) (*StatsOverview, error) {
-	overview := &StatsOverview{}
-
-	err := db.QueryRow(`
-		SELECT COALESCE(SUM(challenges_issued), 0), COALESCE(SUM(verifications_ok), 0), COALESCE(SUM(verifications_fail), 0)
-		FROM daily_stats
-	`).Scan(&overview.TotalChallenges, &overview.TotalVerificationsOK, &overview.TotalVerificationsFail)
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.QueryRow(`SELECT COUNT(*) FROM api_keys WHERE enabled = 1`).Scan(&overview.ActiveKeys)
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := db.Query(`
-		SELECT date, COALESCE(SUM(challenges_issued), 0), COALESCE(SUM(verifications_ok), 0), COALESCE(SUM(verifications_fail), 0)
-		FROM daily_stats
-		WHERE date >= date('now', ?)
-		GROUP BY date
-		ORDER BY date DESC
-	`, fmt.Sprintf("-%d days", days))
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var s DailyStat
-		if err := rows.Scan(&s.Date, &s.ChallengesIssued, &s.VerificationsOK, &s.VerificationsFail); err != nil {
-			return nil, err
-		}
-		overview.Daily = append(overview.Daily, s)
-	}
-
-	return overview, nil
 }
 
 // KeyStatsSummary holds all-time totals for a single API key.
@@ -104,52 +37,98 @@ type KeyStatsSummary struct {
 	LastUsedAt        string `json:"last_used_at"`
 }
 
+func IncrementChallengesIssued(db *gorm.DB, apiKeyID int64) error {
+	date := time.Now().UTC().Format(dateFormatYMD)
+	return db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "api_key_id"}, {Name: "date"}},
+		DoUpdates: clause.Assignments(map[string]any{
+			"challenges_issued": gorm.Expr("challenges_issued + 1"),
+		}),
+	}).Create(&DailyStat{APIKeyID: apiKeyID, Date: date, ChallengesIssued: 1}).Error
+}
+
+func IncrementVerificationsOK(db *gorm.DB, apiKeyID int64) error {
+	date := time.Now().UTC().Format(dateFormatYMD)
+	return db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "api_key_id"}, {Name: "date"}},
+		DoUpdates: clause.Assignments(map[string]any{
+			"verifications_ok": gorm.Expr("verifications_ok + 1"),
+		}),
+	}).Create(&DailyStat{APIKeyID: apiKeyID, Date: date, VerificationsOK: 1}).Error
+}
+
+func IncrementVerificationsFail(db *gorm.DB, apiKeyID int64) error {
+	date := time.Now().UTC().Format(dateFormatYMD)
+	return db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "api_key_id"}, {Name: "date"}},
+		DoUpdates: clause.Assignments(map[string]any{
+			"verifications_fail": gorm.Expr("verifications_fail + 1"),
+		}),
+	}).Create(&DailyStat{APIKeyID: apiKeyID, Date: date, VerificationsFail: 1}).Error
+}
+
+func GetStatsOverview(db *gorm.DB, days int) (*StatsOverview, error) {
+	overview := &StatsOverview{}
+
+	// Total counters across all time
+	row := db.Model(&DailyStat{}).
+		Select("COALESCE(SUM(challenges_issued), 0), COALESCE(SUM(verifications_ok), 0), COALESCE(SUM(verifications_fail), 0)").
+		Row()
+	if err := row.Scan(&overview.TotalChallenges, &overview.TotalVerificationsOK, &overview.TotalVerificationsFail); err != nil {
+		return nil, err
+	}
+
+	// Active key count
+	var activeKeys int64
+	if err := db.Model(&APIKey{}).Where("enabled = ?", true).Count(&activeKeys).Error; err != nil {
+		return nil, err
+	}
+	overview.ActiveKeys = int(activeKeys)
+
+	// Daily breakdown for the requested window
+	since := time.Now().UTC().AddDate(0, 0, -days).Format(dateFormatYMD)
+	if err := db.Model(&DailyStat{}).
+		Select("date, "+
+			"COALESCE(SUM(challenges_issued), 0) AS challenges_issued, "+
+			"COALESCE(SUM(verifications_ok), 0) AS verifications_ok, "+
+			"COALESCE(SUM(verifications_fail), 0) AS verifications_fail").
+		Where("date >= ?", since).
+		Group("date").
+		Order("date DESC").
+		Scan(&overview.Daily).Error; err != nil {
+		return nil, err
+	}
+
+	return overview, nil
+}
+
 // GetAllKeysStatsSummary returns all-time totals grouped by API key ID.
-func GetAllKeysStatsSummary(db *sql.DB) (map[int64]KeyStatsSummary, error) {
-	rows, err := db.Query(`
-		SELECT api_key_id,
-		       COALESCE(SUM(challenges_issued), 0),
-		       COALESCE(SUM(verifications_ok), 0),
-		       COALESCE(SUM(verifications_fail), 0),
-		       COALESCE(MAX(date), '')
-		FROM daily_stats
-		GROUP BY api_key_id
-	`)
+func GetAllKeysStatsSummary(db *gorm.DB) (map[int64]KeyStatsSummary, error) {
+	var rows []KeyStatsSummary
+	err := db.Model(&DailyStat{}).
+		Select("api_key_id, " +
+			"COALESCE(SUM(challenges_issued), 0) AS challenges_issued, " +
+			"COALESCE(SUM(verifications_ok), 0) AS verifications_ok, " +
+			"COALESCE(SUM(verifications_fail), 0) AS verifications_fail, " +
+			"COALESCE(MAX(date), '') AS last_used_at").
+		Group("api_key_id").
+		Scan(&rows).Error
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	result := make(map[int64]KeyStatsSummary)
-	for rows.Next() {
-		var s KeyStatsSummary
-		if err := rows.Scan(&s.APIKeyID, &s.ChallengesIssued, &s.VerificationsOK, &s.VerificationsFail, &s.LastUsedAt); err != nil {
-			return nil, err
-		}
+	result := make(map[int64]KeyStatsSummary, len(rows))
+	for _, s := range rows {
 		result[s.APIKeyID] = s
 	}
 	return result, nil
 }
 
-func GetKeyStats(db *sql.DB, apiKeyID int64, days int) ([]DailyStat, error) {
-	rows, err := db.Query(`
-		SELECT date, COALESCE(challenges_issued, 0), COALESCE(verifications_ok, 0), COALESCE(verifications_fail, 0)
-		FROM daily_stats
-		WHERE api_key_id = ? AND date >= date('now', ?)
-		ORDER BY date DESC
-	`, apiKeyID, fmt.Sprintf("-%d days", days))
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
+func GetKeyStats(db *gorm.DB, apiKeyID int64, days int) ([]DailyStat, error) {
+	since := time.Now().UTC().AddDate(0, 0, -days).Format(dateFormatYMD)
 	var stats []DailyStat
-	for rows.Next() {
-		var s DailyStat
-		if err := rows.Scan(&s.Date, &s.ChallengesIssued, &s.VerificationsOK, &s.VerificationsFail); err != nil {
-			return nil, err
-		}
-		stats = append(stats, s)
-	}
-	return stats, nil
+	err := db.Where("api_key_id = ? AND date >= ?", apiKeyID, since).
+		Order("date DESC").
+		Find(&stats).Error
+	return stats, err
 }

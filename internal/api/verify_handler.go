@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"log/slog"
@@ -10,14 +9,14 @@ import (
 
 	"github.com/Upellift99/GateCHA/internal/altcha"
 	"github.com/Upellift99/GateCHA/internal/models"
-
 	lib "github.com/altcha-org/altcha-lib-go"
+	"gorm.io/gorm"
 )
 
 const logMsgFailIncrement = "failed to increment verifications_fail"
 
 type VerifyHandler struct {
-	DB *sql.DB
+	DB *gorm.DB
 }
 
 type verifyRequest struct {

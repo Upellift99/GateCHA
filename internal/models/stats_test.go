@@ -1,23 +1,24 @@
-package models
+package models_test
 
 import (
 	"testing"
 
+	"github.com/Upellift99/GateCHA/internal/models"
 	"github.com/Upellift99/GateCHA/internal/testutil"
 )
 
 func TestIncrementChallengesIssued(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	key, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 
-	if err := IncrementChallengesIssued(db, key.ID); err != nil {
+	if err := models.IncrementChallengesIssued(db, key.ID); err != nil {
 		t.Fatalf("IncrementChallengesIssued failed: %v", err)
 	}
-	if err := IncrementChallengesIssued(db, key.ID); err != nil {
+	if err := models.IncrementChallengesIssued(db, key.ID); err != nil {
 		t.Fatalf("IncrementChallengesIssued (2nd) failed: %v", err)
 	}
 
-	stats, err := GetKeyStats(db, key.ID, 1)
+	stats, err := models.GetKeyStats(db, key.ID, 1)
 	if err != nil {
 		t.Fatalf("GetKeyStats failed: %v", err)
 	}
@@ -31,13 +32,13 @@ func TestIncrementChallengesIssued(t *testing.T) {
 
 func TestIncrementVerificationsOK(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	key, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 
-	if err := IncrementVerificationsOK(db, key.ID); err != nil {
+	if err := models.IncrementVerificationsOK(db, key.ID); err != nil {
 		t.Fatalf("IncrementVerificationsOK failed: %v", err)
 	}
 
-	stats, _ := GetKeyStats(db, key.ID, 1)
+	stats, _ := models.GetKeyStats(db, key.ID, 1)
 	if len(stats) == 0 {
 		t.Fatal("expected stats")
 	}
@@ -48,13 +49,13 @@ func TestIncrementVerificationsOK(t *testing.T) {
 
 func TestIncrementVerificationsFail(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	key, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 
-	if err := IncrementVerificationsFail(db, key.ID); err != nil {
+	if err := models.IncrementVerificationsFail(db, key.ID); err != nil {
 		t.Fatalf("IncrementVerificationsFail failed: %v", err)
 	}
 
-	stats, _ := GetKeyStats(db, key.ID, 1)
+	stats, _ := models.GetKeyStats(db, key.ID, 1)
 	if len(stats) == 0 {
 		t.Fatal("expected stats")
 	}
@@ -65,14 +66,14 @@ func TestIncrementVerificationsFail(t *testing.T) {
 
 func TestGetStatsOverview(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	key, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 
-	IncrementChallengesIssued(db, key.ID)
-	IncrementChallengesIssued(db, key.ID)
-	IncrementVerificationsOK(db, key.ID)
-	IncrementVerificationsFail(db, key.ID)
+	models.IncrementChallengesIssued(db, key.ID)
+	models.IncrementChallengesIssued(db, key.ID)
+	models.IncrementVerificationsOK(db, key.ID)
+	models.IncrementVerificationsFail(db, key.ID)
 
-	overview, err := GetStatsOverview(db, 30)
+	overview, err := models.GetStatsOverview(db, 30)
 	if err != nil {
 		t.Fatalf("GetStatsOverview failed: %v", err)
 	}
@@ -95,14 +96,14 @@ func TestGetStatsOverview(t *testing.T) {
 
 func TestGetAllKeysStatsSummary(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	key1, _ := CreateAPIKey(db, "Key1", "", 0, 0, "")
-	key2, _ := CreateAPIKey(db, "Key2", "", 0, 0, "")
+	key1, _ := models.CreateAPIKey(db, "Key1", "", 0, 0, "")
+	key2, _ := models.CreateAPIKey(db, "Key2", "", 0, 0, "")
 
-	IncrementChallengesIssued(db, key1.ID)
-	IncrementChallengesIssued(db, key2.ID)
-	IncrementChallengesIssued(db, key2.ID)
+	models.IncrementChallengesIssued(db, key1.ID)
+	models.IncrementChallengesIssued(db, key2.ID)
+	models.IncrementChallengesIssued(db, key2.ID)
 
-	summary, err := GetAllKeysStatsSummary(db)
+	summary, err := models.GetAllKeysStatsSummary(db)
 	if err != nil {
 		t.Fatalf("GetAllKeysStatsSummary failed: %v", err)
 	}
@@ -119,9 +120,9 @@ func TestGetAllKeysStatsSummary(t *testing.T) {
 
 func TestGetKeyStats_Empty(t *testing.T) {
 	db := testutil.SetupTestDB(t)
-	key, _ := CreateAPIKey(db, "Test", "", 0, 0, "")
+	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
 
-	stats, err := GetKeyStats(db, key.ID, 30)
+	stats, err := models.GetKeyStats(db, key.ID, 30)
 	if err != nil {
 		t.Fatalf("GetKeyStats failed: %v", err)
 	}

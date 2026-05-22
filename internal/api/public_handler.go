@@ -1,14 +1,14 @@
 package api
 
 import (
-	"database/sql"
 	"net/http"
 
 	"github.com/Upellift99/GateCHA/internal/models"
+	"gorm.io/gorm"
 )
 
 type PublicHandler struct {
-	DB *sql.DB
+	DB *gorm.DB
 }
 
 // GET /api/public/login-config

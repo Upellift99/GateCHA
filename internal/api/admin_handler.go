@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"encoding/json"
 	"log/slog"
 	"net/http"
@@ -11,6 +10,7 @@ import (
 	"github.com/Upellift99/GateCHA/internal/auth"
 	"github.com/Upellift99/GateCHA/internal/models"
 	"github.com/go-chi/chi/v5"
+	"gorm.io/gorm"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 )
 
 type AdminHandler struct {
-	DB        *sql.DB
+	DB        *gorm.DB
 	SecretKey string
 }
 

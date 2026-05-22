@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"crypto/sha256"
-	"database/sql"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -15,11 +14,12 @@ import (
 	"github.com/Upellift99/GateCHA/internal/auth"
 	"github.com/Upellift99/GateCHA/internal/models"
 	"github.com/Upellift99/GateCHA/internal/testutil"
+	"gorm.io/gorm"
 )
 
 const testSecretKey = "test-secret-key-for-jwt"
 
-func setupTestRouter(t *testing.T) (http.Handler, *sql.DB) {
+func setupTestRouter(t *testing.T) (http.Handler, *gorm.DB) {
 	t.Helper()
 	db := testutil.SetupTestDB(t)
 	auth.EnsureAdminUser(db, "admin", "password123")

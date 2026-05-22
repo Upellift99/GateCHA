@@ -18,8 +18,8 @@ func TestEnsureAdminUser(t *testing.T) {
 		t.Fatalf("EnsureAdminUser (2nd call) failed: %v", err)
 	}
 
-	var count int
-	db.QueryRow("SELECT COUNT(*) FROM admin_users").Scan(&count)
+	var count int64
+	db.Raw("SELECT COUNT(*) FROM admin_users").Scan(&count)
 	if count != 1 {
 		t.Errorf("expected 1 admin user, got %d", count)
 	}

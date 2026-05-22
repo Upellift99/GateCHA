@@ -7,13 +7,15 @@ COPY web/ ./
 RUN npm run build
 
 ### Stage 2: Build Go backend
+# Pass --build-arg BUILD_TAGS=mysql to enable MySQL support.
 FROM golang:1.26-alpine AS backend
+ARG BUILD_TAGS=""
 WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 COPY --from=frontend /build/web/dist ./internal/dashboard/dist
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /gatecha ./cmd/gatecha
+RUN CGO_ENABLED=0 go build -tags "${BUILD_TAGS}" -ldflags="-s -w" -o /gatecha ./cmd/gatecha
 
 ### Stage 3: Final runtime image
 FROM alpine:3.19

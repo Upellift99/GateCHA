@@ -1,0 +1,43 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: gatecha_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: gatecha
+      MYSQL_USER: gatecha
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-gatechapassword}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "gatecha", "-pgatechapassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  gatecha:
+    build:
+      context: .
+      args:
+        BUILD_TAGS: mysql
+    container_name: gatecha
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      GATECHA_LISTEN_ADDR: ":8080"
+      GATECHA_DB_DRIVER: mysql
+      GATECHA_DB_DSN: "gatecha:${MYSQL_PASSWORD:-gatechapassword}@tcp(mysql:3306)/gatecha?parseTime=true&charset=utf8mb4&loc=UTC"
+      GATECHA_ADMIN_PASSWORD: ${GATECHA_ADMIN_PASSWORD:-changeme}
+      GATECHA_SECRET_KEY: ${GATECHA_SECRET_KEY:-}
+      # GATECHA_LOG_LEVEL: info
+      # GATECHA_CLEANUP_INTERVAL: 10
+      # GATECHA_CORS_ALLOW_ALL: false
+
+volumes:
+  mysql_data:

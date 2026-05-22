@@ -2,13 +2,13 @@ package api
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strings"
 
 	"github.com/Upellift99/GateCHA/internal/auth"
 	"github.com/Upellift99/GateCHA/internal/models"
+	"gorm.io/gorm"
 )
 
 const bearerPrefix = "Bearer "
@@ -17,7 +17,7 @@ type contextKey string
 
 const apiKeyContextKey contextKey = "apiKey"
 
-func authenticateAPIKey(db *sql.DB, w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
+func authenticateAPIKey(db *gorm.DB, w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
 	keyID := r.URL.Query().Get("apiKey")
 	if keyID == "" {
 		authHeader := r.Header.Get("Authorization")
@@ -55,7 +55,7 @@ func authenticateAPIKey(db *sql.DB, w http.ResponseWriter, r *http.Request) (*ht
 	return r.WithContext(ctx), true
 }
 
-func APIKeyMiddleware(db *sql.DB) func(http.Handler) http.Handler {
+func APIKeyMiddleware(db *gorm.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			req, ok := authenticateAPIKey(db, w, r)
