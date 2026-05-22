@@ -110,9 +110,7 @@ describe('ApiKeyDetailView', () => {
 
     expect(wrapper.text()).toContain('Delete API Key?')
 
-    // Confirm delete
-    const confirmBtn = wrapper.findAll('button').find(b => b.text() === 'Delete' && b.classes().length > 0)
-    // Find the confirm button inside the modal
+    // Confirm delete — find the confirm button inside the modal
     const modalButtons = wrapper.findAll('.fixed button')
     const confirmDelete = modalButtons.find(b => b.text() === 'Delete')
     await confirmDelete!.trigger('click')
