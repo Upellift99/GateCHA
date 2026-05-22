@@ -73,7 +73,9 @@ func main() {
 
 	go func() {
 		fmt.Printf("\n  GateCHA is running at http://localhost%s\n", cfg.ListenAddr)
-		fmt.Printf("  Admin: %s / %s\n\n", cfg.AdminUsername, cfg.AdminPassword)
+		// Don't log the admin password on every startup; an auto-generated one
+		// is shown once by config.Load when GATECHA_ADMIN_PASSWORD is unset.
+		fmt.Printf("  Admin user: %s\n\n", cfg.AdminUsername)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			slog.Error("server error", "error", err)
 			os.Exit(1)
