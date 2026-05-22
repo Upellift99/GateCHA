@@ -22,7 +22,7 @@ jobs:
       matrix:
         include:
           - language: go
-            build-mode: none
+            build-mode: manual
           - language: javascript-typescript
             build-mode: none
           - language: actions
@@ -31,12 +31,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Go
+        if: matrix.language == 'go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
           queries: security-and-quality
+
+      - name: Build Go (manual)
+        if: matrix.language == 'go'
+        # The Vue SPA dist is gitignored and embedded via //go:embed dist/*,
+        # so seed a placeholder to satisfy the embed before building.
+        run: |
+          mkdir -p internal/dashboard/dist
+          echo '<!doctype html><title>placeholder</title>' > internal/dashboard/dist/index.html
+          go build ./...
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
