@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/altcha-org/altcha-lib-go v1.0.0
 	github.com/glebarez/sqlite v1.11.0
-	github.com/go-chi/chi/v5 v5.2.5
+	github.com/go-chi/chi/v5 v5.3.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	golang.org/x/crypto v0.52.0
 	gorm.io/driver/mysql v1.6.0
