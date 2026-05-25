@@ -20,6 +20,7 @@ internal/dashboard/dist/
 .vscode/
 *.swp
 *.swo
+.qodo/
 
 # OS
 .DS_Store
