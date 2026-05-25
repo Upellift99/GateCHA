@@ -24,3 +24,9 @@ internal/dashboard/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# claude code memory (synced via Syncthing, see ~/.claude/projects/.../memory symlink)
+.claude-memory/
+
+# claude code local settings
+.claude/
