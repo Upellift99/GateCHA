@@ -125,9 +125,12 @@ func CORSMiddleware(allowAll bool) func(http.Handler) http.Handler {
 // SPA: all scripts/styles/assets ship from the same origin (the ALTCHA widget is
 // bundled, not loaded from a CDN), so 'self' is sufficient. 'unsafe-inline' is
 // kept for styles only, to tolerate runtime style injection by Vue/Tailwind.
+// worker-src allows blob: because the ALTCHA widget runs its proof-of-work in a
+// Worker created from a blob URL; without this the login captcha cannot start.
 const securityCSP = "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; " +
 	"form-action 'self'; object-src 'none'; img-src 'self' data:; " +
-	"style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'"
+	"style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; " +
+	"worker-src 'self' blob:"
 
 // SecurityHeadersMiddleware sets a baseline of security-related response headers.
 // HSTS is opt-in because GateCHA is commonly run over plain HTTP locally or

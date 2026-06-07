@@ -258,8 +258,14 @@ func TestSecurityHeadersMiddleware(t *testing.T) {
 			t.Errorf("%s = %q, want %q", header, got, want)
 		}
 	}
-	if w.Header().Get("Content-Security-Policy") == "" {
+	csp := w.Header().Get("Content-Security-Policy")
+	if csp == "" {
 		t.Error("expected a Content-Security-Policy header")
+	}
+	// The ALTCHA widget runs its proof-of-work in a blob: Worker; without this
+	// directive the login captcha would be blocked by the CSP.
+	if !strings.Contains(csp, "worker-src 'self' blob:") {
+		t.Errorf("CSP must allow blob: workers for the ALTCHA widget, got %q", csp)
 	}
 	if w.Header().Get("Strict-Transport-Security") != "" {
 		t.Error("HSTS should be absent when disabled")
