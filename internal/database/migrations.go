@@ -9,6 +9,19 @@ import "gorm.io/gorm"
 //
 //	database.RunMigrations(db, &models.AdminUser{}, &models.APIKey{}, ...)
 func RunMigrations(db *gorm.DB, modelList ...any) error {
+	// SQLite's AutoMigrate rebuilds a changed table by DROP-ing the original.
+	// With foreign keys enabled, DROP TABLE performs an implicit DELETE of the
+	// table's rows, which fires ON DELETE CASCADE on referencing tables — so a
+	// rebuild of api_keys would wipe every daily_stats row. Disable foreign-key
+	// enforcement for the duration of the migration to make rebuilds safe.
+	// (PRAGMA is SQLite-only; the single-connection pool ensures it sticks.)
+	if db.Dialector.Name() == "sqlite" {
+		if err := db.Exec("PRAGMA foreign_keys = OFF").Error; err != nil {
+			return err
+		}
+		defer db.Exec("PRAGMA foreign_keys = ON")
+	}
+
 	if err := db.AutoMigrate(modelList...); err != nil {
 		return err
 	}
