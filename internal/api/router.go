@@ -14,6 +14,7 @@ const keysIDRoute = "/keys/{id}"
 // RouterConfig holds the request-handling and hardening options for NewRouter.
 type RouterConfig struct {
 	CORSAllowAll     bool
+	TrustProxy       bool // honor X-Forwarded-For/X-Real-IP (only safe behind a trusted proxy)
 	EnableHSTS       bool
 	MaxBodyBytes     int64
 	RateLimitEnabled bool
@@ -24,7 +25,13 @@ type RouterConfig struct {
 func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	r := chi.NewRouter()
 
-	r.Use(chiMiddleware.RealIP)
+	// RealIP rewrites RemoteAddr from client-supplied proxy headers, which are
+	// spoofable when the server is exposed directly. Enable it only when a
+	// trusted proxy sits in front, otherwise the rate limiter keys off the real
+	// TCP peer address (RemoteAddr) which cannot be forged.
+	if cfg.TrustProxy {
+		r.Use(chiMiddleware.RealIP)
+	}
 	r.Use(chiMiddleware.Logger)
 	r.Use(chiMiddleware.Recoverer)
 	r.Use(SecurityHeadersMiddleware(cfg.EnableHSTS))

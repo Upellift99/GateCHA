@@ -63,6 +63,7 @@ func main() {
 
 	router := api.NewRouter(db, cfg.SecretKey, api.RouterConfig{
 		CORSAllowAll:     cfg.CORSAllowAll,
+		TrustProxy:       cfg.TrustProxy,
 		EnableHSTS:       cfg.EnableHSTS,
 		MaxBodyBytes:     cfg.MaxBodyBytes,
 		RateLimitEnabled: cfg.RateLimit,

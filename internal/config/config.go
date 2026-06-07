@@ -19,6 +19,7 @@ type Config struct {
 	LogLevel        string
 	CleanupInterval time.Duration
 	CORSAllowAll    bool
+	TrustProxy      bool
 	EnableHSTS      bool
 	MaxBodyBytes    int64
 	RateLimit       bool
@@ -35,9 +36,20 @@ func Load() (*Config, error) {
 		AdminUsername: envOrDefault("GATECHA_ADMIN_USERNAME", "admin"),
 		AdminPassword: os.Getenv("GATECHA_ADMIN_PASSWORD"),
 		LogLevel:      envOrDefault("GATECHA_LOG_LEVEL", "info"),
-		CORSAllowAll:  envBool("GATECHA_CORS_ALLOW_ALL", false),
-		EnableHSTS:    envBool("GATECHA_ENABLE_HSTS", false),
-		RateLimit:     envBool("GATECHA_RATE_LIMIT_ENABLED", true),
+	}
+
+	var err error
+	if cfg.CORSAllowAll, err = envBool("GATECHA_CORS_ALLOW_ALL", false); err != nil {
+		return nil, err
+	}
+	if cfg.TrustProxy, err = envBool("GATECHA_TRUST_PROXY", false); err != nil {
+		return nil, err
+	}
+	if cfg.EnableHSTS, err = envBool("GATECHA_ENABLE_HSTS", false); err != nil {
+		return nil, err
+	}
+	if cfg.RateLimit, err = envBool("GATECHA_RATE_LIMIT_ENABLED", true); err != nil {
+		return nil, err
 	}
 
 	intervalStr := envOrDefault("GATECHA_CLEANUP_INTERVAL", "10")
@@ -55,6 +67,21 @@ func Load() (*Config, error) {
 	}
 	if cfg.RateLimitAPI, err = envInt("GATECHA_RATE_LIMIT_API", 60); err != nil {
 		return nil, err
+	}
+
+	// These must be strictly positive: a zero/negative body cap or rate would
+	// silently disable the protection or surprise the operator.
+	for _, c := range []struct {
+		key string
+		val int64
+	}{
+		{"GATECHA_MAX_BODY_BYTES", cfg.MaxBodyBytes},
+		{"GATECHA_RATE_LIMIT_LOGIN", int64(cfg.RateLimitLogin)},
+		{"GATECHA_RATE_LIMIT_API", int64(cfg.RateLimitAPI)},
+	} {
+		if c.val <= 0 {
+			return nil, fmt.Errorf("%s must be > 0, got %d", c.key, c.val)
+		}
 	}
 
 	if cfg.SecretKey == "" {
@@ -86,12 +113,16 @@ func envOrDefault(key, fallback string) string {
 	return fallback
 }
 
-func envBool(key string, fallback bool) bool {
+func envBool(key string, fallback bool) (bool, error) {
 	v := os.Getenv(key)
 	if v == "" {
-		return fallback
+		return fallback, nil
 	}
-	return v == "true" || v == "1"
+	b, err := strconv.ParseBool(v)
+	if err != nil {
+		return false, fmt.Errorf("invalid %s: %q is not a boolean (use true/false)", key, v)
+	}
+	return b, nil
 }
 
 func envInt(key string, fallback int) (int, error) {
