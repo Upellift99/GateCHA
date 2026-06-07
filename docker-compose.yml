@@ -9,7 +9,7 @@ services:
       - gatecha_data:/app/data
     environment:
       - GATECHA_LISTEN_ADDR=:8080
-      - GATECHA_DB_PATH=/app/data/gatecha.db
+      - GATECHA_DB_DSN=/app/data/gatecha.db
       - GATECHA_ADMIN_PASSWORD=${GATECHA_ADMIN_PASSWORD:-changeme}
       - GATECHA_SECRET_KEY=${GATECHA_SECRET_KEY:-}
       # - GATECHA_LOG_LEVEL=info

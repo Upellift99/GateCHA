@@ -22,7 +22,7 @@ backend-mysql:
 
 # Development: run backend with SQLite (frontend via vite dev proxy)
 dev:
-	GATECHA_DB_PATH=./data/gatecha.db go run ./cmd/gatecha
+	GATECHA_DB_DSN=./data/gatecha.db go run ./cmd/gatecha
 
 # Clean build artifacts
 clean:
