@@ -61,7 +61,14 @@ func main() {
 	defer cancel()
 	go cleanupWorker(ctx, db, cfg.CleanupInterval)
 
-	router := api.NewRouter(db, cfg.SecretKey, cfg.CORSAllowAll)
+	router := api.NewRouter(db, cfg.SecretKey, api.RouterConfig{
+		CORSAllowAll:     cfg.CORSAllowAll,
+		EnableHSTS:       cfg.EnableHSTS,
+		MaxBodyBytes:     cfg.MaxBodyBytes,
+		RateLimitEnabled: cfg.RateLimit,
+		RateLimitLogin:   cfg.RateLimitLogin,
+		RateLimitAPI:     cfg.RateLimitAPI,
+	})
 
 	srv := &http.Server{
 		Addr:         cfg.ListenAddr,

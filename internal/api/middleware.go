@@ -121,6 +121,47 @@ func CORSMiddleware(allowAll bool) func(http.Handler) http.Handler {
 	}
 }
 
+// securityCSP is a baseline Content-Security-Policy tuned for the embedded Vue
+// SPA: all scripts/styles/assets ship from the same origin (the ALTCHA widget is
+// bundled, not loaded from a CDN), so 'self' is sufficient. 'unsafe-inline' is
+// kept for styles only, to tolerate runtime style injection by Vue/Tailwind.
+const securityCSP = "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; " +
+	"form-action 'self'; object-src 'none'; img-src 'self' data:; " +
+	"style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'"
+
+// SecurityHeadersMiddleware sets a baseline of security-related response headers.
+// HSTS is opt-in because GateCHA is commonly run over plain HTTP locally or
+// behind a TLS-terminating reverse proxy.
+func SecurityHeadersMiddleware(enableHSTS bool) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h := w.Header()
+			h.Set("X-Frame-Options", "DENY")
+			h.Set("X-Content-Type-Options", "nosniff")
+			h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+			h.Set("Content-Security-Policy", securityCSP)
+			if enableHSTS {
+				h.Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// MaxBodyBytesMiddleware caps the size of request bodies to guard against
+// memory-exhaustion. An oversized body surfaces as a read error, which the
+// JSON-decoding handlers already translate into a 4xx response.
+func MaxBodyBytesMiddleware(limit int64) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if limit > 0 && r.Body != nil {
+				r.Body = http.MaxBytesReader(w, r.Body, limit)
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 func matchDomain(urlStr, domain string) bool {
 	urlStr = strings.TrimPrefix(urlStr, "http://")
 	urlStr = strings.TrimPrefix(urlStr, "https://")

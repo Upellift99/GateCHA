@@ -2,8 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/Upellift99/GateCHA/internal/auth"
@@ -234,6 +236,82 @@ func TestCORSMiddleware_Preflight(t *testing.T) {
 
 	if w.Code != http.StatusNoContent {
 		t.Errorf("expected 204 for preflight, got %d", w.Code)
+	}
+}
+
+func TestSecurityHeadersMiddleware(t *testing.T) {
+	handler := SecurityHeadersMiddleware(false)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	req := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	checks := map[string]string{
+		"X-Frame-Options":        "DENY",
+		"X-Content-Type-Options": "nosniff",
+		"Referrer-Policy":        "strict-origin-when-cross-origin",
+	}
+	for header, want := range checks {
+		if got := w.Header().Get(header); got != want {
+			t.Errorf("%s = %q, want %q", header, got, want)
+		}
+	}
+	if w.Header().Get("Content-Security-Policy") == "" {
+		t.Error("expected a Content-Security-Policy header")
+	}
+	if w.Header().Get("Strict-Transport-Security") != "" {
+		t.Error("HSTS should be absent when disabled")
+	}
+}
+
+func TestSecurityHeadersMiddleware_HSTS(t *testing.T) {
+	handler := SecurityHeadersMiddleware(true)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+
+	req := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Header().Get("Strict-Transport-Security") == "" {
+		t.Error("expected HSTS header when enabled")
+	}
+}
+
+func TestMaxBodyBytesMiddleware_Rejects(t *testing.T) {
+	// Handler reads the whole body; the limiter should make oversized reads fail.
+	handler := MaxBodyBytesMiddleware(10)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, err := io.ReadAll(r.Body); err != nil {
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	req := httptest.NewRequest("POST", "/", strings.NewReader("this body is definitely longer than ten bytes"))
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusRequestEntityTooLarge {
+		t.Errorf("expected oversized body to be rejected, got %d", w.Code)
+	}
+}
+
+func TestMaxBodyBytesMiddleware_AllowsSmall(t *testing.T) {
+	handler := MaxBodyBytesMiddleware(1024)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, err := io.ReadAll(r.Body); err != nil {
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	req := httptest.NewRequest("POST", "/", strings.NewReader("small"))
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected small body to pass, got %d", w.Code)
 	}
 }
 

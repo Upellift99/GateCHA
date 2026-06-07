@@ -23,7 +23,10 @@ func setupTestRouter(t *testing.T) (http.Handler, *gorm.DB) {
 	t.Helper()
 	db := testutil.SetupTestDB(t)
 	auth.EnsureAdminUser(db, "admin", "password123")
-	router := NewRouter(db, testSecretKey, true)
+	// Rate limiting is disabled here so the shared-IP request loops in the
+	// existing handler tests stay deterministic; it is covered separately in
+	// middleware_test.go.
+	router := NewRouter(db, testSecretKey, RouterConfig{CORSAllowAll: true})
 	return router, db
 }
 
