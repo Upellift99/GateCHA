@@ -38,39 +38,50 @@ func Load() (*Config, error) {
 		LogLevel:      envOrDefault("GATECHA_LOG_LEVEL", "info"),
 	}
 
+	if err := loadOptions(cfg); err != nil {
+		return nil, err
+	}
+	if err := ensureSecrets(cfg); err != nil {
+		return nil, err
+	}
+	return cfg, nil
+}
+
+// loadOptions parses the boolean and numeric tuning knobs from the environment,
+// applying defaults and validating that sizes/rates are strictly positive.
+func loadOptions(cfg *Config) error {
 	var err error
 	if cfg.CORSAllowAll, err = envBool("GATECHA_CORS_ALLOW_ALL", false); err != nil {
-		return nil, err
+		return err
 	}
 	if cfg.TrustProxy, err = envBool("GATECHA_TRUST_PROXY", false); err != nil {
-		return nil, err
+		return err
 	}
 	if cfg.EnableHSTS, err = envBool("GATECHA_ENABLE_HSTS", false); err != nil {
-		return nil, err
+		return err
 	}
 	if cfg.RateLimit, err = envBool("GATECHA_RATE_LIMIT_ENABLED", true); err != nil {
-		return nil, err
+		return err
 	}
 
-	intervalStr := envOrDefault("GATECHA_CLEANUP_INTERVAL", "10")
-	intervalMin, err := strconv.Atoi(intervalStr)
+	intervalMin, err := strconv.Atoi(envOrDefault("GATECHA_CLEANUP_INTERVAL", "10"))
 	if err != nil {
-		return nil, fmt.Errorf("invalid GATECHA_CLEANUP_INTERVAL: %w", err)
+		return fmt.Errorf("invalid GATECHA_CLEANUP_INTERVAL: %w", err)
 	}
 	cfg.CleanupInterval = time.Duration(intervalMin) * time.Minute
 
 	if cfg.MaxBodyBytes, err = envInt64("GATECHA_MAX_BODY_BYTES", 1<<20); err != nil {
-		return nil, err
+		return err
 	}
 	if cfg.RateLimitLogin, err = envInt("GATECHA_RATE_LIMIT_LOGIN", 5); err != nil {
-		return nil, err
+		return err
 	}
 	if cfg.RateLimitAPI, err = envInt("GATECHA_RATE_LIMIT_API", 60); err != nil {
-		return nil, err
+		return err
 	}
 
-	// These must be strictly positive: a zero/negative body cap or rate would
-	// silently disable the protection or surprise the operator.
+	// A zero/negative body cap or rate would silently disable the protection or
+	// surprise the operator.
 	for _, c := range []struct {
 		key string
 		val int64
@@ -80,14 +91,19 @@ func Load() (*Config, error) {
 		{"GATECHA_RATE_LIMIT_API", int64(cfg.RateLimitAPI)},
 	} {
 		if c.val <= 0 {
-			return nil, fmt.Errorf("%s must be > 0, got %d", c.key, c.val)
+			return fmt.Errorf("%s must be > 0, got %d", c.key, c.val)
 		}
 	}
+	return nil
+}
 
+// ensureSecrets fills in a random SecretKey and AdminPassword when unset,
+// printing each generated value once so the operator can capture it.
+func ensureSecrets(cfg *Config) error {
 	if cfg.SecretKey == "" {
 		key, err := generateRandomHex(32)
 		if err != nil {
-			return nil, fmt.Errorf("failed to generate secret key: %w", err)
+			return fmt.Errorf("failed to generate secret key: %w", err)
 		}
 		cfg.SecretKey = key
 		fmt.Printf("⚠ No GATECHA_SECRET_KEY set. Generated: %s\n", cfg.SecretKey)
@@ -97,13 +113,12 @@ func Load() (*Config, error) {
 	if cfg.AdminPassword == "" {
 		pw, err := generateRandomHex(16)
 		if err != nil {
-			return nil, fmt.Errorf("failed to generate admin password: %w", err)
+			return fmt.Errorf("failed to generate admin password: %w", err)
 		}
 		cfg.AdminPassword = pw
 		fmt.Printf("⚠ No GATECHA_ADMIN_PASSWORD set. Generated: %s\n", cfg.AdminPassword)
 	}
-
-	return cfg, nil
+	return nil
 }
 
 func envOrDefault(key, fallback string) string {
