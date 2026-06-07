@@ -11,13 +11,32 @@ import (
 
 const keysIDRoute = "/keys/{id}"
 
-func NewRouter(db *gorm.DB, secretKey string, corsAllowAll bool) http.Handler {
+// RouterConfig holds the request-handling and hardening options for NewRouter.
+type RouterConfig struct {
+	CORSAllowAll     bool
+	TrustProxy       bool // honor X-Forwarded-For/X-Real-IP (only safe behind a trusted proxy)
+	EnableHSTS       bool
+	MaxBodyBytes     int64
+	RateLimitEnabled bool
+	RateLimitLogin   int // requests per minute on /api/admin/login
+	RateLimitAPI     int // requests per minute on /api/v1/*
+}
+
+func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	r := chi.NewRouter()
 
+	// RealIP rewrites RemoteAddr from client-supplied proxy headers, which are
+	// spoofable when the server is exposed directly. Enable it only when a
+	// trusted proxy sits in front, otherwise the rate limiter keys off the real
+	// TCP peer address (RemoteAddr) which cannot be forged.
+	if cfg.TrustProxy {
+		r.Use(chiMiddleware.RealIP)
+	}
 	r.Use(chiMiddleware.Logger)
 	r.Use(chiMiddleware.Recoverer)
-	r.Use(chiMiddleware.RealIP)
-	r.Use(CORSMiddleware(corsAllowAll))
+	r.Use(SecurityHeadersMiddleware(cfg.EnableHSTS))
+	r.Use(MaxBodyBytesMiddleware(cfg.MaxBodyBytes))
+	r.Use(CORSMiddleware(cfg.CORSAllowAll))
 
 	publicHandler := &PublicHandler{DB: db}
 	challengeHandler := &ChallengeHandler{DB: db}
@@ -31,6 +50,9 @@ func NewRouter(db *gorm.DB, secretKey string, corsAllowAll bool) http.Handler {
 
 	// Public API (API key auth)
 	r.Route("/api/v1", func(r chi.Router) {
+		if cfg.RateLimitEnabled {
+			r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
+		}
 		r.Use(APIKeyMiddleware(db))
 		r.Get("/challenge", challengeHandler.ServeHTTP)
 		r.Post("/verify", verifyHandler.ServeHTTP)
@@ -38,7 +60,13 @@ func NewRouter(db *gorm.DB, secretKey string, corsAllowAll bool) http.Handler {
 
 	// Admin API
 	r.Route("/api/admin", func(r chi.Router) {
-		r.Post("/login", adminHandler.Login)
+		// Login is rate-limited more strictly to slow down credential brute-force.
+		r.Group(func(r chi.Router) {
+			if cfg.RateLimitEnabled {
+				r.Use(RateLimitMiddleware(cfg.RateLimitLogin))
+			}
+			r.Post("/login", adminHandler.Login)
+		})
 
 		r.Group(func(r chi.Router) {
 			r.Use(AdminAuthMiddleware(secretKey))

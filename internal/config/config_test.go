@@ -45,6 +45,39 @@ func TestLoad_Defaults(t *testing.T) {
 	if cfg.AdminPassword == "" {
 		t.Error("expected auto-generated AdminPassword")
 	}
+	if !cfg.RateLimit {
+		t.Error("expected rate limiting enabled by default")
+	}
+	if cfg.RateLimitLogin != 5 || cfg.RateLimitAPI != 60 {
+		t.Errorf("unexpected default rate limits: login=%d api=%d", cfg.RateLimitLogin, cfg.RateLimitAPI)
+	}
+	if cfg.MaxBodyBytes != 1<<20 {
+		t.Errorf("expected 1 MiB default body cap, got %d", cfg.MaxBodyBytes)
+	}
+	if cfg.TrustProxy || cfg.EnableHSTS {
+		t.Error("expected TrustProxy and EnableHSTS to be false by default")
+	}
+}
+
+func TestLoad_InvalidBool(t *testing.T) {
+	t.Setenv("GATECHA_TRUST_PROXY", "ture") // typo must not be silently coerced
+	if _, err := Load(); err == nil {
+		t.Error("expected error for non-boolean GATECHA_TRUST_PROXY")
+	}
+}
+
+func TestLoad_NonPositiveRateLimit(t *testing.T) {
+	t.Setenv("GATECHA_RATE_LIMIT_LOGIN", "0")
+	if _, err := Load(); err == nil {
+		t.Error("expected error for non-positive GATECHA_RATE_LIMIT_LOGIN")
+	}
+}
+
+func TestLoad_InvalidMaxBodyBytes(t *testing.T) {
+	t.Setenv("GATECHA_MAX_BODY_BYTES", "-1")
+	if _, err := Load(); err == nil {
+		t.Error("expected error for negative GATECHA_MAX_BODY_BYTES")
+	}
 }
 
 func TestLoad_CustomEnv(t *testing.T) {
