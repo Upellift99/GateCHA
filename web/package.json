@@ -13,7 +13,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "altcha": "^3.0.11",
-    "axios": "^1.13.5",
+    "axios": "^1.17.0",
     "chart.js": "^4.5.1",
     "pinia": "^3.0.4",
     "tailwindcss": "^4.2.0",
@@ -22,15 +22,15 @@
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.2",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vitest/coverage-v8": "^4.1.8",
-    "@vue/test-utils": "^2.4.10",
+    "@vue/test-utils": "^2.4.11",
     "@vue/tsconfig": "^0.9.1",
-    "happy-dom": "^20.7.0",
+    "happy-dom": "^20.10.2",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
     "vitest": "^4.0.18",
-    "vue-tsc": "^3.3.3"
+    "vue-tsc": "^3.3.4"
   }
 }
