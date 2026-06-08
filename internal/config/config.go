@@ -90,8 +90,11 @@ func Load() (*Config, error) {
 			return nil, fmt.Errorf("failed to generate secret key: %w", err)
 		}
 		cfg.SecretKey = key
-		fmt.Printf("⚠ No GATECHA_SECRET_KEY set. Generated: %s\n", cfg.SecretKey)
-		fmt.Println("  Set this as an environment variable to persist sessions across restarts.")
+		// First-boot bootstrap: the generated secret is written to stderr (the
+		// conventional channel for operational notices) so the operator can
+		// persist it. It is never written to a structured/persistent log.
+		fmt.Fprintf(os.Stderr, "⚠ No GATECHA_SECRET_KEY set. Generated: %s\n", cfg.SecretKey)
+		fmt.Fprintln(os.Stderr, "  Set this as an environment variable to persist sessions across restarts.")
 	}
 
 	if cfg.AdminPassword == "" {
@@ -100,7 +103,10 @@ func Load() (*Config, error) {
 			return nil, fmt.Errorf("failed to generate admin password: %w", err)
 		}
 		cfg.AdminPassword = pw
-		fmt.Printf("⚠ No GATECHA_ADMIN_PASSWORD set. Generated: %s\n", cfg.AdminPassword)
+		// First-boot bootstrap: the operator has no other way to obtain the
+		// generated admin password. Written to stderr only, once, at startup.
+		fmt.Fprintf(os.Stderr, "⚠ No GATECHA_ADMIN_PASSWORD set. Generated: %s\n", cfg.AdminPassword)
+		fmt.Fprintln(os.Stderr, "  Log in and change it, or set GATECHA_ADMIN_PASSWORD to a value of your choice.")
 	}
 
 	return cfg, nil
