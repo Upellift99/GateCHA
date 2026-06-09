@@ -96,7 +96,7 @@ async function handleLogin() {
 
           <div v-if="captchaRequired && challengeUrl">
             <altcha-widget
-              :challengeurl="challengeUrl"
+              :challenge="challengeUrl"
               @statechange="onAltchaStateChange"
               style="--altcha-max-width: 100%;"
             ></altcha-widget>

@@ -55,7 +55,7 @@ const challengeUrl = computed(() => {
 const widgetSnippet = computed(() => {
   if (!key.value) return ''
   return `<altcha-widget
-  challengeurl="${challengeUrl.value}"
+  challenge="${challengeUrl.value}"
 ></altcha-widget>`
 })
 </script>
