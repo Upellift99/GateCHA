@@ -100,7 +100,7 @@ describe('LoginView', () => {
     const wrapper = mountView()
     await flushPromises()
 
-    expect(wrapper.find('altcha-widget-stub').exists() || wrapper.find('[challengeurl]').exists()).toBe(true)
+    expect(wrapper.find('altcha-widget-stub').exists() || wrapper.find('[challenge]').exists()).toBe(true)
   })
 
   it('canSubmit is false when captcha required but not verified', async () => {

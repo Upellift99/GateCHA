@@ -75,7 +75,7 @@ describe('ApiKeyDetailView', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('<altcha-widget')
-    expect(wrapper.text()).toContain('challengeurl=')
+    expect(wrapper.text()).toContain('challenge=')
   })
 
   it('toggles key enabled state', async () => {
