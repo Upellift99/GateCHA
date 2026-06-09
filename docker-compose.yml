@@ -7,11 +7,21 @@ services:
       - "8080:8080"
     volumes:
       - gatecha_data:/app/data
+    # Values below are read from a .env file in this directory (Compose loads it
+    # automatically). Copy .env.example to .env and adjust.
     environment:
       - GATECHA_LISTEN_ADDR=:8080
       - GATECHA_DB_DSN=/app/data/gatecha.db
       - GATECHA_ADMIN_PASSWORD=${GATECHA_ADMIN_PASSWORD:-changeme}
       - GATECHA_SECRET_KEY=${GATECHA_SECRET_KEY:-}
+      # Set GATECHA_TRUST_PROXY=true in .env when behind a reverse proxy,
+      # otherwise per-IP rate limiting shares one bucket and breaks the captcha.
+      - GATECHA_TRUST_PROXY=${GATECHA_TRUST_PROXY:-false}
+      - GATECHA_ENABLE_HSTS=${GATECHA_ENABLE_HSTS:-false}
+      - GATECHA_RATE_LIMIT_ENABLED=${GATECHA_RATE_LIMIT_ENABLED:-true}
+      - GATECHA_RATE_LIMIT_LOGIN=${GATECHA_RATE_LIMIT_LOGIN:-5}
+      - GATECHA_RATE_LIMIT_API=${GATECHA_RATE_LIMIT_API:-60}
+      - GATECHA_MAX_BODY_BYTES=${GATECHA_MAX_BODY_BYTES:-1048576}
       # - GATECHA_LOG_LEVEL=info
       # - GATECHA_CLEANUP_INTERVAL=10
       # - GATECHA_CORS_ALLOW_ALL=false
