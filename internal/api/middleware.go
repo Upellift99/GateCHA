@@ -175,6 +175,12 @@ func matchDomain(urlStr, domain string) bool {
 
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
+	// API responses are dynamic and per-request (auth'd payloads, and ALTCHA
+	// challenges are single-use nonces). They must never be stored by a shared
+	// cache/CDN — a cached challenge URL otherwise replays a stale (or even an
+	// error/HTML) response and breaks verification. no-store keeps intermediaries
+	// from caching any JSON endpoint.
+	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
 }
