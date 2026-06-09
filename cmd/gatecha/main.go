@@ -29,6 +29,18 @@ func main() {
 
 	slog.Info("starting GateCHA", "listen", cfg.ListenAddr, "db_driver", cfg.DBDriver)
 
+	// Per-IP rate limiting keys off the TCP peer address. Behind a reverse proxy
+	// with GATECHA_TRUST_PROXY=false, that peer is the proxy, so every visitor
+	// shares one bucket — which exhausts almost immediately and makes the public
+	// ALTCHA challenge endpoint return 429s, breaking the login captcha. Warn so
+	// the operator enables TRUST_PROXY (only safe behind a trusted proxy).
+	if cfg.RateLimit && !cfg.TrustProxy {
+		slog.Warn("rate limiting is enabled but GATECHA_TRUST_PROXY=false; " +
+			"if GateCHA runs behind a reverse proxy, all clients share one rate-limit bucket " +
+			"(keyed on the proxy IP), which can break the login captcha. " +
+			"Set GATECHA_TRUST_PROXY=true when behind a trusted proxy that sets X-Forwarded-For/X-Real-IP.")
+	}
+
 	db, err := database.Open(cfg.DBDriver, cfg.DBDSN)
 	if err != nil {
 		slog.Error("failed to open database", "error", err)
