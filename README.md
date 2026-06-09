@@ -144,6 +144,21 @@ docker compose -f docker-compose.mysql.yml up -d
 | `GATECHA_LOG_LEVEL` | `info` | Log level |
 | `GATECHA_CLEANUP_INTERVAL` | `10` | Cleanup interval (minutes) |
 | `GATECHA_CORS_ALLOW_ALL` | `false` | Allow CORS from any origin |
+| `GATECHA_TRUST_PROXY` | `false` | Trust `X-Forwarded-For`/`X-Real-IP` for the client IP. **Set to `true` when behind a reverse proxy** (see note below) |
+| `GATECHA_ENABLE_HSTS` | `false` | Send the `Strict-Transport-Security` header (enable only when always served over HTTPS) |
+| `GATECHA_MAX_BODY_BYTES` | `1048576` | Maximum accepted request body size, in bytes |
+| `GATECHA_RATE_LIMIT_ENABLED` | `true` | Enable per-IP rate limiting |
+| `GATECHA_RATE_LIMIT_LOGIN` | `5` | Admin login requests per minute, per IP |
+| `GATECHA_RATE_LIMIT_API` | `60` | Public API (`/api/v1/*`) requests per minute, per IP |
+
+> ⚠️ **Behind a reverse proxy, set `GATECHA_TRUST_PROXY=true`.**
+> Per-IP rate limiting keys off the connecting IP. With `GATECHA_TRUST_PROXY=false`
+> behind a proxy, that IP is the **proxy itself**, so every visitor shares a single
+> rate-limit bucket. It exhausts almost immediately, the public ALTCHA challenge
+> endpoint starts returning `429`s, and the **login captcha breaks** with
+> *"Expected application/json, received text/html"*. Enabling `TRUST_PROXY` makes
+> the limiter use each visitor's real IP. Only enable it behind a **trusted** proxy
+> that sets `X-Forwarded-For`/`X-Real-IP`, otherwise clients can spoof their IP.
 
 ## License
 
