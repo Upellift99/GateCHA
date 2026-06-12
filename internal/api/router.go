@@ -39,7 +39,7 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	r.Use(CORSMiddleware(cfg.CORSAllowAll))
 
 	publicHandler := &PublicHandler{DB: db}
-	challengeHandler := &ChallengeHandler{DB: db}
+	challengeHandler := &ChallengeHandler{DB: db, Adaptive: newAdaptiveLimiter()}
 	verifyHandler := &VerifyHandler{DB: db}
 	adminHandler := &AdminHandler{DB: db, SecretKey: secretKey}
 

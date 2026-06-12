@@ -110,12 +110,13 @@ func (h *AdminHandler) ListKeys(w http.ResponseWriter, r *http.Request) {
 // POST /api/admin/keys
 func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Name            string `json:"name"`
-		Domain          string `json:"domain"`
-		MaxNumber       int64  `json:"max_number"`
-		ExpireSeconds   int    `json:"expire_seconds"`
-		Algorithm       string `json:"algorithm"`
-		RateLimitPerMin int    `json:"rate_limit_per_min"`
+		Name               string `json:"name"`
+		Domain             string `json:"domain"`
+		MaxNumber          int64  `json:"max_number"`
+		ExpireSeconds      int    `json:"expire_seconds"`
+		Algorithm          string `json:"algorithm"`
+		RateLimitPerMin    int    `json:"rate_limit_per_min"`
+		AdaptiveDifficulty bool   `json:"adaptive_difficulty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
@@ -128,22 +129,24 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// CreateAPIKey keeps its narrow signature; apply the optional per-key rate
-	// limit as a follow-up update so create stays a single source of defaults.
-	if req.RateLimitPerMin > 0 {
+	// CreateAPIKey keeps its narrow signature; apply the optional advanced levers
+	// as a follow-up update so create stays a single source of defaults.
+	if req.RateLimitPerMin > 0 || req.AdaptiveDifficulty {
 		if err := models.UpdateAPIKey(h.DB, key.ID, models.UpdateAPIKeyParams{
-			Name:            key.Name,
-			Domain:          key.Domain,
-			MaxNumber:       key.MaxNumber,
-			ExpireSeconds:   key.ExpireSeconds,
-			Algorithm:       key.Algorithm,
-			RateLimitPerMin: req.RateLimitPerMin,
-			Enabled:         key.Enabled,
+			Name:               key.Name,
+			Domain:             key.Domain,
+			MaxNumber:          key.MaxNumber,
+			ExpireSeconds:      key.ExpireSeconds,
+			Algorithm:          key.Algorithm,
+			RateLimitPerMin:    req.RateLimitPerMin,
+			AdaptiveDifficulty: req.AdaptiveDifficulty,
+			Enabled:            key.Enabled,
 		}); err != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create key"})
 			return
 		}
 		key.RateLimitPerMin = req.RateLimitPerMin
+		key.AdaptiveDifficulty = req.AdaptiveDifficulty
 	}
 
 	writeJSON(w, http.StatusCreated, key)
@@ -175,13 +178,14 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Name            string `json:"name"`
-		Domain          string `json:"domain"`
-		MaxNumber       int64  `json:"max_number"`
-		ExpireSeconds   int    `json:"expire_seconds"`
-		Algorithm       string `json:"algorithm"`
-		RateLimitPerMin *int   `json:"rate_limit_per_min"`
-		Enabled         *bool  `json:"enabled"`
+		Name               string `json:"name"`
+		Domain             string `json:"domain"`
+		MaxNumber          int64  `json:"max_number"`
+		ExpireSeconds      int    `json:"expire_seconds"`
+		Algorithm          string `json:"algorithm"`
+		RateLimitPerMin    *int   `json:"rate_limit_per_min"`
+		AdaptiveDifficulty *bool  `json:"adaptive_difficulty"`
+		Enabled            *bool  `json:"enabled"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
@@ -224,15 +228,20 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 	if req.RateLimitPerMin != nil {
 		rateLimitPerMin = *req.RateLimitPerMin
 	}
+	adaptiveDifficulty := existing.AdaptiveDifficulty
+	if req.AdaptiveDifficulty != nil {
+		adaptiveDifficulty = *req.AdaptiveDifficulty
+	}
 
 	if err := models.UpdateAPIKey(h.DB, id, models.UpdateAPIKeyParams{
-		Name:            name,
-		Domain:          domain,
-		MaxNumber:       maxNumber,
-		ExpireSeconds:   expireSeconds,
-		Algorithm:       algorithm,
-		RateLimitPerMin: rateLimitPerMin,
-		Enabled:         enabled,
+		Name:               name,
+		Domain:             domain,
+		MaxNumber:          maxNumber,
+		ExpireSeconds:      expireSeconds,
+		Algorithm:          algorithm,
+		RateLimitPerMin:    rateLimitPerMin,
+		AdaptiveDifficulty: adaptiveDifficulty,
+		Enabled:            enabled,
 	}); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update key"})
 		return

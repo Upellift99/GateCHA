@@ -17,6 +17,7 @@ const form = ref({
   expire_seconds: 300,
   algorithm: 'SHA-256',
   rate_limit_per_min: 0,
+  adaptive_difficulty: false,
 })
 
 const error = ref('')
@@ -33,6 +34,7 @@ onMounted(async () => {
       expire_seconds: key.expire_seconds,
       algorithm: key.algorithm,
       rate_limit_per_min: key.rate_limit_per_min,
+      adaptive_difficulty: key.adaptive_difficulty,
     }
   }
 })
@@ -157,6 +159,19 @@ async function handleSubmit() {
           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <p class="mt-1 text-xs text-gray-500">Caps challenge + verify calls for this key, across all clients. 0 = unlimited.</p>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <input
+          id="key-adaptive"
+          v-model="form.adaptive_difficulty"
+          type="checkbox"
+          class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        />
+        <label for="key-adaptive" class="text-sm">
+          <span class="font-medium text-gray-700">Adaptive difficulty</span>
+          <span class="block text-xs text-gray-500">Raises proof-of-work difficulty above the base for clients (by IP) requesting challenges at an abusive rate. The difficulty above is the floor.</span>
+        </label>
       </div>
 
       <button

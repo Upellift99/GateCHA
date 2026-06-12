@@ -127,4 +127,19 @@ describe('ApiKeyFormView', () => {
       rate_limit_per_min: 30,
     }))
   })
+
+  it('submits the adaptive difficulty toggle', async () => {
+    mockApi.post.mockResolvedValue({ data: { key_id: 'gk_x', hmac_secret: 's' } })
+    mockApi.get.mockResolvedValue({ data: { keys: [] } })
+
+    const wrapper = mountView()
+    await wrapper.find('#key-name').setValue('Adaptive')
+    await wrapper.find('#key-adaptive').setValue(true)
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(mockApi.post).toHaveBeenCalledWith('/keys', expect.objectContaining({
+      adaptive_difficulty: true,
+    }))
+  })
 })
