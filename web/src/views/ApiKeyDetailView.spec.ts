@@ -29,6 +29,7 @@ const mockKey = {
   expire_seconds: 300,
   algorithm: 'SHA-256',
   rate_limit_per_min: 60,
+  adaptive_difficulty: true,
   enabled: true,
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
@@ -63,6 +64,8 @@ describe('ApiKeyDetailView', () => {
     expect(wrapper.text()).toContain('test.com')
     expect(wrapper.text()).toContain('SHA-256')
     expect(wrapper.text()).toContain('60 req/min')
+    expect(wrapper.text()).toContain('Adaptive difficulty')
+    expect(wrapper.text()).toContain('On')
   })
 
   it('shows "Unlimited" when no per-key rate limit is set', async () => {

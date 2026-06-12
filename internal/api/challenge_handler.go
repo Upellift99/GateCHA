@@ -11,6 +11,9 @@ import (
 
 type ChallengeHandler struct {
 	DB *gorm.DB
+	// Adaptive scales proof-of-work difficulty by source request rate for keys
+	// that opt in via AdaptiveDifficulty.
+	Adaptive *adaptiveLimiter
 }
 
 func (h *ChallengeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +23,15 @@ func (h *ChallengeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	challenge, err := altcha.GenerateChallenge(key.HMACSecret, key.MaxNumber, key.Algorithm, key.ExpireSeconds)
+	maxNumber := key.MaxNumber
+	if key.AdaptiveDifficulty && h.Adaptive != nil {
+		// Rate is tracked per (key, IP) so one abusive source is escalated
+		// without penalizing other clients of the same key.
+		rate := h.Adaptive.observe(key.KeyID + "|" + clientIP(r))
+		maxNumber = adaptiveMaxNumber(key.MaxNumber, rate)
+	}
+
+	challenge, err := altcha.GenerateChallenge(key.HMACSecret, maxNumber, key.Algorithm, key.ExpireSeconds)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to generate challenge"})
 		return

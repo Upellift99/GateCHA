@@ -11,32 +11,37 @@ import (
 
 // APIKey represents a site-specific API key used to generate and verify ALTCHA challenges.
 type APIKey struct {
-	ID            int64     `gorm:"primaryKey;autoIncrement" json:"id"`
-	KeyID         string    `gorm:"not null;uniqueIndex;size:32" json:"key_id"`
-	HMACSecret    string    `gorm:"not null" json:"hmac_secret,omitempty"`
-	Name          string    `gorm:"not null;default:''" json:"name"`
-	Domain        string    `gorm:"not null;default:''" json:"domain"`
-	MaxNumber     int64     `gorm:"not null;default:100000" json:"max_number"`
-	ExpireSeconds int       `gorm:"not null;default:300" json:"expire_seconds"`
-	Algorithm     string    `gorm:"not null;default:'SHA-256'" json:"algorithm"`
+	ID            int64  `gorm:"primaryKey;autoIncrement" json:"id"`
+	KeyID         string `gorm:"not null;uniqueIndex;size:32" json:"key_id"`
+	HMACSecret    string `gorm:"not null" json:"hmac_secret,omitempty"`
+	Name          string `gorm:"not null;default:''" json:"name"`
+	Domain        string `gorm:"not null;default:''" json:"domain"`
+	MaxNumber     int64  `gorm:"not null;default:100000" json:"max_number"`
+	ExpireSeconds int    `gorm:"not null;default:300" json:"expire_seconds"`
+	Algorithm     string `gorm:"not null;default:'SHA-256'" json:"algorithm"`
 	// RateLimitPerMin caps how many /api/v1 requests this key accepts per minute,
 	// aggregated across all clients. 0 means unlimited (only the global per-IP
 	// limiter applies).
-	RateLimitPerMin int       `gorm:"not null;default:0" json:"rate_limit_per_min"`
-	Enabled         bool      `gorm:"not null;default:true" json:"enabled"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	RateLimitPerMin int `gorm:"not null;default:0" json:"rate_limit_per_min"`
+	// AdaptiveDifficulty, when set, raises the proof-of-work MaxNumber above this
+	// key's configured base for clients (by IP) that request challenges at an
+	// abusive rate, capped server-side. MaxNumber stays the floor.
+	AdaptiveDifficulty bool      `gorm:"not null;default:false" json:"adaptive_difficulty"`
+	Enabled            bool      `gorm:"not null;default:true" json:"enabled"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
 }
 
 // UpdateAPIKeyParams holds the fields for updating an API key.
 type UpdateAPIKeyParams struct {
-	Name            string
-	Domain          string
-	MaxNumber       int64
-	ExpireSeconds   int
-	Algorithm       string
-	RateLimitPerMin int
-	Enabled         bool
+	Name               string
+	Domain             string
+	MaxNumber          int64
+	ExpireSeconds      int
+	Algorithm          string
+	RateLimitPerMin    int
+	AdaptiveDifficulty bool
+	Enabled            bool
 }
 
 func GenerateKeyID() (string, error) {
@@ -117,13 +122,14 @@ func ListAPIKeys(db *gorm.DB) ([]APIKey, error) {
 
 func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
 	return db.Model(&APIKey{}).Where("id = ?", id).Updates(map[string]any{
-		"name":               params.Name,
-		"domain":             params.Domain,
-		"max_number":         params.MaxNumber,
-		"expire_seconds":     params.ExpireSeconds,
-		"algorithm":          params.Algorithm,
-		"rate_limit_per_min": params.RateLimitPerMin,
-		"enabled":            params.Enabled,
+		"name":                params.Name,
+		"domain":              params.Domain,
+		"max_number":          params.MaxNumber,
+		"expire_seconds":      params.ExpireSeconds,
+		"algorithm":           params.Algorithm,
+		"rate_limit_per_min":  params.RateLimitPerMin,
+		"adaptive_difficulty": params.AdaptiveDifficulty,
+		"enabled":             params.Enabled,
 	}).Error
 }
 
