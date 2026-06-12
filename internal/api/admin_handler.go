@@ -110,11 +110,12 @@ func (h *AdminHandler) ListKeys(w http.ResponseWriter, r *http.Request) {
 // POST /api/admin/keys
 func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Name          string `json:"name"`
-		Domain        string `json:"domain"`
-		MaxNumber     int64  `json:"max_number"`
-		ExpireSeconds int    `json:"expire_seconds"`
-		Algorithm     string `json:"algorithm"`
+		Name            string `json:"name"`
+		Domain          string `json:"domain"`
+		MaxNumber       int64  `json:"max_number"`
+		ExpireSeconds   int    `json:"expire_seconds"`
+		Algorithm       string `json:"algorithm"`
+		RateLimitPerMin int    `json:"rate_limit_per_min"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
@@ -125,6 +126,24 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create key"})
 		return
+	}
+
+	// CreateAPIKey keeps its narrow signature; apply the optional per-key rate
+	// limit as a follow-up update so create stays a single source of defaults.
+	if req.RateLimitPerMin > 0 {
+		if err := models.UpdateAPIKey(h.DB, key.ID, models.UpdateAPIKeyParams{
+			Name:            key.Name,
+			Domain:          key.Domain,
+			MaxNumber:       key.MaxNumber,
+			ExpireSeconds:   key.ExpireSeconds,
+			Algorithm:       key.Algorithm,
+			RateLimitPerMin: req.RateLimitPerMin,
+			Enabled:         key.Enabled,
+		}); err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create key"})
+			return
+		}
+		key.RateLimitPerMin = req.RateLimitPerMin
 	}
 
 	writeJSON(w, http.StatusCreated, key)
@@ -156,12 +175,13 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Name          string `json:"name"`
-		Domain        string `json:"domain"`
-		MaxNumber     int64  `json:"max_number"`
-		ExpireSeconds int    `json:"expire_seconds"`
-		Algorithm     string `json:"algorithm"`
-		Enabled       *bool  `json:"enabled"`
+		Name            string `json:"name"`
+		Domain          string `json:"domain"`
+		MaxNumber       int64  `json:"max_number"`
+		ExpireSeconds   int    `json:"expire_seconds"`
+		Algorithm       string `json:"algorithm"`
+		RateLimitPerMin *int   `json:"rate_limit_per_min"`
+		Enabled         *bool  `json:"enabled"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
@@ -198,14 +218,21 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 	if req.Enabled != nil {
 		enabled = *req.Enabled
 	}
+	// 0 is a valid value (disables the per-key limit), so distinguish "omitted"
+	// from "set to 0" via the pointer.
+	rateLimitPerMin := existing.RateLimitPerMin
+	if req.RateLimitPerMin != nil {
+		rateLimitPerMin = *req.RateLimitPerMin
+	}
 
 	if err := models.UpdateAPIKey(h.DB, id, models.UpdateAPIKeyParams{
-		Name:          name,
-		Domain:        domain,
-		MaxNumber:     maxNumber,
-		ExpireSeconds: expireSeconds,
-		Algorithm:     algorithm,
-		Enabled:       enabled,
+		Name:            name,
+		Domain:          domain,
+		MaxNumber:       maxNumber,
+		ExpireSeconds:   expireSeconds,
+		Algorithm:       algorithm,
+		RateLimitPerMin: rateLimitPerMin,
+		Enabled:         enabled,
 	}); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update key"})
 		return

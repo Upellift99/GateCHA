@@ -110,6 +110,60 @@ func TestRateLimitMiddleware_Returns429(t *testing.T) {
 	}
 }
 
+func TestKeyRateLimiter_PerCallLimit(t *testing.T) {
+	base := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	now, _ := fakeClock(base)
+	l := newKeyRateLimiter()
+	l.now = now
+
+	for i := 0; i < 3; i++ {
+		if !l.allow("gk_a", 3) {
+			t.Fatalf("request %d should be allowed within the per-key budget", i+1)
+		}
+	}
+	if l.allow("gk_a", 3) {
+		t.Fatal("4th request should be blocked once the budget is exhausted")
+	}
+	// A different key has its own independent bucket.
+	if !l.allow("gk_b", 3) {
+		t.Fatal("a different key must not share gk_a's bucket")
+	}
+}
+
+func TestKeyRateLimiter_ZeroMeansUnlimited(t *testing.T) {
+	base := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	now, _ := fakeClock(base)
+	l := newKeyRateLimiter()
+	l.now = now
+
+	for i := 0; i < 1000; i++ {
+		if !l.allow("gk_unlimited", 0) {
+			t.Fatalf("limit 0 should never throttle (request %d blocked)", i+1)
+		}
+	}
+	if len(l.buckets) != 0 {
+		t.Errorf("unlimited keys should not allocate buckets, got %d", len(l.buckets))
+	}
+}
+
+func TestKeyRateLimiter_RefillsOverTime(t *testing.T) {
+	base := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	now, advance := fakeClock(base)
+	l := newKeyRateLimiter()
+	l.now = now
+
+	for i := 0; i < 60; i++ {
+		l.allow("gk_x", 60) // 60/min => 1 token/sec
+	}
+	if l.allow("gk_x", 60) {
+		t.Fatal("should be blocked after consuming the full burst")
+	}
+	advance(2 * time.Second)
+	if !l.allow("gk_x", 60) {
+		t.Fatal("should be allowed again after refill")
+	}
+}
+
 func TestClientIP(t *testing.T) {
 	tests := []struct {
 		remoteAddr, want string

@@ -19,19 +19,24 @@ type APIKey struct {
 	MaxNumber     int64     `gorm:"not null;default:100000" json:"max_number"`
 	ExpireSeconds int       `gorm:"not null;default:300" json:"expire_seconds"`
 	Algorithm     string    `gorm:"not null;default:'SHA-256'" json:"algorithm"`
-	Enabled       bool      `gorm:"not null;default:true" json:"enabled"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	// RateLimitPerMin caps how many /api/v1 requests this key accepts per minute,
+	// aggregated across all clients. 0 means unlimited (only the global per-IP
+	// limiter applies).
+	RateLimitPerMin int       `gorm:"not null;default:0" json:"rate_limit_per_min"`
+	Enabled         bool      `gorm:"not null;default:true" json:"enabled"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 // UpdateAPIKeyParams holds the fields for updating an API key.
 type UpdateAPIKeyParams struct {
-	Name          string
-	Domain        string
-	MaxNumber     int64
-	ExpireSeconds int
-	Algorithm     string
-	Enabled       bool
+	Name            string
+	Domain          string
+	MaxNumber       int64
+	ExpireSeconds   int
+	Algorithm       string
+	RateLimitPerMin int
+	Enabled         bool
 }
 
 func GenerateKeyID() (string, error) {
@@ -112,12 +117,13 @@ func ListAPIKeys(db *gorm.DB) ([]APIKey, error) {
 
 func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
 	return db.Model(&APIKey{}).Where("id = ?", id).Updates(map[string]any{
-		"name":           params.Name,
-		"domain":         params.Domain,
-		"max_number":     params.MaxNumber,
-		"expire_seconds": params.ExpireSeconds,
-		"algorithm":      params.Algorithm,
-		"enabled":        params.Enabled,
+		"name":               params.Name,
+		"domain":             params.Domain,
+		"max_number":         params.MaxNumber,
+		"expire_seconds":     params.ExpireSeconds,
+		"algorithm":          params.Algorithm,
+		"rate_limit_per_min": params.RateLimitPerMin,
+		"enabled":            params.Enabled,
 	}).Error
 }
 

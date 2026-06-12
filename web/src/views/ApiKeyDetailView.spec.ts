@@ -28,6 +28,7 @@ const mockKey = {
   max_number: 100000,
   expire_seconds: 300,
   algorithm: 'SHA-256',
+  rate_limit_per_min: 60,
   enabled: true,
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
@@ -61,6 +62,19 @@ describe('ApiKeyDetailView', () => {
     expect(wrapper.text()).toContain('gk_abc123def456')
     expect(wrapper.text()).toContain('test.com')
     expect(wrapper.text()).toContain('SHA-256')
+    expect(wrapper.text()).toContain('60 req/min')
+  })
+
+  it('shows "Unlimited" when no per-key rate limit is set', async () => {
+    mockApi.get
+      .mockReset()
+      .mockResolvedValueOnce({ data: { ...mockKey, rate_limit_per_min: 0 } })
+      .mockResolvedValueOnce({ data: { days: [] } })
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Unlimited')
   })
 
   it('computes challengeUrl correctly', async () => {

@@ -16,6 +16,7 @@ const form = ref({
   max_number: 100000,
   expire_seconds: 300,
   algorithm: 'SHA-256',
+  rate_limit_per_min: 0,
 })
 
 const error = ref('')
@@ -31,6 +32,7 @@ onMounted(async () => {
       max_number: key.max_number,
       expire_seconds: key.expire_seconds,
       algorithm: key.algorithm,
+      rate_limit_per_min: key.rate_limit_per_min,
     }
   }
 })
@@ -142,6 +144,19 @@ async function handleSubmit() {
           <option value="SHA-256">SHA-256 (recommended)</option>
           <option value="SHA-512">SHA-512</option>
         </select>
+      </div>
+
+      <div>
+        <label for="key-rate-limit" class="block text-sm font-medium text-gray-700 mb-1">Rate limit (requests / minute)</label>
+        <input
+          id="key-rate-limit"
+          v-model.number="form.rate_limit_per_min"
+          type="number"
+          min="0"
+          max="100000"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+        <p class="mt-1 text-xs text-gray-500">Caps challenge + verify calls for this key, across all clients. 0 = unlimited.</p>
       </div>
 
       <button
