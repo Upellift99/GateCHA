@@ -112,4 +112,19 @@ describe('ApiKeyFormView', () => {
     const maxNumber = wrapper.find('#key-max-number')
     expect((maxNumber.element as HTMLInputElement).value).toBe('100000')
   })
+
+  it('submits the per-key rate limit', async () => {
+    mockApi.post.mockResolvedValue({ data: { key_id: 'gk_x', hmac_secret: 's' } })
+    mockApi.get.mockResolvedValue({ data: { keys: [] } })
+
+    const wrapper = mountView()
+    await wrapper.find('#key-name').setValue('Throttled')
+    await wrapper.find('#key-rate-limit').setValue(30)
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(mockApi.post).toHaveBeenCalledWith('/keys', expect.objectContaining({
+      rate_limit_per_min: 30,
+    }))
+  })
 })

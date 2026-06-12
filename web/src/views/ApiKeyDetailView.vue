@@ -120,6 +120,12 @@ const widgetSnippet = computed(() => {
           <dt class="text-sm font-medium text-gray-500">Algorithm</dt>
           <dd class="mt-1 text-sm text-gray-900">{{ key.algorithm }}</dd>
         </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Rate limit</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            {{ key.rate_limit_per_min > 0 ? `${key.rate_limit_per_min.toLocaleString()} req/min` : 'Unlimited' }}
+          </dd>
+        </div>
       </dl>
     </div>
 

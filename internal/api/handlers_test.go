@@ -805,6 +805,62 @@ func TestChallengeEndpoint_CustomSettings(t *testing.T) {
 	}
 }
 
+func TestPerKeyRateLimit_Enforced(t *testing.T) {
+	router, db := setupTestRouter(t)
+	key, _ := models.CreateAPIKey(db, "Limited", "", 100, 60, "SHA-256")
+	if err := models.UpdateAPIKey(db, key.ID, models.UpdateAPIKeyParams{
+		Name:            key.Name,
+		MaxNumber:       key.MaxNumber,
+		ExpireSeconds:   key.ExpireSeconds,
+		Algorithm:       key.Algorithm,
+		RateLimitPerMin: 2, // burst of 2, then throttle
+		Enabled:         true,
+	}); err != nil {
+		t.Fatalf("UpdateAPIKey failed: %v", err)
+	}
+
+	call := func() int {
+		req := httptest.NewRequest("GET", "/api/v1/challenge?apiKey="+key.KeyID, nil)
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		return w.Code
+	}
+
+	if code := call(); code != http.StatusOK {
+		t.Fatalf("request 1 should pass, got %d", code)
+	}
+	if code := call(); code != http.StatusOK {
+		t.Fatalf("request 2 should pass, got %d", code)
+	}
+	if code := call(); code != http.StatusTooManyRequests {
+		t.Fatalf("request 3 should be throttled by the per-key limit, got %d", code)
+	}
+}
+
+func TestCreateKey_WithRateLimit(t *testing.T) {
+	router, _ := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	body, _ := json.Marshal(map[string]interface{}{
+		"name":               "Throttled",
+		"rate_limit_per_min": 30,
+	})
+	req := httptest.NewRequest("POST", "/api/admin/keys", bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusCreated {
+		t.Fatalf("expected 201, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp map[string]interface{}
+	json.NewDecoder(w.Body).Decode(&resp)
+	if resp["rate_limit_per_min"] != float64(30) {
+		t.Errorf("expected rate_limit_per_min 30, got %v", resp["rate_limit_per_min"])
+	}
+}
+
 func TestUpdateKey_AllFields(t *testing.T) {
 	router, db := setupTestRouter(t)
 	token := getAdminToken(t)

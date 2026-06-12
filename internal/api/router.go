@@ -54,6 +54,9 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 			r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
 		}
 		r.Use(APIKeyMiddleware(db))
+		// Per-key throttle runs after auth so the key (and its limit) is known.
+		// No-op for keys whose RateLimitPerMin is 0.
+		r.Use(PerKeyRateLimitMiddleware())
 		r.Get("/challenge", challengeHandler.ServeHTTP)
 		r.Post("/verify", verifyHandler.ServeHTTP)
 	})
