@@ -877,6 +877,48 @@ func TestAdaptiveDifficulty_EscalatesMaxNumber(t *testing.T) {
 	}
 }
 
+func TestVerify_HISMonitorRecordsWithoutChangingOutcome(t *testing.T) {
+	router, db := setupTestRouter(t)
+	key, _ := models.CreateAPIKey(db, "HIS", "", 100, 60, "SHA-256")
+
+	// Bot-like signals (instant, no motion) alongside an invalid payload.
+	body, _ := json.Marshal(map[string]interface{}{
+		"payload": "not-valid-base64!!",
+		"his_signals": map[string]interface{}{
+			"duration_ms":      10,
+			"time_to_first_ms": -1,
+			"pointer_events":   0,
+			"pointer_distance": 0,
+		},
+	})
+	req := httptest.NewRequest("POST", "/api/v1/verify?apiKey="+key.KeyID, bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	// Outcome is driven solely by the PoW: invalid payload => ok:false, 200.
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp verifyResponse
+	json.NewDecoder(w.Body).Decode(&resp)
+	if resp.OK {
+		t.Error("invalid payload must not verify, regardless of HIS")
+	}
+
+	// But the HIS sample was recorded in Monitor mode and flagged as suspected.
+	stats, _ := models.GetKeyStats(db, key.ID, 1)
+	if len(stats) == 0 {
+		t.Fatal("expected a stat row")
+	}
+	if stats[0].HISObservations != 1 {
+		t.Errorf("expected 1 HIS observation, got %d", stats[0].HISObservations)
+	}
+	if stats[0].HISBotSuspected != 1 {
+		t.Errorf("expected bot-like signals to be suspected, got %d", stats[0].HISBotSuspected)
+	}
+}
+
 func TestCreateKey_WithRateLimit(t *testing.T) {
 	router, _ := setupTestRouter(t)
 	token := getAdminToken(t)

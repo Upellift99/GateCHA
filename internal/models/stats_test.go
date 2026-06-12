@@ -64,6 +64,35 @@ func TestIncrementVerificationsFail(t *testing.T) {
 	}
 }
 
+func TestIncrementHISObservation(t *testing.T) {
+	db := testutil.SetupTestDB(t)
+	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
+
+	// Two observations, one of them bot-suspected.
+	if err := models.IncrementHISObservation(db, key.ID, false); err != nil {
+		t.Fatalf("IncrementHISObservation failed: %v", err)
+	}
+	if err := models.IncrementHISObservation(db, key.ID, true); err != nil {
+		t.Fatalf("IncrementHISObservation (suspected) failed: %v", err)
+	}
+
+	stats, _ := models.GetKeyStats(db, key.ID, 1)
+	if len(stats) == 0 {
+		t.Fatal("expected stats")
+	}
+	if stats[0].HISObservations != 2 {
+		t.Errorf("expected 2 HIS observations, got %d", stats[0].HISObservations)
+	}
+	if stats[0].HISBotSuspected != 1 {
+		t.Errorf("expected 1 bot-suspected, got %d", stats[0].HISBotSuspected)
+	}
+
+	overview, _ := models.GetStatsOverview(db, 1)
+	if overview.TotalHISObservations != 2 || overview.TotalHISBotSuspected != 1 {
+		t.Errorf("overview HIS totals = %d/%d, want 2/1", overview.TotalHISObservations, overview.TotalHISBotSuspected)
+	}
+}
+
 func TestGetStatsOverview(t *testing.T) {
 	db := testutil.SetupTestDB(t)
 	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")

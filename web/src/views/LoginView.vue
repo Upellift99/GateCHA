@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import 'altcha'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { startHISCollector, type HISCollector } from '../lib/his'
 import axios from 'axios'
 
 const router = useRouter()
@@ -18,7 +19,13 @@ const challengeUrl = ref('')
 const altchaPayload = ref('')
 const altchaVerified = ref(false)
 
+// Collect privacy-preserving interaction signals (HIS) for the duration of the
+// login page. Sent with the login request; the server scores them in Monitor
+// mode and never blocks on them.
+let hisCollector: HISCollector | null = null
+
 onMounted(async () => {
+  hisCollector = startHISCollector()
   try {
     const { data } = await axios.get('/api/public/login-config')
     captchaRequired.value = data.captcha_required
@@ -29,6 +36,8 @@ onMounted(async () => {
     captchaRequired.value = false
   }
 })
+
+onUnmounted(() => hisCollector?.stop())
 
 function onAltchaStateChange(event: Event) {
   const detail = (event as CustomEvent).detail
@@ -50,7 +59,12 @@ async function handleLogin() {
   error.value = ''
   loading.value = true
   try {
-    await authStore.login(username.value, password.value, altchaPayload.value || undefined)
+    await authStore.login(
+      username.value,
+      password.value,
+      altchaPayload.value || undefined,
+      hisCollector?.signals(),
+    )
     router.push('/')
   } catch {
     error.value = 'Invalid credentials'

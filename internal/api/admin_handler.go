@@ -8,6 +8,7 @@ import (
 
 	"github.com/Upellift99/GateCHA/internal/altcha"
 	"github.com/Upellift99/GateCHA/internal/auth"
+	"github.com/Upellift99/GateCHA/internal/his"
 	"github.com/Upellift99/GateCHA/internal/models"
 	"github.com/go-chi/chi/v5"
 	"gorm.io/gorm"
@@ -53,9 +54,10 @@ func (h *AdminHandler) verifyLoginCaptcha(w http.ResponseWriter, payload string)
 // POST /api/admin/login
 func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Username      string `json:"username"`
-		Password      string `json:"password"`
-		AltchaPayload string `json:"altcha_payload"`
+		Username      string       `json:"username"`
+		Password      string       `json:"password"`
+		AltchaPayload string       `json:"altcha_payload"`
+		HISSignals    *his.Signals `json:"his_signals,omitempty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
@@ -73,8 +75,17 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal error"})
 		return
 	}
-	if captchaEnabled && !h.verifyLoginCaptcha(w, req.AltchaPayload) {
-		return
+	if captchaEnabled {
+		// Record HIS in Monitor mode against the login captcha key before the
+		// captcha check, so failed attempts are observed too. Never blocks login.
+		if req.HISSignals != nil {
+			if key, err := models.EnsureLoginCaptchaAPIKey(h.DB); err == nil {
+				recordHISMonitor(h.DB, key.ID, req.HISSignals)
+			}
+		}
+		if !h.verifyLoginCaptcha(w, req.AltchaPayload) {
+			return
+		}
 	}
 
 	token, expiresAt, err := auth.GenerateJWT(req.Username, h.SecretKey)
