@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Upellift99/GateCHA/internal/altcha"
+	"github.com/Upellift99/GateCHA/internal/his"
 	"github.com/Upellift99/GateCHA/internal/models"
 	lib "github.com/altcha-org/altcha-lib-go"
 	"gorm.io/gorm"
@@ -21,6 +22,10 @@ type VerifyHandler struct {
 
 type verifyRequest struct {
 	Payload string `json:"payload"`
+	// HISSignals is an optional privacy-preserving interaction sample. When
+	// present it is scored and recorded in Monitor mode; it never changes the
+	// verification result.
+	HISSignals *his.Signals `json:"his_signals,omitempty"`
 }
 
 type verifyResponse struct {
@@ -48,6 +53,10 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, verifyResponse{OK: false, Error: "invalid request body"})
 		return
 	}
+
+	// Monitor HIS before outcome branching so bot-like attempts that fail the
+	// PoW are still observed. Never affects the response.
+	recordHISMonitor(h.DB, key.ID, req.HISSignals)
 
 	if req.Payload == "" {
 		writeJSON(w, http.StatusBadRequest, verifyResponse{OK: false, Error: "missing payload"})

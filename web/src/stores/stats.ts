@@ -7,12 +7,16 @@ export interface DailyStat {
   challenges_issued: number
   verifications_ok: number
   verifications_fail: number
+  his_observations: number
+  his_bot_suspected: number
 }
 
 export interface StatsOverview {
   total_challenges: number
   total_verifications_ok: number
   total_verifications_fail: number
+  total_his_observations: number
+  total_his_bot_suspected: number
   active_keys: number
   daily: DailyStat[]
 }
@@ -22,6 +26,8 @@ export interface KeyStatsSummary {
   challenges_issued: number
   verifications_ok: number
   verifications_fail: number
+  his_observations: number
+  his_bot_suspected: number
   last_used_at: string
 }
 

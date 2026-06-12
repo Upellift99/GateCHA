@@ -17,6 +17,11 @@ type DailyStat struct {
 	ChallengesIssued  int    `gorm:"not null;default:0" json:"challenges_issued"`
 	VerificationsOK   int    `gorm:"not null;default:0" json:"verifications_ok"`
 	VerificationsFail int    `gorm:"not null;default:0" json:"verifications_fail"`
+	// HIS (Human Interaction Signature) Monitor counters: every scored sample
+	// increments HISObservations; samples at/above the suspect threshold also
+	// increment HISBotSuspected. Monitor mode only records — it never blocks.
+	HISObservations int `gorm:"not null;default:0" json:"his_observations"`
+	HISBotSuspected int `gorm:"not null;default:0" json:"his_bot_suspected"`
 }
 
 // StatsOverview holds aggregated statistics for the dashboard.
@@ -24,6 +29,8 @@ type StatsOverview struct {
 	TotalChallenges        int         `json:"total_challenges"`
 	TotalVerificationsOK   int         `json:"total_verifications_ok"`
 	TotalVerificationsFail int         `json:"total_verifications_fail"`
+	TotalHISObservations   int         `json:"total_his_observations"`
+	TotalHISBotSuspected   int         `json:"total_his_bot_suspected"`
 	ActiveKeys             int         `json:"active_keys"`
 	Daily                  []DailyStat `json:"daily"`
 }
@@ -34,6 +41,8 @@ type KeyStatsSummary struct {
 	ChallengesIssued  int    `json:"challenges_issued"`
 	VerificationsOK   int    `json:"verifications_ok"`
 	VerificationsFail int    `json:"verifications_fail"`
+	HISObservations   int    `json:"his_observations"`
+	HISBotSuspected   int    `json:"his_bot_suspected"`
 	LastUsedAt        string `json:"last_used_at"`
 }
 
@@ -67,14 +76,32 @@ func IncrementVerificationsFail(db *gorm.DB, apiKeyID int64) error {
 	}).Create(&DailyStat{APIKeyID: apiKeyID, Date: date, VerificationsFail: 1}).Error
 }
 
+// IncrementHISObservation records one HIS Monitor sample for the key/day: it
+// always bumps the observation count and additionally bumps the bot-suspected
+// count when the sample was flagged. It never affects verification outcomes.
+func IncrementHISObservation(db *gorm.DB, apiKeyID int64, botSuspected bool) error {
+	date := time.Now().UTC().Format(dateFormatYMD)
+	suspected := 0
+	if botSuspected {
+		suspected = 1
+	}
+	return db.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "api_key_id"}, {Name: "date"}},
+		DoUpdates: clause.Assignments(map[string]any{
+			"his_observations":  gorm.Expr("his_observations + 1"),
+			"his_bot_suspected": gorm.Expr("his_bot_suspected + ?", suspected),
+		}),
+	}).Create(&DailyStat{APIKeyID: apiKeyID, Date: date, HISObservations: 1, HISBotSuspected: suspected}).Error
+}
+
 func GetStatsOverview(db *gorm.DB, days int) (*StatsOverview, error) {
 	overview := &StatsOverview{}
 
 	// Total counters across all time
 	row := db.Model(&DailyStat{}).
-		Select("COALESCE(SUM(challenges_issued), 0), COALESCE(SUM(verifications_ok), 0), COALESCE(SUM(verifications_fail), 0)").
+		Select("COALESCE(SUM(challenges_issued), 0), COALESCE(SUM(verifications_ok), 0), COALESCE(SUM(verifications_fail), 0), COALESCE(SUM(his_observations), 0), COALESCE(SUM(his_bot_suspected), 0)").
 		Row()
-	if err := row.Scan(&overview.TotalChallenges, &overview.TotalVerificationsOK, &overview.TotalVerificationsFail); err != nil {
+	if err := row.Scan(&overview.TotalChallenges, &overview.TotalVerificationsOK, &overview.TotalVerificationsFail, &overview.TotalHISObservations, &overview.TotalHISBotSuspected); err != nil {
 		return nil, err
 	}
 
@@ -110,6 +137,8 @@ func GetAllKeysStatsSummary(db *gorm.DB) (map[int64]KeyStatsSummary, error) {
 			"COALESCE(SUM(challenges_issued), 0) AS challenges_issued, " +
 			"COALESCE(SUM(verifications_ok), 0) AS verifications_ok, " +
 			"COALESCE(SUM(verifications_fail), 0) AS verifications_fail, " +
+			"COALESCE(SUM(his_observations), 0) AS his_observations, " +
+			"COALESCE(SUM(his_bot_suspected), 0) AS his_bot_suspected, " +
 			"COALESCE(MAX(date), '') AS last_used_at").
 		Group("api_key_id").
 		Scan(&rows).Error

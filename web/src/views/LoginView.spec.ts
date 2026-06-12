@@ -73,10 +73,12 @@ describe('LoginView', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(mockApi.post).toHaveBeenCalledWith('/login', {
+    expect(mockApi.post).toHaveBeenCalledWith('/login', expect.objectContaining({
       username: 'admin',
       password: 'password123',
-    })
+      // HIS signals are collected and attached to the login request (Monitor).
+      his_signals: expect.objectContaining({ pointer_events: expect.any(Number) }),
+    }))
     expect(mockPush).toHaveBeenCalledWith('/')
   })
 

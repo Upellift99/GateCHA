@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useStatsStore } from '../stores/stats'
 import StatsChart from '../components/StatsChart.vue'
 import StatsSummaryCard from '../components/StatsSummaryCard.vue'
 
 const statsStore = useStatsStore()
+
+const hisSuspectedPct = computed(() => {
+  const o = statsStore.overview
+  if (!o || o.total_his_observations === 0) return 0
+  return Math.round((o.total_his_bot_suspected / o.total_his_observations) * 100)
+})
 
 onMounted(() => {
   statsStore.fetchOverview(30)
@@ -38,6 +44,34 @@ onMounted(() => {
           :value="statsStore.overview.active_keys"
           color="purple"
         />
+      </div>
+
+      <!-- HIS (Human Interaction Signature) — Monitor mode -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-medium text-gray-900">Human Interaction Signature</h2>
+          <span class="text-xs font-medium px-2 py-1 rounded bg-amber-50 text-amber-700">Monitor mode</span>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">
+          Observes interaction behavior to estimate automation probability. In Monitor mode it only records — it never blocks a verification.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatsSummaryCard
+            label="HIS Observations"
+            :value="statsStore.overview.total_his_observations"
+            color="blue"
+          />
+          <StatsSummaryCard
+            label="Bot Suspected"
+            :value="statsStore.overview.total_his_bot_suspected"
+            color="amber"
+          />
+          <StatsSummaryCard
+            label="Bot Suspected %"
+            :value="hisSuspectedPct"
+            color="red"
+          />
+        </div>
       </div>
 
       <!-- Chart -->

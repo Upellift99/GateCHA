@@ -58,6 +58,11 @@ const widgetSnippet = computed(() => {
   challenge="${challengeUrl.value}"
 ></altcha-widget>`
 })
+
+const hisTotals = computed(() => ({
+  observations: statsStore.keyStats.reduce((s, d) => s + (d.his_observations || 0), 0),
+  suspected: statsStore.keyStats.reduce((s, d) => s + (d.his_bot_suspected || 0), 0),
+}))
 </script>
 
 <template>
@@ -150,6 +155,11 @@ const widgetSnippet = computed(() => {
     <!-- Stats -->
     <div class="bg-white shadow rounded-lg p-6">
       <h2 class="text-lg font-medium text-gray-900 mb-4">Statistics (30 days)</h2>
+      <div class="mb-4 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+        <span class="text-gray-500">HIS <span class="text-xs px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Monitor</span>:</span>
+        <span class="text-gray-900">{{ hisTotals.observations.toLocaleString() }} observed</span>
+        <span class="text-gray-900">{{ hisTotals.suspected.toLocaleString() }} bot-suspected</span>
+      </div>
       <StatsChart v-if="statsStore.keyStats.length" :data="statsStore.keyStats" />
       <p v-else class="text-gray-500 text-center py-12">No data yet</p>
     </div>
