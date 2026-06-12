@@ -837,6 +837,46 @@ func TestPerKeyRateLimit_Enforced(t *testing.T) {
 	}
 }
 
+func TestAdaptiveDifficulty_EscalatesMaxNumber(t *testing.T) {
+	router, db := setupTestRouter(t)
+	key, _ := models.CreateAPIKey(db, "Adaptive", "", 1000, 60, "SHA-256")
+	if err := models.UpdateAPIKey(db, key.ID, models.UpdateAPIKeyParams{
+		Name:               key.Name,
+		MaxNumber:          key.MaxNumber,
+		ExpireSeconds:      key.ExpireSeconds,
+		Algorithm:          key.Algorithm,
+		AdaptiveDifficulty: true,
+		Enabled:            true,
+	}); err != nil {
+		t.Fatalf("UpdateAPIKey failed: %v", err)
+	}
+
+	maxNumberOf := func() int64 {
+		req := httptest.NewRequest("GET", "/api/v1/challenge?apiKey="+key.KeyID, nil)
+		req.RemoteAddr = "5.5.5.5:1111" // same source IP for every call
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Fatalf("challenge request failed: %d %s", w.Code, w.Body.String())
+		}
+		var resp map[string]interface{}
+		json.NewDecoder(w.Body).Decode(&resp)
+		return int64(resp["maxNumber"].(float64))
+	}
+
+	if first := maxNumberOf(); first != 1000 {
+		t.Fatalf("first request should use the base maxNumber 1000, got %d", first)
+	}
+
+	var last int64
+	for i := 0; i < adaptiveThreshold+5; i++ {
+		last = maxNumberOf()
+	}
+	if last <= 1000 {
+		t.Fatalf("maxNumber should escalate above base after abusive volume, got %d", last)
+	}
+}
+
 func TestCreateKey_WithRateLimit(t *testing.T) {
 	router, _ := setupTestRouter(t)
 	token := getAdminToken(t)

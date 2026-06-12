@@ -126,6 +126,10 @@ const widgetSnippet = computed(() => {
             {{ key.rate_limit_per_min > 0 ? `${key.rate_limit_per_min.toLocaleString()} req/min` : 'Unlimited' }}
           </dd>
         </div>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Adaptive difficulty</dt>
+          <dd class="mt-1 text-sm text-gray-900">{{ key.adaptive_difficulty ? 'On' : 'Off' }}</dd>
+        </div>
       </dl>
     </div>
 

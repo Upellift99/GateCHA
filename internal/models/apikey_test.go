@@ -159,13 +159,14 @@ func TestUpdateAPIKey(t *testing.T) {
 	created, _ := models.CreateAPIKey(db, "Original", "old.com", 10000, 100, "SHA-256")
 
 	err := models.UpdateAPIKey(db, created.ID, models.UpdateAPIKeyParams{
-		Name:            "Updated",
-		Domain:          "new.com",
-		MaxNumber:       200000,
-		ExpireSeconds:   600,
-		Algorithm:       "SHA-512",
-		RateLimitPerMin: 120,
-		Enabled:         false,
+		Name:               "Updated",
+		Domain:             "new.com",
+		MaxNumber:          200000,
+		ExpireSeconds:      600,
+		Algorithm:          "SHA-512",
+		RateLimitPerMin:    120,
+		AdaptiveDifficulty: true,
+		Enabled:            false,
 	})
 	if err != nil {
 		t.Fatalf("UpdateAPIKey failed: %v", err)
@@ -189,6 +190,9 @@ func TestUpdateAPIKey(t *testing.T) {
 	}
 	if updated.RateLimitPerMin != 120 {
 		t.Errorf("expected rate_limit_per_min 120, got %d", updated.RateLimitPerMin)
+	}
+	if !updated.AdaptiveDifficulty {
+		t.Error("expected adaptive_difficulty to be enabled")
 	}
 	if updated.Enabled {
 		t.Error("expected key to be disabled")
