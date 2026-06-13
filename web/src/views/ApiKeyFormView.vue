@@ -18,6 +18,7 @@ const form = ref({
   algorithm: 'SHA-256',
   rate_limit_per_min: 0,
   adaptive_difficulty: false,
+  his_sampling: false,
 })
 
 const error = ref('')
@@ -35,6 +36,7 @@ onMounted(async () => {
       algorithm: key.algorithm,
       rate_limit_per_min: key.rate_limit_per_min,
       adaptive_difficulty: key.adaptive_difficulty,
+      his_sampling: key.his_sampling,
     }
   }
 })
@@ -171,6 +173,19 @@ async function handleSubmit() {
         <label for="key-adaptive" class="text-sm">
           <span class="font-medium text-slate-700">Adaptive difficulty</span>
           <span class="block text-xs text-slate-500">Raises proof-of-work difficulty above the base for clients (by IP) requesting challenges at an abusive rate. The difficulty above is the floor.</span>
+        </label>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <input
+          id="key-his-sampling"
+          v-model="form.his_sampling"
+          type="checkbox"
+          class="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+        />
+        <label for="key-his-sampling" class="text-sm">
+          <span class="font-medium text-slate-700">HIS sampling</span>
+          <span class="block text-xs text-slate-500">Stores each scored interaction sample (privacy-preserving aggregates only — no IP, coordinates or key contents) so HIS enforcement thresholds can be calibrated on real traffic. Samples are pruned after the retention window.</span>
         </label>
       </div>
 
