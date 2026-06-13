@@ -5,6 +5,7 @@ import { useApiKeysStore, type APIKey } from '../stores/apikeys'
 import { useStatsStore } from '../stores/stats'
 import StatsChart from '../components/StatsChart.vue'
 import CountryTraffic from '../components/CountryTraffic.vue'
+import HISCalibrationPanel from '../components/HISCalibrationPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -136,6 +137,10 @@ const hisTotals = computed(() => ({
           <dt class="text-sm font-medium text-slate-500">Adaptive difficulty</dt>
           <dd class="mt-1 text-sm text-slate-900">{{ key.adaptive_difficulty ? 'On' : 'Off' }}</dd>
         </div>
+        <div>
+          <dt class="text-sm font-medium text-slate-500">HIS sampling</dt>
+          <dd class="mt-1 text-sm text-slate-900">{{ key.his_sampling ? 'On' : 'Off' }}</dd>
+        </div>
       </dl>
     </div>
 
@@ -166,6 +171,8 @@ const hisTotals = computed(() => ({
     </div>
 
     <CountryTraffic :countries="statsStore.keyCountries" />
+
+    <HISCalibrationPanel v-if="key.his_sampling" :key-id="key.id" />
 
 
     <!-- Delete Confirmation -->

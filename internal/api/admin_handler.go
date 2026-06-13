@@ -80,7 +80,7 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 		// captcha check, so failed attempts are observed too. Never blocks login.
 		if req.HISSignals != nil {
 			if key, err := models.EnsureLoginCaptchaAPIKey(h.DB); err == nil {
-				recordHISMonitor(h.DB, key.ID, req.HISSignals)
+				recordHISMonitor(h.DB, key, req.HISSignals)
 			}
 		}
 		if !h.verifyLoginCaptcha(w, req.AltchaPayload) {
@@ -128,6 +128,7 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		Algorithm          string `json:"algorithm"`
 		RateLimitPerMin    int    `json:"rate_limit_per_min"`
 		AdaptiveDifficulty bool   `json:"adaptive_difficulty"`
+		HISSampling        bool   `json:"his_sampling"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
@@ -142,7 +143,7 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 
 	// CreateAPIKey keeps its narrow signature; apply the optional advanced levers
 	// as a follow-up update so create stays a single source of defaults.
-	if req.RateLimitPerMin > 0 || req.AdaptiveDifficulty {
+	if req.RateLimitPerMin > 0 || req.AdaptiveDifficulty || req.HISSampling {
 		if err := models.UpdateAPIKey(h.DB, key.ID, models.UpdateAPIKeyParams{
 			Name:               key.Name,
 			Domain:             key.Domain,
@@ -151,6 +152,7 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 			Algorithm:          key.Algorithm,
 			RateLimitPerMin:    req.RateLimitPerMin,
 			AdaptiveDifficulty: req.AdaptiveDifficulty,
+			HISSampling:        req.HISSampling,
 			Enabled:            key.Enabled,
 		}); err != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create key"})
@@ -158,6 +160,7 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		}
 		key.RateLimitPerMin = req.RateLimitPerMin
 		key.AdaptiveDifficulty = req.AdaptiveDifficulty
+		key.HISSampling = req.HISSampling
 	}
 
 	writeJSON(w, http.StatusCreated, key)
@@ -196,6 +199,7 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 		Algorithm          string `json:"algorithm"`
 		RateLimitPerMin    *int   `json:"rate_limit_per_min"`
 		AdaptiveDifficulty *bool  `json:"adaptive_difficulty"`
+		HISSampling        *bool  `json:"his_sampling"`
 		Enabled            *bool  `json:"enabled"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -243,6 +247,10 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 	if req.AdaptiveDifficulty != nil {
 		adaptiveDifficulty = *req.AdaptiveDifficulty
 	}
+	hisSampling := existing.HISSampling
+	if req.HISSampling != nil {
+		hisSampling = *req.HISSampling
+	}
 
 	if err := models.UpdateAPIKey(h.DB, id, models.UpdateAPIKeyParams{
 		Name:               name,
@@ -252,6 +260,7 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 		Algorithm:          algorithm,
 		RateLimitPerMin:    rateLimitPerMin,
 		AdaptiveDifficulty: adaptiveDifficulty,
+		HISSampling:        hisSampling,
 		Enabled:            enabled,
 	}); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update key"})
@@ -372,6 +381,36 @@ func (h *AdminHandler) KeyStats(w http.ResponseWriter, r *http.Request) {
 		"days":      stats,
 		"countries": countries,
 	})
+}
+
+// GET /api/admin/his/calibration?key_id=&days=
+// Returns the score distribution and signal averages over stored HIS samples,
+// to help calibrate an enforcement threshold before any blocking is enabled.
+func (h *AdminHandler) HISCalibration(w http.ResponseWriter, r *http.Request) {
+	days := 30
+	if d := r.URL.Query().Get("days"); d != "" {
+		if parsed, err := strconv.Atoi(d); err == nil && parsed > 0 {
+			days = parsed
+		}
+	}
+
+	var keyID *int64
+	if k := r.URL.Query().Get("key_id"); k != "" {
+		parsed, err := strconv.ParseInt(k, 10, 64)
+		if err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
+			return
+		}
+		keyID = &parsed
+	}
+
+	cal, err := models.GetHISCalibration(h.DB, keyID, days, his.BotSuspectThreshold)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch calibration"})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, cal)
 }
 
 // POST /api/admin/change-password

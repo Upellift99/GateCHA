@@ -18,13 +18,16 @@ type Config struct {
 	AdminPassword   string
 	LogLevel        string
 	CleanupInterval time.Duration
-	CORSAllowAll    bool
-	TrustProxy      bool
-	EnableHSTS      bool
-	MaxBodyBytes    int64
-	RateLimit       bool
-	RateLimitLogin  int
-	RateLimitAPI    int
+	// HISSampleRetention bounds how long opted-in raw HIS samples are kept
+	// before the cleanup worker prunes them.
+	HISSampleRetention time.Duration
+	CORSAllowAll       bool
+	TrustProxy         bool
+	EnableHSTS         bool
+	MaxBodyBytes       int64
+	RateLimit          bool
+	RateLimitLogin     int
+	RateLimitAPI       int
 }
 
 func Load() (*Config, error) {
@@ -69,6 +72,15 @@ func loadOptions(cfg *Config) error {
 		return fmt.Errorf("invalid GATECHA_CLEANUP_INTERVAL: %w", err)
 	}
 	cfg.CleanupInterval = time.Duration(intervalMin) * time.Minute
+
+	retentionDays, err := strconv.Atoi(envOrDefault("GATECHA_HIS_SAMPLE_RETENTION_DAYS", "30"))
+	if err != nil {
+		return fmt.Errorf("invalid GATECHA_HIS_SAMPLE_RETENTION_DAYS: %w", err)
+	}
+	if retentionDays <= 0 {
+		return fmt.Errorf("GATECHA_HIS_SAMPLE_RETENTION_DAYS must be > 0, got %d", retentionDays)
+	}
+	cfg.HISSampleRetention = time.Duration(retentionDays) * 24 * time.Hour
 
 	if cfg.MaxBodyBytes, err = envInt64("GATECHA_MAX_BODY_BYTES", 1<<20); err != nil {
 		return err

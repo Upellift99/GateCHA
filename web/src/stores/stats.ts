@@ -40,6 +40,22 @@ export interface KeyStatsSummary {
   last_used_at: string
 }
 
+export interface HISScoreBucket {
+  lo: number
+  hi: number
+  count: number
+}
+
+export interface HISCalibration {
+  samples: number
+  suspected: number
+  threshold: number
+  score_histogram: HISScoreBucket[]
+  avg_duration_ms: number
+  avg_pointer_events: number
+  no_motion_pct: number
+}
+
 export const useStatsStore = defineStore('stats', () => {
   const overview = ref<StatsOverview | null>(null)
   const keyStats = ref<DailyStat[]>([])
@@ -62,5 +78,21 @@ export const useStatsStore = defineStore('stats', () => {
     keysSummary.value = data.keys
   }
 
-  return { overview, keyStats, keyCountries, keysSummary, fetchOverview, fetchKeyStats, fetchKeysSummary }
+  async function fetchHISCalibration(keyId?: number, days = 30): Promise<HISCalibration> {
+    const params = new URLSearchParams({ days: String(days) })
+    if (keyId != null) params.set('key_id', String(keyId))
+    const { data } = await api.get(`/his/calibration?${params.toString()}`)
+    return data as HISCalibration
+  }
+
+  return {
+    overview,
+    keyStats,
+    keyCountries,
+    keysSummary,
+    fetchOverview,
+    fetchKeyStats,
+    fetchKeysSummary,
+    fetchHISCalibration,
+  }
 })

@@ -90,6 +90,9 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 			r.Get("/stats/overview", adminHandler.StatsOverview)
 			r.Get("/stats/keys-summary", adminHandler.KeysStatsSummary)
 			r.Get("/stats/keys/{id}", adminHandler.KeyStats)
+
+			// HIS sampling calibration (score distribution over stored samples)
+			r.Get("/his/calibration", adminHandler.HISCalibration)
 		})
 	})
 

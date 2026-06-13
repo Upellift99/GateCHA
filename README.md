@@ -143,6 +143,7 @@ docker compose -f docker-compose.mysql.yml up -d
 | `GATECHA_ADMIN_PASSWORD` | *(auto-generated)* | Admin password |
 | `GATECHA_LOG_LEVEL` | `info` | Log level |
 | `GATECHA_CLEANUP_INTERVAL` | `10` | Cleanup interval (minutes) |
+| `GATECHA_HIS_SAMPLE_RETENTION_DAYS` | `30` | Retention (days) for opted-in raw HIS calibration samples |
 | `GATECHA_CORS_ALLOW_ALL` | `false` | Allow CORS from any origin |
 | `GATECHA_TRUST_PROXY` | `false` | Trust `X-Forwarded-For`/`X-Real-IP` for the client IP. **Set to `true` when behind a reverse proxy** (see note below) |
 | `GATECHA_ENABLE_HSTS` | `false` | Send the `Strict-Transport-Security` header (enable only when always served over HTTPS) |

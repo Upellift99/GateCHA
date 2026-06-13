@@ -26,10 +26,14 @@ type APIKey struct {
 	// AdaptiveDifficulty, when set, raises the proof-of-work MaxNumber above this
 	// key's configured base for clients (by IP) that request challenges at an
 	// abusive rate, capped server-side. MaxNumber stays the floor.
-	AdaptiveDifficulty bool      `gorm:"not null;default:false" json:"adaptive_difficulty"`
-	Enabled            bool      `gorm:"not null;default:true" json:"enabled"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
+	AdaptiveDifficulty bool `gorm:"not null;default:false" json:"adaptive_difficulty"`
+	// HISSampling, when set, persists each scored HIS observation for this key
+	// (raw aggregates + score) so enforcement thresholds can be calibrated on
+	// real traffic. Samples are pruned after the configured retention window.
+	HISSampling bool      `gorm:"not null;default:false" json:"his_sampling"`
+	Enabled     bool      `gorm:"not null;default:true" json:"enabled"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // UpdateAPIKeyParams holds the fields for updating an API key.
@@ -41,6 +45,7 @@ type UpdateAPIKeyParams struct {
 	Algorithm          string
 	RateLimitPerMin    int
 	AdaptiveDifficulty bool
+	HISSampling        bool
 	Enabled            bool
 }
 
@@ -129,6 +134,7 @@ func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
 		"algorithm":           params.Algorithm,
 		"rate_limit_per_min":  params.RateLimitPerMin,
 		"adaptive_difficulty": params.AdaptiveDifficulty,
+		"his_sampling":        params.HISSampling,
 		"enabled":             params.Enabled,
 	}).Error
 }
