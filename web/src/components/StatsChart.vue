@@ -28,8 +28,8 @@ const chartData = computed(() => {
       {
         label: 'Challenges',
         data: sorted.map((d) => d.challenges_issued),
-        borderColor: '#0d9488',
-        backgroundColor: 'rgba(13, 148, 136, 0.1)',
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
         fill: true,
         tension: 0.3,
       },

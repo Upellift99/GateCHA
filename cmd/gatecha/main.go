@@ -18,6 +18,10 @@ import (
 	"gorm.io/gorm"
 )
 
+// version is the build version, injected at link time via
+// -ldflags "-X main.version=...". It defaults to "dev" for source builds.
+var version = "dev"
+
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
@@ -83,6 +87,7 @@ func main() {
 		RateLimitEnabled: cfg.RateLimit,
 		RateLimitLogin:   cfg.RateLimitLogin,
 		RateLimitAPI:     cfg.RateLimitAPI,
+		Version:          version,
 	})
 
 	srv := &http.Server{

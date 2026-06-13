@@ -6,6 +6,7 @@ import type { HISSignals } from '../lib/his'
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('gatecha_token') || '')
   const isAuthenticated = computed(() => !!token.value)
+  const version = ref('')
 
   async function login(username: string, password: string, altchaPayload?: string, hisSignals?: HISSignals) {
     const body: Record<string, unknown> = { username, password }
@@ -22,7 +23,20 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout() {
     token.value = ''
+    version.value = ''
     localStorage.removeItem('gatecha_token')
+  }
+
+  // fetchVersion loads the build version once (authenticated endpoint). Silently
+  // no-ops if it fails so the footer simply omits the version.
+  async function fetchVersion() {
+    if (version.value) return
+    try {
+      const { data } = await api.get('/version')
+      version.value = data.version ?? ''
+    } catch {
+      version.value = ''
+    }
   }
 
   async function checkAuth() {
@@ -35,5 +49,5 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { token, isAuthenticated, login, logout, checkAuth }
+  return { token, isAuthenticated, version, login, logout, checkAuth, fetchVersion }
 })
