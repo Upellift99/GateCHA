@@ -58,6 +58,7 @@ func main() {
 		&models.ConsumedChallenge{},
 		&models.DailyStat{},
 		&models.DailyCountryStat{},
+		&models.HISSample{},
 		&models.Setting{},
 	); err != nil {
 		slog.Error("failed to run migrations", "error", err)
@@ -72,7 +73,7 @@ func main() {
 	// Start cleanup worker
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	go cleanupWorker(ctx, db, cfg.CleanupInterval)
+	go cleanupWorker(ctx, db, cfg.CleanupInterval, cfg.HISSampleRetention)
 
 	router := api.NewRouter(db, cfg.SecretKey, api.RouterConfig{
 		CORSAllowAll:     cfg.CORSAllowAll,
@@ -116,7 +117,7 @@ func main() {
 	}
 }
 
-func cleanupWorker(ctx context.Context, db *gorm.DB, interval time.Duration) {
+func cleanupWorker(ctx context.Context, db *gorm.DB, interval, hisRetention time.Duration) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
@@ -129,6 +130,13 @@ func cleanupWorker(ctx context.Context, db *gorm.DB, interval time.Duration) {
 				slog.Error("cleanup error", "error", err)
 			} else if deleted > 0 {
 				slog.Info("cleaned up expired challenges", "count", deleted)
+			}
+
+			pruned, err := models.PruneHISSamples(db, time.Now().Add(-hisRetention))
+			if err != nil {
+				slog.Error("his sample prune error", "error", err)
+			} else if pruned > 0 {
+				slog.Info("pruned old HIS samples", "count", pruned)
 			}
 		}
 	}

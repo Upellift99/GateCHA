@@ -71,7 +71,7 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Monitor HIS before outcome branching so bot-like attempts that fail the
 	// PoW are still observed. Never affects the response.
-	recordHISMonitor(h.DB, key.ID, req.HISSignals)
+	recordHISMonitor(h.DB, key, req.HISSignals)
 
 	if req.Payload == "" {
 		writeJSON(w, http.StatusBadRequest, verifyResponse{OK: false, Error: "missing payload"})
