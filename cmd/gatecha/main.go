@@ -57,6 +57,7 @@ func main() {
 		&models.APIKey{},
 		&models.ConsumedChallenge{},
 		&models.DailyStat{},
+		&models.DailyCountryStat{},
 		&models.Setting{},
 	); err != nil {
 		slog.Error("failed to run migrations", "error", err)

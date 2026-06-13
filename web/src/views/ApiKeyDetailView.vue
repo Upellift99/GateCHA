@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useApiKeysStore, type APIKey } from '../stores/apikeys'
 import { useStatsStore } from '../stores/stats'
 import StatsChart from '../components/StatsChart.vue'
+import CountryTraffic from '../components/CountryTraffic.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -163,6 +164,9 @@ const hisTotals = computed(() => ({
       <StatsChart v-if="statsStore.keyStats.length" :data="statsStore.keyStats" />
       <p v-else class="text-gray-500 text-center py-12">No data yet</p>
     </div>
+
+    <CountryTraffic :countries="statsStore.keyCountries" />
+
 
     <!-- Delete Confirmation -->
     <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

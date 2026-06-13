@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Upellift99/GateCHA/internal/altcha"
+	"github.com/Upellift99/GateCHA/internal/geo"
 	"github.com/Upellift99/GateCHA/internal/his"
 	"github.com/Upellift99/GateCHA/internal/models"
 	lib "github.com/altcha-org/altcha-lib-go"
@@ -33,9 +34,19 @@ type verifyResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-func (h *VerifyHandler) recordFail(apiKeyID int64) {
+func (h *VerifyHandler) recordFail(apiKeyID int64, country string) {
 	if err := models.IncrementVerificationsFail(h.DB, apiKeyID); err != nil {
 		slog.Error(logMsgFailIncrement, "error", err, "api_key_id", apiKeyID)
+	}
+	h.recordCountry(apiKeyID, country, false)
+}
+
+// recordCountry attributes one verification outcome to the source country
+// (resolved at request time; the IP itself is never stored). country may be
+// empty for unlocatable sources, which is bucketed as "unknown".
+func (h *VerifyHandler) recordCountry(apiKeyID int64, country string, ok bool) {
+	if err := models.IncrementCountryVerification(h.DB, apiKeyID, country, ok); err != nil {
+		slog.Error("failed to increment country stat", "error", err, "api_key_id", apiKeyID)
 	}
 }
 
@@ -47,6 +58,10 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	slog.Debug("verify request", "api_key_id", key.ID, "key_id", key.KeyID)
+
+	// Resolve the source country once, then discard the IP. Used only for the
+	// aggregated per-country breakdown; the raw address is never stored.
+	country := geo.Country(clientIP(r))
 
 	var req verifyRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -66,14 +81,14 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Decode payload to extract challenge hash for replay check
 	decoded, err := base64.StdEncoding.DecodeString(req.Payload)
 	if err != nil {
-		h.recordFail(key.ID)
+		h.recordFail(key.ID, country)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload encoding"})
 		return
 	}
 
 	var payload lib.Payload
 	if err := json.Unmarshal(decoded, &payload); err != nil {
-		h.recordFail(key.ID)
+		h.recordFail(key.ID, country)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload format"})
 		return
 	}
@@ -81,13 +96,13 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Verify the solution
 	ok, err := altcha.VerifyPayload(key.HMACSecret, req.Payload)
 	if err != nil {
-		h.recordFail(key.ID)
+		h.recordFail(key.ID, country)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "verification failed"})
 		return
 	}
 
 	if !ok {
-		h.recordFail(key.ID)
+		h.recordFail(key.ID, country)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid_solution"})
 		return
 	}
@@ -100,7 +115,7 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if consumed {
-		h.recordFail(key.ID)
+		h.recordFail(key.ID, country)
 		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "already_used"})
 		return
 	}
@@ -113,6 +128,7 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := models.IncrementVerificationsOK(h.DB, key.ID); err != nil {
 		slog.Error("failed to increment verifications_ok", "error", err, "api_key_id", key.ID)
 	}
+	h.recordCountry(key.ID, country, true)
 
 	slog.Debug("verify success", "api_key_id", key.ID)
 	writeJSON(w, http.StatusOK, verifyResponse{OK: true})

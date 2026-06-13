@@ -360,10 +360,17 @@ func (h *AdminHandler) KeyStats(w http.ResponseWriter, r *http.Request) {
 		stats = []models.DailyStat{}
 	}
 
+	countries, err := models.GetCountryStats(h.DB, &id, days, 20)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch stats"})
+		return
+	}
+
 	writeJSON(w, http.StatusOK, map[string]interface{}{
-		"key_id": key.KeyID,
-		"name":   key.Name,
-		"days":   stats,
+		"key_id":    key.KeyID,
+		"name":      key.Name,
+		"days":      stats,
+		"countries": countries,
 	})
 }
 
