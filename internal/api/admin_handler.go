@@ -18,6 +18,7 @@ const (
 	errInvalidRequest = "invalid request"
 	errInvalidKeyID   = "invalid key ID"
 	errKeyNotFound    = "key not found"
+	errFetchStats     = "failed to fetch stats"
 )
 
 type AdminHandler struct {
@@ -323,7 +324,7 @@ func (h *AdminHandler) StatsOverview(w http.ResponseWriter, r *http.Request) {
 
 	overview, err := models.GetStatsOverview(h.DB, days)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch stats"})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": errFetchStats})
 		return
 	}
 
@@ -353,7 +354,7 @@ func (h *AdminHandler) KeyStats(w http.ResponseWriter, r *http.Request) {
 
 	stats, err := models.GetKeyStats(h.DB, id, days)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch stats"})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": errFetchStats})
 		return
 	}
 	if stats == nil {
@@ -362,7 +363,7 @@ func (h *AdminHandler) KeyStats(w http.ResponseWriter, r *http.Request) {
 
 	countries, err := models.GetCountryStats(h.DB, &id, days, 20)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch stats"})
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": errFetchStats})
 		return
 	}
 
