@@ -18,8 +18,9 @@ type RouterConfig struct {
 	EnableHSTS       bool
 	MaxBodyBytes     int64
 	RateLimitEnabled bool
-	RateLimitLogin   int // requests per minute on /api/admin/login
-	RateLimitAPI     int // requests per minute on /api/v1/*
+	RateLimitLogin   int    // requests per minute on /api/admin/login
+	RateLimitAPI     int    // requests per minute on /api/v1/*
+	Version          string // build version surfaced to authenticated admins
 }
 
 func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
@@ -41,7 +42,7 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	publicHandler := &PublicHandler{DB: db}
 	challengeHandler := &ChallengeHandler{DB: db, Adaptive: newAdaptiveLimiter()}
 	verifyHandler := &VerifyHandler{DB: db}
-	adminHandler := &AdminHandler{DB: db, SecretKey: secretKey}
+	adminHandler := &AdminHandler{DB: db, SecretKey: secretKey, BuildVersion: cfg.Version}
 
 	// Public endpoints (no auth, used by login page)
 	r.Route("/api/public", func(r chi.Router) {
@@ -74,6 +75,7 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(AdminAuthMiddleware(secretKey))
 			r.Get("/me", adminHandler.Me)
+			r.Get("/version", adminHandler.Version)
 			r.Post("/change-password", adminHandler.ChangePassword)
 			r.Get("/settings", adminHandler.GetSettings)
 			r.Put("/settings", adminHandler.UpdateSettings)

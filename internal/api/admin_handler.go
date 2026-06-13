@@ -22,8 +22,9 @@ const (
 )
 
 type AdminHandler struct {
-	DB        *gorm.DB
-	SecretKey string
+	DB           *gorm.DB
+	SecretKey    string
+	BuildVersion string
 }
 
 // verifyLoginCaptcha validates the ALTCHA captcha payload during login.
@@ -104,6 +105,17 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 // GET /api/admin/me
 func (h *AdminHandler) Me(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"username": "admin"})
+}
+
+// GET /api/admin/version
+// Returns the build version. Kept behind admin auth so the running version is
+// not disclosed to unauthenticated visitors.
+func (h *AdminHandler) Version(w http.ResponseWriter, r *http.Request) {
+	v := h.BuildVersion
+	if v == "" {
+		v = "dev"
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"version": v})
 }
 
 // GET /api/admin/keys

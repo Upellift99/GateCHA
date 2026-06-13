@@ -1,5 +1,9 @@
 .PHONY: build build-mysql dev clean frontend backend backend-mysql
 
+# Build version, injected into the binary. Override with `make VERSION=v1.2.3`.
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+LDFLAGS := -s -w -X main.version=$(VERSION)
+
 # Build everything (frontend + backend) — SQLite only (default)
 build: frontend backend
 
@@ -14,11 +18,11 @@ frontend:
 
 # Build Go binary — SQLite only (requires frontend to be built first)
 backend:
-	go build -ldflags="-s -w" -o gatecha ./cmd/gatecha
+	go build -ldflags="$(LDFLAGS)" -o gatecha ./cmd/gatecha
 
 # Build Go binary with MySQL support (requires frontend to be built first)
 backend-mysql:
-	go build -tags mysql -ldflags="-s -w" -o gatecha ./cmd/gatecha
+	go build -tags mysql -ldflags="$(LDFLAGS)" -o gatecha ./cmd/gatecha
 
 # Development: run backend with SQLite (frontend via vite dev proxy)
 dev:
