@@ -14,12 +14,14 @@ describe('Footer', () => {
     localStorage.clear()
   })
 
-  it('always links to gatecha.org and shows the Sceaux tagline', () => {
+  it('always links to gatecha.org + docs and shows the Sceaux tagline', () => {
     const wrapper = mount(Footer)
-    const link = wrapper.get('a')
-    expect(link.attributes('href')).toBe('https://gatecha.org')
-    expect(link.attributes('target')).toBe('_blank')
-    expect(link.attributes('rel')).toContain('noopener')
+    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
+    expect(hrefs).toContain('https://gatecha.org')
+    expect(hrefs).toContain('https://gatecha.org/docs')
+    const site = wrapper.findAll('a').find((a) => a.attributes('href') === 'https://gatecha.org')!
+    expect(site.attributes('target')).toBe('_blank')
+    expect(site.attributes('rel')).toContain('noopener')
     expect(wrapper.text()).toContain('Made with')
     expect(wrapper.text()).toContain('Sceaux, FR')
   })

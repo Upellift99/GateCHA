@@ -7,6 +7,8 @@
 
 **Self-hosted ALTCHA CAPTCHA management with API keys, multi-site support, and statistics.**
 
+🌐 **[Website](https://gatecha.org)** · 📖 **[Documentation](https://gatecha.org/docs)** · 🧩 **[WordPress plugin](https://github.com/Upellift99/GateCHA-WordPress)**
+
 GateCHA is an open-source alternative to [ALTCHA Sentinel](https://altcha.org/docs/v2/sentinel/). It wraps the [ALTCHA](https://altcha.org/) proof-of-work CAPTCHA protocol with a management layer: API key management, per-site configuration, replay protection, and a dashboard with statistics.
 
 ## Features
