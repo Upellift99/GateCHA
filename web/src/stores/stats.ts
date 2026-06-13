@@ -56,6 +56,15 @@ export interface HISCalibration {
   no_motion_pct: number
 }
 
+// Defined at module scope: it captures no store state, so it needn't be
+// recreated on every store instantiation.
+async function fetchHISCalibration(keyId?: number, days = 30): Promise<HISCalibration> {
+  const params = new URLSearchParams({ days: String(days) })
+  if (keyId != null) params.set('key_id', String(keyId))
+  const { data } = await api.get(`/his/calibration?${params.toString()}`)
+  return data as HISCalibration
+}
+
 export const useStatsStore = defineStore('stats', () => {
   const overview = ref<StatsOverview | null>(null)
   const keyStats = ref<DailyStat[]>([])
@@ -76,13 +85,6 @@ export const useStatsStore = defineStore('stats', () => {
   async function fetchKeysSummary() {
     const { data } = await api.get('/stats/keys-summary')
     keysSummary.value = data.keys
-  }
-
-  async function fetchHISCalibration(keyId?: number, days = 30): Promise<HISCalibration> {
-    const params = new URLSearchParams({ days: String(days) })
-    if (keyId != null) params.set('key_id', String(keyId))
-    const { data } = await api.get(`/his/calibration?${params.toString()}`)
-    return data as HISCalibration
   }
 
   return {
