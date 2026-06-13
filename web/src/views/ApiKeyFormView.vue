@@ -60,8 +60,8 @@ async function handleSubmit() {
 
 <template>
   <div class="max-w-xl">
-    <router-link to="/keys" class="text-sm text-gray-500 hover:text-gray-700">&larr; Back to keys</router-link>
-    <h1 class="text-2xl font-bold text-gray-900 mt-1 mb-6">
+    <router-link to="/keys" class="text-sm text-slate-500 hover:text-slate-700">&larr; Back to keys</router-link>
+    <h1 class="text-2xl font-bold text-slate-900 mt-1 mb-6">
       {{ isEdit ? 'Edit API Key' : 'Create API Key' }}
     </h1>
 
@@ -78,70 +78,70 @@ async function handleSubmit() {
           <dd class="font-mono bg-white px-2 py-1 rounded mt-1 break-all">{{ createdKey.hmac_secret }}</dd>
         </div>
       </dl>
-      <router-link to="/keys" class="inline-block mt-4 text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+      <router-link to="/keys" class="inline-block mt-4 text-sm text-teal-600 hover:text-teal-800 font-medium">
         Go to API Keys &rarr;
       </router-link>
     </div>
 
     <!-- Form -->
-    <form v-else @submit.prevent="handleSubmit" class="bg-white shadow rounded-lg p-6 space-y-4">
+    <form v-else @submit.prevent="handleSubmit" class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
       <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
 
       <div>
-        <label for="key-name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+        <label for="key-name" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
         <input
           id="key-name"
           v-model="form.name"
           type="text"
           placeholder="My Website"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
       <div>
-        <label for="key-domain" class="block text-sm font-medium text-gray-700 mb-1">Domain</label>
+        <label for="key-domain" class="block text-sm font-medium text-slate-700 mb-1">Domain</label>
         <input
           id="key-domain"
           v-model="form.domain"
           type="text"
           placeholder="example.com (leave empty for any)"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
-        <p class="mt-1 text-xs text-gray-500">Optional. Restricts the API key to this domain.</p>
+        <p class="mt-1 text-xs text-slate-500">Optional. Restricts the API key to this domain.</p>
       </div>
 
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label for="key-max-number" class="block text-sm font-medium text-gray-700 mb-1">Difficulty (maxNumber)</label>
+          <label for="key-max-number" class="block text-sm font-medium text-slate-700 mb-1">Difficulty (maxNumber)</label>
           <input
             id="key-max-number"
             v-model.number="form.max_number"
             type="number"
             min="1000"
             max="10000000"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
-          <p class="mt-1 text-xs text-gray-500">Higher = harder. 100,000 ~ 0.5s</p>
+          <p class="mt-1 text-xs text-slate-500">Higher = harder. 100,000 ~ 0.5s</p>
         </div>
         <div>
-          <label for="key-expire-seconds" class="block text-sm font-medium text-gray-700 mb-1">Challenge TTL (seconds)</label>
+          <label for="key-expire-seconds" class="block text-sm font-medium text-slate-700 mb-1">Challenge TTL (seconds)</label>
           <input
             id="key-expire-seconds"
             v-model.number="form.expire_seconds"
             type="number"
             min="60"
             max="3600"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
         </div>
       </div>
 
       <div>
-        <label for="key-algorithm" class="block text-sm font-medium text-gray-700 mb-1">Algorithm</label>
+        <label for="key-algorithm" class="block text-sm font-medium text-slate-700 mb-1">Algorithm</label>
         <select
           id="key-algorithm"
           v-model="form.algorithm"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         >
           <option value="SHA-256">SHA-256 (recommended)</option>
           <option value="SHA-512">SHA-512</option>
@@ -149,16 +149,16 @@ async function handleSubmit() {
       </div>
 
       <div>
-        <label for="key-rate-limit" class="block text-sm font-medium text-gray-700 mb-1">Rate limit (requests / minute)</label>
+        <label for="key-rate-limit" class="block text-sm font-medium text-slate-700 mb-1">Rate limit (requests / minute)</label>
         <input
           id="key-rate-limit"
           v-model.number="form.rate_limit_per_min"
           type="number"
           min="0"
           max="100000"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
-        <p class="mt-1 text-xs text-gray-500">Caps challenge + verify calls for this key, across all clients. 0 = unlimited.</p>
+        <p class="mt-1 text-xs text-slate-500">Caps challenge + verify calls for this key, across all clients. 0 = unlimited.</p>
       </div>
 
       <div class="flex items-start gap-3">
@@ -166,18 +166,18 @@ async function handleSubmit() {
           id="key-adaptive"
           v-model="form.adaptive_difficulty"
           type="checkbox"
-          class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          class="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
         />
         <label for="key-adaptive" class="text-sm">
-          <span class="font-medium text-gray-700">Adaptive difficulty</span>
-          <span class="block text-xs text-gray-500">Raises proof-of-work difficulty above the base for clients (by IP) requesting challenges at an abusive rate. The difficulty above is the floor.</span>
+          <span class="font-medium text-slate-700">Adaptive difficulty</span>
+          <span class="block text-xs text-slate-500">Raises proof-of-work difficulty above the base for clients (by IP) requesting challenges at an abusive rate. The difficulty above is the floor.</span>
         </label>
       </div>
 
       <button
         type="submit"
         :disabled="loading"
-        class="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 disabled:opacity-50"
+        class="w-full py-2 px-4 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 disabled:opacity-50"
       >
         {{ loading ? 'Saving...' : (isEdit ? 'Update Key' : 'Create Key') }}
       </button>

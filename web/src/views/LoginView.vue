@@ -75,11 +75,11 @@ async function handleLogin() {
 </script>
 
 <template>
-  <div class="overflow-hidden flex items-start justify-center pt-[10dvh] bg-gray-50" style="height: 70dvh">
+  <div class="overflow-hidden flex items-start justify-center pt-[10dvh] bg-slate-50" style="height: 70dvh">
     <div class="w-full max-w-sm">
-      <div class="bg-white shadow rounded-lg p-6">
-        <h1 class="text-2xl font-bold text-center text-gray-900 mb-2">GateCHA</h1>
-        <p class="text-sm text-center text-gray-500 mb-4">Sign in to your dashboard</p>
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
+        <h1 class="text-2xl font-bold text-center text-slate-900 mb-2">GateCHA</h1>
+        <p class="text-sm text-center text-slate-500 mb-4">Sign in to your dashboard</p>
 
         <form @submit.prevent="handleLogin" class="space-y-3">
           <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
@@ -87,24 +87,24 @@ async function handleLogin() {
           </div>
 
           <div>
-            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label for="username" class="block text-sm font-medium text-slate-700 mb-1">Username</label>
             <input
               id="username"
               v-model="username"
               type="text"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
             <input
               id="password"
               v-model="password"
               type="password"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
 
@@ -119,7 +119,7 @@ async function handleLogin() {
           <button
             type="submit"
             :disabled="loading || !canSubmit"
-            class="w-full py-2 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+            class="w-full py-2 px-4 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
           >
             {{ loading ? 'Signing in...' : 'Sign in' }}
           </button>
