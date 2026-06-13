@@ -26,13 +26,14 @@ type DailyStat struct {
 
 // StatsOverview holds aggregated statistics for the dashboard.
 type StatsOverview struct {
-	TotalChallenges        int         `json:"total_challenges"`
-	TotalVerificationsOK   int         `json:"total_verifications_ok"`
-	TotalVerificationsFail int         `json:"total_verifications_fail"`
-	TotalHISObservations   int         `json:"total_his_observations"`
-	TotalHISBotSuspected   int         `json:"total_his_bot_suspected"`
-	ActiveKeys             int         `json:"active_keys"`
-	Daily                  []DailyStat `json:"daily"`
+	TotalChallenges        int           `json:"total_challenges"`
+	TotalVerificationsOK   int           `json:"total_verifications_ok"`
+	TotalVerificationsFail int           `json:"total_verifications_fail"`
+	TotalHISObservations   int           `json:"total_his_observations"`
+	TotalHISBotSuspected   int           `json:"total_his_bot_suspected"`
+	ActiveKeys             int           `json:"active_keys"`
+	Daily                  []DailyStat   `json:"daily"`
+	Countries              []CountryStat `json:"countries"`
 }
 
 // KeyStatsSummary holds all-time totals for a single API key.
@@ -125,6 +126,13 @@ func GetStatsOverview(db *gorm.DB, days int) (*StatsOverview, error) {
 		Scan(&overview.Daily).Error; err != nil {
 		return nil, err
 	}
+
+	// Per-country verification breakdown for the same window (top 20).
+	countries, err := GetCountryStats(db, nil, days, 20)
+	if err != nil {
+		return nil, err
+	}
+	overview.Countries = countries
 
 	return overview, nil
 }

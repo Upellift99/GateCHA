@@ -11,6 +11,14 @@ export interface DailyStat {
   his_bot_suspected: number
 }
 
+export interface CountryStat {
+  /** ISO 3166-1 alpha-2 code; empty string means an unlocatable source. */
+  country: string
+  verifications_ok: number
+  verifications_fail: number
+  total: number
+}
+
 export interface StatsOverview {
   total_challenges: number
   total_verifications_ok: number
@@ -19,6 +27,7 @@ export interface StatsOverview {
   total_his_bot_suspected: number
   active_keys: number
   daily: DailyStat[]
+  countries: CountryStat[]
 }
 
 export interface KeyStatsSummary {
@@ -34,6 +43,7 @@ export interface KeyStatsSummary {
 export const useStatsStore = defineStore('stats', () => {
   const overview = ref<StatsOverview | null>(null)
   const keyStats = ref<DailyStat[]>([])
+  const keyCountries = ref<CountryStat[]>([])
   const keysSummary = ref<Record<string, KeyStatsSummary>>({})
 
   async function fetchOverview(days = 30) {
@@ -44,6 +54,7 @@ export const useStatsStore = defineStore('stats', () => {
   async function fetchKeyStats(keyId: number, days = 30) {
     const { data } = await api.get(`/stats/keys/${keyId}?days=${days}`)
     keyStats.value = data.days
+    keyCountries.value = data.countries ?? []
   }
 
   async function fetchKeysSummary() {
@@ -51,5 +62,5 @@ export const useStatsStore = defineStore('stats', () => {
     keysSummary.value = data.keys
   }
 
-  return { overview, keyStats, keysSummary, fetchOverview, fetchKeyStats, fetchKeysSummary }
+  return { overview, keyStats, keyCountries, keysSummary, fetchOverview, fetchKeyStats, fetchKeysSummary }
 })

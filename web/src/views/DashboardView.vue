@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useStatsStore } from '../stores/stats'
 import StatsChart from '../components/StatsChart.vue'
 import StatsSummaryCard from '../components/StatsSummaryCard.vue'
+import CountryTraffic from '../components/CountryTraffic.vue'
 
 const statsStore = useStatsStore()
 
@@ -74,14 +75,17 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Chart -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4">Last 30 Days</h2>
-        <StatsChart
-          v-if="statsStore.overview.daily?.length"
-          :data="statsStore.overview.daily"
-        />
-        <p v-else class="text-gray-500 text-center py-12">No data yet</p>
+      <!-- Chart + Traffic by country -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white shadow rounded-lg p-6 lg:col-span-2">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Last 30 Days</h2>
+          <StatsChart
+            v-if="statsStore.overview.daily?.length"
+            :data="statsStore.overview.daily"
+          />
+          <p v-else class="text-gray-500 text-center py-12">No data yet</p>
+        </div>
+        <CountryTraffic :countries="statsStore.overview.countries ?? []" />
       </div>
     </div>
 
