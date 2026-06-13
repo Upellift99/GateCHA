@@ -24,7 +24,7 @@ function flagEmoji(code: string): string {
   if (!code || code.length !== 2 || !/^[A-Za-z]{2}$/.test(code)) return '🌐'
   const base = 0x1f1e6
   return String.fromCodePoint(
-    ...[...code.toUpperCase()].map((c) => base + c.charCodeAt(0) - 65),
+    ...[...code.toUpperCase()].map((c) => base + (c.codePointAt(0) ?? 0) - 65),
   )
 }
 
