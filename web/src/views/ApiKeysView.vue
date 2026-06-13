@@ -70,87 +70,87 @@ onMounted(() => {
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">API Keys</h1>
+      <h1 class="text-2xl font-bold text-slate-900">API Keys</h1>
       <router-link
         to="/keys/new"
-        class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+        class="px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-md hover:bg-teal-700"
       >
         Create Key
       </router-link>
     </div>
 
-    <div v-if="store.loading" class="text-center py-12 text-gray-500">Loading...</div>
+    <div v-if="store.loading" class="text-center py-12 text-slate-500">Loading...</div>
 
-    <div v-else-if="!store.keys.length" class="bg-white shadow rounded-lg p-12 text-center">
-      <p class="text-gray-500 mb-4">No API keys yet</p>
-      <router-link to="/keys/new" class="text-indigo-600 hover:text-indigo-800 font-medium">
+    <div v-else-if="!store.keys.length" class="rounded-xl border border-slate-200 bg-white shadow-sm p-12 text-center">
+      <p class="text-slate-500 mb-4">No API keys yet</p>
+      <router-link to="/keys/new" class="text-teal-600 hover:text-teal-800 font-medium">
         Create your first key
       </router-link>
     </div>
 
-    <div v-else class="bg-white shadow rounded-lg overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+    <div v-else class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
           <tr>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
               @click="toggleSort('name')"
             >
               Name
               <span v-if="sortColumn === 'name'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
               @click="toggleSort('domain')"
             >
               Domain
               <span v-if="sortColumn === 'domain'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
               @click="toggleSort('enabled')"
             >
               Status
               <span v-if="sortColumn === 'enabled'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
             <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
               @click="toggleSort('challenges')"
             >
               Challenges
               <span v-if="sortColumn === 'challenges'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
             <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
               @click="toggleSort('verified')"
             >
               Verified
               <span v-if="sortColumn === 'verified'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
             <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
               @click="toggleSort('failed')"
             >
               Failed
               <span v-if="sortColumn === 'failed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
             <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase cursor-pointer hover:text-gray-700 select-none"
+              class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
               @click="toggleSort('lastUsed')"
             >
               Last Used
               <span v-if="sortColumn === 'lastUsed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
             </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
-          <tr v-for="key in sortedKeys" :key="key.id" class="hover:bg-gray-50">
+        <tbody class="divide-y divide-slate-200">
+          <tr v-for="key in sortedKeys" :key="key.id" class="hover:bg-slate-50">
             <td class="px-6 py-4">
-              <div class="text-sm font-medium text-gray-900">{{ key.name || '-' }}</div>
-              <div class="text-xs text-gray-400 font-mono">{{ key.key_id }}</div>
+              <div class="text-sm font-medium text-slate-900">{{ key.name || '-' }}</div>
+              <div class="text-xs text-slate-400 font-mono">{{ key.key_id }}</div>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-500">{{ key.domain || '*' }}</td>
+            <td class="px-6 py-4 text-sm text-slate-500">{{ key.domain || '*' }}</td>
             <td class="px-6 py-4">
               <span
                 :class="key.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
@@ -159,7 +159,7 @@ onMounted(() => {
                 {{ key.enabled ? 'Active' : 'Disabled' }}
               </span>
             </td>
-            <td class="px-6 py-4 text-sm text-right font-medium text-indigo-600">
+            <td class="px-6 py-4 text-sm text-right font-medium text-teal-600">
               {{ getKeyStat(key.id, 'challenges_issued').toLocaleString() }}
             </td>
             <td class="px-6 py-4 text-sm text-right font-medium text-green-600">
@@ -168,14 +168,14 @@ onMounted(() => {
             <td class="px-6 py-4 text-sm text-right font-medium text-red-600">
               {{ getKeyStat(key.id, 'verifications_fail').toLocaleString() }}
             </td>
-            <td class="px-6 py-4 text-sm text-right text-gray-500">
+            <td class="px-6 py-4 text-sm text-right text-slate-500">
               {{ formatLastUsed(key.id) }}
             </td>
             <td class="px-6 py-4 text-right space-x-3">
-              <router-link :to="`/keys/${key.id}`" class="text-indigo-600 hover:text-indigo-800 text-sm">
+              <router-link :to="`/keys/${key.id}`" class="text-teal-600 hover:text-teal-800 text-sm">
                 View
               </router-link>
-              <router-link :to="`/keys/${key.id}/edit`" class="text-gray-600 hover:text-gray-800 text-sm">
+              <router-link :to="`/keys/${key.id}/edit`" class="text-slate-600 hover:text-slate-800 text-sm">
                 Edit
               </router-link>
             </td>

@@ -47,10 +47,10 @@ function failPct(c: CountryStat): number {
 </script>
 
 <template>
-  <div class="bg-white shadow rounded-lg p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-medium text-gray-900">{{ title }}</h2>
-      <span class="text-xs text-gray-400">privacy-first · country only, no IP stored</span>
+  <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex items-center justify-between mb-4 gap-2">
+      <h2 class="text-lg font-semibold text-slate-900">{{ title }}</h2>
+      <span class="text-xs text-slate-400 text-right">privacy-first · country only, no IP stored</span>
     </div>
 
     <ul v-if="rows.length" class="space-y-3">
@@ -60,10 +60,10 @@ function failPct(c: CountryStat): number {
         }}</span>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between text-sm">
-            <span class="font-medium text-gray-700 truncate">{{ countryName(c.country) }}</span>
-            <span class="text-gray-500 tabular-nums">{{ c.total.toLocaleString() }}</span>
+            <span class="font-medium text-slate-700 truncate">{{ countryName(c.country) }}</span>
+            <span class="text-slate-500 tabular-nums">{{ c.total.toLocaleString() }}</span>
           </div>
-          <div class="mt-1 h-2 rounded-full bg-gray-100 overflow-hidden flex">
+          <div class="mt-1 h-2 rounded-full bg-slate-100 overflow-hidden flex">
             <div
               class="h-full bg-green-500"
               :style="{ width: (c.verifications_ok / maxTotal) * 100 + '%' }"
@@ -78,13 +78,13 @@ function failPct(c: CountryStat): number {
         </div>
         <span
           class="text-xs tabular-nums w-12 text-right"
-          :class="failPct(c) >= 50 ? 'text-red-600' : 'text-gray-400'"
+          :class="failPct(c) >= 50 ? 'text-red-600' : 'text-slate-400'"
           :title="'failure rate'"
           >{{ failPct(c) }}%</span
         >
       </li>
     </ul>
 
-    <p v-else class="text-gray-500 text-center py-8 text-sm">No verifications recorded yet</p>
+    <p v-else class="text-slate-400 text-center py-8 text-sm">No verifications recorded yet</p>
   </div>
 </template>

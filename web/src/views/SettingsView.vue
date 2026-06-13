@@ -61,58 +61,58 @@ async function toggleCaptcha(event: Event) {
 
 <template>
   <div class="max-w-xl space-y-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+    <h1 class="text-2xl font-bold text-slate-900 mb-6">Settings</h1>
 
-    <form @submit.prevent="handleSubmit" class="bg-white shadow rounded-lg p-6 space-y-4">
-      <h2 class="text-lg font-medium text-gray-900">Change Password</h2>
+    <form @submit.prevent="handleSubmit" class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
+      <h2 class="text-lg font-medium text-slate-900">Change Password</h2>
 
       <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
       <div v-if="success" class="bg-green-50 text-green-700 px-4 py-3 rounded text-sm">{{ success }}</div>
 
       <div>
-        <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+        <label for="currentPassword" class="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
         <input
           id="currentPassword"
           v-model="currentPassword"
           type="password"
           required
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
       <div>
-        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+        <label for="newPassword" class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
         <input
           id="newPassword"
           v-model="newPassword"
           type="password"
           required
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
       <div>
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+        <label for="confirmPassword" class="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
         <input
           id="confirmPassword"
           v-model="confirmPassword"
           type="password"
           required
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
       <button
         type="submit"
         :disabled="loading"
-        class="py-2 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 disabled:opacity-50"
+        class="py-2 px-4 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 disabled:opacity-50"
       >
         {{ loading ? 'Saving...' : 'Change Password' }}
       </button>
     </form>
 
-    <div class="bg-white shadow rounded-lg p-6 space-y-4">
-      <h2 class="text-lg font-medium text-gray-900">Security</h2>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
+      <h2 class="text-lg font-medium text-slate-900">Security</h2>
 
       <div v-if="settingsError" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
         {{ settingsError }}
@@ -120,8 +120,8 @@ async function toggleCaptcha(event: Event) {
 
       <div class="flex items-center justify-between">
         <div>
-          <label for="loginCaptchaToggle" class="text-sm font-medium text-gray-700">Login CAPTCHA</label>
-          <p class="text-xs text-gray-500 mt-0.5">
+          <label for="loginCaptchaToggle" class="text-sm font-medium text-slate-700">Login CAPTCHA</label>
+          <p class="text-xs text-slate-500 mt-0.5">
             Require an ALTCHA proof-of-work challenge before signing in.
           </p>
         </div>
@@ -134,11 +134,11 @@ async function toggleCaptcha(event: Event) {
             :disabled="settingsStore.loading"
             @change="toggleCaptcha"
           />
-          <div class="w-11 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer
+          <div class="w-11 h-6 bg-slate-200 peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer
                       peer-checked:after:translate-x-full peer-checked:after:border-white
                       after:content-[''] after:absolute after:top-0.5 after:left-[2px]
-                      after:bg-white after:border-gray-300 after:border after:rounded-full
-                      after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600
+                      after:bg-white after:border-slate-300 after:border after:rounded-full
+                      after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600
                       peer-disabled:opacity-50"></div>
         </div>
       </div>
