@@ -14,7 +14,7 @@ GateCHA is an open-source alternative to [ALTCHA Sentinel](https://altcha.org/do
 ## Features
 
 - **ALTCHA-compatible** - Works with the official [ALTCHA widget](https://altcha.org/docs/v2/widget-integration/) (MIT)
-- **API Key Management** - Create keys per site with custom difficulty, TTL, and domain restrictions
+- **API Key Management** - Create keys per site with custom difficulty, TTL, and domain restrictions (multiple domains + `*.example.com` wildcards)
 - **Replay Protection** - Consumed challenges are tracked and rejected on reuse
 - **Statistics Dashboard** - Track challenges issued, verifications (success/fail), per key, per day
 - **Single Binary** - Vue.js dashboard embedded in the Go binary via `go:embed`

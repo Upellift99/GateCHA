@@ -331,6 +331,19 @@ func TestMatchDomain(t *testing.T) {
 		{"https://other.com", "example.com", false},
 		{"https://EXAMPLE.COM", "example.com", true},
 		{"example.com/path", "example.com", true},
+		// Multiple domains (one per line, commas/whitespace tolerated).
+		{"https://app.com", "example.com\napp.com", true},
+		{"https://other.com", "example.com\napp.com", false},
+		{"https://app.com", "example.com, app.com", true},
+		// Wildcard: matches subdomains and the bare domain.
+		{"https://api.example.com", "*.example.com", true},
+		{"https://deep.api.example.com", "*.example.com", true},
+		{"https://example.com", "*.example.com", true},
+		{"https://EXAMPLE.COM", "*.example.com", true},
+		{"https://notexample.com", "*.example.com", false},
+		{"https://example.com.evil.com", "*.example.com", false},
+		// Empty config never matches a present origin (caller gates on this).
+		{"https://example.com", "", false},
 	}
 
 	for _, tt := range tests {

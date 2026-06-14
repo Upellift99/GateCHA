@@ -165,12 +165,49 @@ func MaxBodyBytesMiddleware(limit int64) func(http.Handler) http.Handler {
 	}
 }
 
-func matchDomain(urlStr, domain string) bool {
+// matchDomain reports whether the host in urlStr is allowed by the key's
+// domain configuration. The configuration may list several domains (one per
+// line; commas and surrounding whitespace are also tolerated). An entry of the
+// form "*.example.com" matches any subdomain of example.com as well as the
+// bare example.com.
+func matchDomain(urlStr, allowed string) bool {
+	host := hostFromURL(urlStr)
+	if host == "" {
+		return false
+	}
+	for _, entry := range splitDomains(allowed) {
+		if domainEntryMatches(host, entry) {
+			return true
+		}
+	}
+	return false
+}
+
+func hostFromURL(urlStr string) string {
 	urlStr = strings.TrimPrefix(urlStr, "http://")
 	urlStr = strings.TrimPrefix(urlStr, "https://")
 	parts := strings.SplitN(urlStr, "/", 2)
-	host := strings.SplitN(parts[0], ":", 2)[0]
-	return strings.EqualFold(host, domain)
+	return strings.SplitN(parts[0], ":", 2)[0]
+}
+
+// splitDomains breaks a domain configuration into individual entries, splitting
+// on newlines, commas and whitespace and discarding empty fields.
+func splitDomains(allowed string) []string {
+	return strings.FieldsFunc(allowed, func(r rune) bool {
+		return r == '\n' || r == '\r' || r == ',' || r == ' ' || r == '\t'
+	})
+}
+
+func domainEntryMatches(host, entry string) bool {
+	if entry == "" {
+		return false
+	}
+	if suffix, ok := strings.CutPrefix(entry, "*."); ok {
+		host = strings.ToLower(host)
+		suffix = strings.ToLower(suffix)
+		return host == suffix || strings.HasSuffix(host, "."+suffix)
+	}
+	return strings.EqualFold(host, entry)
 }
 
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {
