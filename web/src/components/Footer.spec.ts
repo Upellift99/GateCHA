@@ -23,7 +23,7 @@ describe('Footer', () => {
     expect(site.attributes('target')).toBe('_blank')
     expect(site.attributes('rel')).toContain('noopener')
     expect(wrapper.text()).toContain('Made with')
-    expect(wrapper.text()).toContain('Sceaux, FR')
+    expect(wrapper.text()).toContain('Sceaux, France')
   })
 
   it('shows the version when authenticated', () => {
@@ -39,6 +39,15 @@ describe('Footer', () => {
   it('does not show a version when logged out', () => {
     const wrapper = mount(Footer)
     expect(wrapper.text()).not.toContain('v1')
+    expect(mockApi.get).not.toHaveBeenCalled()
+  })
+
+  it('never shows or fetches the version when showVersion is false (login page)', () => {
+    const auth = useAuthStore()
+    auth.token = 'tok'
+    auth.version = 'v1.2.3'
+    const wrapper = mount(Footer, { props: { showVersion: false } })
+    expect(wrapper.text()).not.toContain('v1.2.3')
     expect(mockApi.get).not.toHaveBeenCalled()
   })
 })

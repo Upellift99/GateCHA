@@ -19,6 +19,13 @@ const showDeleteConfirm = ref(false)
 
 const keyId = computed(() => Number(route.params.id))
 
+const domainList = computed(() =>
+  (key.value?.domain ?? '')
+    .split(/[\n,]/)
+    .map((d) => d.trim())
+    .filter(Boolean),
+)
+
 onMounted(async () => {
   key.value = await keysStore.getKey(keyId.value)
   statsStore.fetchKeyStats(keyId.value)
@@ -112,8 +119,16 @@ const hisTotals = computed(() => ({
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Domain</dt>
-          <dd class="mt-1 text-sm text-slate-900">{{ key.domain || 'Any (*)' }}</dd>
+          <dt class="text-sm font-medium text-slate-500">Domains</dt>
+          <dd class="mt-1 text-sm text-slate-900">
+            <span v-if="domainList.length === 0">Any (*)</span>
+            <span
+              v-for="d in domainList"
+              :key="d"
+              class="inline-block mr-1 mb-1 px-2 py-0.5 rounded bg-slate-100 font-mono text-xs text-slate-700"
+              >{{ d }}</span
+            >
+          </dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-slate-500">Difficulty (maxNumber)</dt>
