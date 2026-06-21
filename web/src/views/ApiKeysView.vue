@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useApiKeysStore, type APIKey } from '../stores/apikeys'
 import { useStatsStore } from '../stores/stats'
+import CopyButton from '../components/CopyButton.vue'
 
 const store = useApiKeysStore()
 const statsStore = useStatsStore()
@@ -9,13 +10,6 @@ const statsStore = useStatsStore()
 type SortColumn = 'name' | 'domain' | 'enabled' | 'challenges' | 'verified' | 'failed' | 'lastUsed'
 const sortColumn = ref<SortColumn>('name')
 const sortDirection = ref<'asc' | 'desc'>('asc')
-const copiedId = ref<number | null>(null)
-
-function copyKeyId(keyId: number, value: string) {
-  navigator.clipboard.writeText(value)
-  copiedId.value = keyId
-  setTimeout(() => { copiedId.value = null }, 2000)
-}
 
 function getKeyStat(keyId: number, field: 'challenges_issued' | 'verifications_ok' | 'verifications_fail'): number {
   const summary = statsStore.keysSummary[String(keyId)]
@@ -157,13 +151,7 @@ onMounted(() => {
               <div class="text-sm font-medium text-slate-900">{{ key.name || '-' }}</div>
               <div class="flex items-center gap-1.5">
                 <span class="text-xs text-slate-400 font-mono">{{ key.key_id }}</span>
-                <button
-                  @click="copyKeyId(key.id, key.key_id)"
-                  class="text-xs text-teal-600 hover:text-teal-800"
-                  :title="`Copy ${key.key_id}`"
-                >
-                  {{ copiedId === key.id ? 'Copied!' : 'Copy' }}
-                </button>
+                <CopyButton :value="key.key_id" :label="`Copy ${key.key_id}`" />
               </div>
             </td>
             <td class="px-6 py-4 text-sm text-slate-500">{{ key.domain || '*' }}</td>

@@ -6,6 +6,7 @@ import { useStatsStore } from '../stores/stats'
 import StatsChart from '../components/StatsChart.vue'
 import CountryTraffic from '../components/CountryTraffic.vue'
 import HISCalibrationPanel from '../components/HISCalibrationPanel.vue'
+import CopyButton from '../components/CopyButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,7 +15,6 @@ const statsStore = useStatsStore()
 
 const key = ref<APIKey | null>(null)
 const showSecret = ref(false)
-const copied = ref('')
 const showDeleteConfirm = ref(false)
 
 const keyId = computed(() => Number(route.params.id))
@@ -30,12 +30,6 @@ onMounted(async () => {
   key.value = await keysStore.getKey(keyId.value)
   statsStore.fetchKeyStats(keyId.value)
 })
-
-function copyToClipboard(text: string, label: string) {
-  navigator.clipboard.writeText(text)
-  copied.value = label
-  setTimeout(() => { copied.value = '' }, 2000)
-}
 
 async function handleDelete() {
   await keysStore.deleteKey(keyId.value)
@@ -104,9 +98,7 @@ const hisTotals = computed(() => ({
           <dt class="text-sm font-medium text-slate-500">Key ID</dt>
           <dd class="mt-1 flex items-center gap-2">
             <code class="text-sm bg-slate-100 px-2 py-1 rounded font-mono">{{ key.key_id }}</code>
-            <button @click="copyToClipboard(key.key_id, 'key')" class="text-xs text-teal-600 hover:text-teal-800">
-              {{ copied === 'key' ? 'Copied!' : 'Copy' }}
-            </button>
+            <CopyButton :value="key.key_id" label="Copy key ID" />
           </dd>
         </div>
         <div>
@@ -124,9 +116,7 @@ const hisTotals = computed(() => ({
           <dt class="text-sm font-medium text-slate-500">Instance URL</dt>
           <dd class="mt-1 flex items-center gap-2">
             <code class="text-sm bg-slate-100 px-2 py-1 rounded font-mono break-all">{{ instanceOrigin }}</code>
-            <button @click="copyToClipboard(instanceOrigin, 'url')" class="text-xs text-teal-600 hover:text-teal-800 shrink-0">
-              {{ copied === 'url' ? 'Copied!' : 'Copy' }}
-            </button>
+            <CopyButton :value="instanceOrigin" label="Copy instance URL" />
           </dd>
         </div>
         <div>
@@ -161,11 +151,21 @@ const hisTotals = computed(() => ({
         </div>
         <div>
           <dt class="text-sm font-medium text-slate-500">Adaptive difficulty</dt>
-          <dd class="mt-1 text-sm text-slate-900">{{ key.adaptive_difficulty ? 'On' : 'Off' }}</dd>
+          <dd class="mt-1">
+            <span
+              :class="key.adaptive_difficulty ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+            >{{ key.adaptive_difficulty ? 'On' : 'Off' }}</span>
+          </dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-slate-500">HIS sampling</dt>
-          <dd class="mt-1 text-sm text-slate-900">{{ key.his_sampling ? 'On' : 'Off' }}</dd>
+          <dd class="mt-1">
+            <span
+              :class="key.his_sampling ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+            >{{ key.his_sampling ? 'On' : 'Off' }}</span>
+          </dd>
         </div>
       </dl>
     </div>
@@ -175,15 +175,12 @@ const hisTotals = computed(() => ({
       <h2 class="text-lg font-medium text-slate-900 mb-4">Integration</h2>
       <div class="relative">
         <pre class="bg-slate-900 text-green-400 text-sm p-4 rounded-lg overflow-x-auto"><code>{{ widgetSnippet }}</code></pre>
-        <button
-          @click="copyToClipboard(widgetSnippet, 'snippet')"
-          class="absolute top-2 right-2 text-xs font-medium px-2.5 py-1 rounded shadow-sm transition-colors"
-          :class="copied === 'snippet'
-            ? 'bg-green-500 text-white'
-            : 'bg-teal-600 text-white hover:bg-teal-500'"
-        >
-          {{ copied === 'snippet' ? 'Copied!' : 'Copy' }}
-        </button>
+        <CopyButton
+          :value="widgetSnippet"
+          label="Copy snippet"
+          variant="overlay"
+          class="absolute top-2 right-2"
+        />
       </div>
     </div>
 

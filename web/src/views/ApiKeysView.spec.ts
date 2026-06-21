@@ -210,12 +210,13 @@ describe('ApiKeysView', () => {
     const wrapper = mountView()
     await flushPromises()
 
-    const copyBtn = wrapper.findAll('tbody button').find(b => b.text() === 'Copy')
-    expect(copyBtn).toBeDefined()
-    await copyBtn!.trigger('click')
+    // Alpha (gk_bbb) sorts first
+    const copyBtn = wrapper.find('tbody button[aria-label="Copy gk_bbb"]')
+    expect(copyBtn.exists()).toBe(true)
+    await copyBtn.trigger('click')
 
-    expect(writeText).toHaveBeenCalledWith('gk_bbb') // Alpha sorts first
-    expect(copyBtn!.text()).toBe('Copied!')
+    expect(writeText).toHaveBeenCalledWith('gk_bbb')
+    expect(copyBtn.text()).toBe('Copied!') // tooltip
   })
 
   it('fetches keys and summary on mount', async () => {
