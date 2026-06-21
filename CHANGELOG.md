@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/Upellift99/GateCHA/compare/v0.3.0...v0.3.1) (2026-06-21)
+
+
+### Bug Fixes
+
+* **ui:** footer links + stack "Traffic by country" header ([#65](https://github.com/Upellift99/GateCHA/issues/65)) ([59bde01](https://github.com/Upellift99/GateCHA/commit/59bde018c597450c60650d0abe4f2d087594161b))
+
 ## [0.3.0](https://github.com/Upellift99/GateCHA/compare/v0.2.1...v0.3.0) (2026-06-21)
 
 
