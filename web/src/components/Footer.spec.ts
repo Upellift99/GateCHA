@@ -36,24 +36,22 @@ describe('Footer', () => {
     expect(mockApi.get).not.toHaveBeenCalled()
   })
 
-  it('deep-links a clean semver version to its GitHub release', () => {
+  it('links the version to the GitHub releases page', () => {
     const auth = useAuthStore()
     auth.token = 'tok'
     auth.version = '0.2.1'
     const wrapper = mount(Footer)
     const link = wrapper.findAll('a').find((a) => a.text() === '0.2.1')!
-    expect(link.attributes('href')).toBe('https://github.com/Upellift99/GateCHA/releases/tag/v0.2.1')
+    expect(link.attributes('href')).toBe('https://github.com/Upellift99/GateCHA/releases')
     expect(link.attributes('target')).toBe('_blank')
     expect(link.attributes('rel')).toContain('noopener')
   })
 
-  it('links a dev build version to the releases list', () => {
-    const auth = useAuthStore()
-    auth.token = 'tok'
-    auth.version = 'main'
+  it('links the GateCHA wordmark to gatecha.org', () => {
     const wrapper = mount(Footer)
-    const link = wrapper.findAll('a').find((a) => a.text() === 'main')!
-    expect(link.attributes('href')).toBe('https://github.com/Upellift99/GateCHA/releases')
+    const brand = wrapper.findAll('a').find((a) => a.text() === 'GateCHA')!
+    expect(brand).toBeTruthy()
+    expect(brand.attributes('href')).toBe('https://gatecha.org')
   })
 
   it('does not show a version when logged out', () => {
