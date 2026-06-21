@@ -94,14 +94,12 @@ describe('ApiKeyDetailView', () => {
     const wrapper = mountView()
     await flushPromises()
 
-    const copyUrlBtn = wrapper.findAll('button').find(
-      b => b.text() === 'Copy' && b.element.closest('dd')?.previousElementSibling?.textContent === 'Instance URL',
-    )
-    expect(copyUrlBtn).toBeDefined()
-    await copyUrlBtn!.trigger('click')
+    const copyUrlBtn = wrapper.find('button[aria-label="Copy instance URL"]')
+    expect(copyUrlBtn.exists()).toBe(true)
+    await copyUrlBtn.trigger('click')
 
     expect(writeText).toHaveBeenCalledWith(globalThis.location.origin)
-    expect(copyUrlBtn!.text()).toBe('Copied!')
+    expect(copyUrlBtn.text()).toBe('Copied!') // tooltip, not the button label
   })
 
   it('computes widgetSnippet correctly', async () => {
