@@ -56,9 +56,11 @@ async function toggleEnabled() {
   key.value = await keysStore.getKey(keyId.value)
 }
 
+const instanceOrigin = computed(() => globalThis.location.origin)
+
 const challengeUrl = computed(() => {
   if (!key.value) return ''
-  return `${globalThis.location.origin}/api/v1/challenge?apiKey=${key.value.key_id}`
+  return `${instanceOrigin.value}/api/v1/challenge?apiKey=${key.value.key_id}`
 })
 
 const widgetSnippet = computed(() => {
@@ -118,6 +120,15 @@ const hisTotals = computed(() => ({
             <button @click="handleRotateSecret" class="text-xs text-orange-600 hover:text-orange-800">Rotate</button>
           </dd>
         </div>
+        <div class="md:col-span-2">
+          <dt class="text-sm font-medium text-slate-500">Instance URL</dt>
+          <dd class="mt-1 flex items-center gap-2">
+            <code class="text-sm bg-slate-100 px-2 py-1 rounded font-mono break-all">{{ instanceOrigin }}</code>
+            <button @click="copyToClipboard(instanceOrigin, 'url')" class="text-xs text-teal-600 hover:text-teal-800 shrink-0">
+              {{ copied === 'url' ? 'Copied!' : 'Copy' }}
+            </button>
+          </dd>
+        </div>
         <div>
           <dt class="text-sm font-medium text-slate-500">Domains</dt>
           <dd class="mt-1 text-sm text-slate-900">
@@ -166,7 +177,10 @@ const hisTotals = computed(() => ({
         <pre class="bg-slate-900 text-green-400 text-sm p-4 rounded-lg overflow-x-auto"><code>{{ widgetSnippet }}</code></pre>
         <button
           @click="copyToClipboard(widgetSnippet, 'snippet')"
-          class="absolute top-2 right-2 text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded hover:bg-slate-600"
+          class="absolute top-2 right-2 text-xs font-medium px-2.5 py-1 rounded shadow-sm transition-colors"
+          :class="copied === 'snippet'
+            ? 'bg-green-500 text-white'
+            : 'bg-teal-600 text-white hover:bg-teal-500'"
         >
           {{ copied === 'snippet' ? 'Copied!' : 'Copy' }}
         </button>

@@ -9,6 +9,13 @@ const statsStore = useStatsStore()
 type SortColumn = 'name' | 'domain' | 'enabled' | 'challenges' | 'verified' | 'failed' | 'lastUsed'
 const sortColumn = ref<SortColumn>('name')
 const sortDirection = ref<'asc' | 'desc'>('asc')
+const copiedId = ref<number | null>(null)
+
+function copyKeyId(keyId: number, value: string) {
+  navigator.clipboard.writeText(value)
+  copiedId.value = keyId
+  setTimeout(() => { copiedId.value = null }, 2000)
+}
 
 function getKeyStat(keyId: number, field: 'challenges_issued' | 'verifications_ok' | 'verifications_fail'): number {
   const summary = statsStore.keysSummary[String(keyId)]
@@ -148,7 +155,16 @@ onMounted(() => {
           <tr v-for="key in sortedKeys" :key="key.id" class="hover:bg-slate-50">
             <td class="px-6 py-4">
               <div class="text-sm font-medium text-slate-900">{{ key.name || '-' }}</div>
-              <div class="text-xs text-slate-400 font-mono">{{ key.key_id }}</div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs text-slate-400 font-mono">{{ key.key_id }}</span>
+                <button
+                  @click="copyKeyId(key.id, key.key_id)"
+                  class="text-xs text-teal-600 hover:text-teal-800"
+                  :title="`Copy ${key.key_id}`"
+                >
+                  {{ copiedId === key.id ? 'Copied!' : 'Copy' }}
+                </button>
+              </div>
             </td>
             <td class="px-6 py-4 text-sm text-slate-500">{{ key.domain || '*' }}</td>
             <td class="px-6 py-4">

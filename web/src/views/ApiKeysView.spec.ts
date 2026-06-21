@@ -203,6 +203,21 @@ describe('ApiKeysView', () => {
     expect(nameHeader.text()).toContain('\u25B2')
   })
 
+  it('copies a key id to clipboard from the list', async () => {
+    const writeText = vi.fn()
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    const copyBtn = wrapper.findAll('tbody button').find(b => b.text() === 'Copy')
+    expect(copyBtn).toBeDefined()
+    await copyBtn!.trigger('click')
+
+    expect(writeText).toHaveBeenCalledWith('gk_bbb') // Alpha sorts first
+    expect(copyBtn!.text()).toBe('Copied!')
+  })
+
   it('fetches keys and summary on mount', async () => {
     mountView()
     await flushPromises()

@@ -87,6 +87,23 @@ describe('ApiKeyDetailView', () => {
     expect(wrapper.text()).toContain('/api/v1/challenge?apiKey=gk_abc123def456')
   })
 
+  it('copies the instance URL to clipboard', async () => {
+    const writeText = vi.fn()
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    const copyUrlBtn = wrapper.findAll('button').find(
+      b => b.text() === 'Copy' && b.element.closest('dd')?.previousElementSibling?.textContent === 'Instance URL',
+    )
+    expect(copyUrlBtn).toBeDefined()
+    await copyUrlBtn!.trigger('click')
+
+    expect(writeText).toHaveBeenCalledWith(globalThis.location.origin)
+    expect(copyUrlBtn!.text()).toBe('Copied!')
+  })
+
   it('computes widgetSnippet correctly', async () => {
     const wrapper = mountView()
     await flushPromises()
