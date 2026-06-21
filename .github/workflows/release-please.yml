@@ -1,0 +1,23 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # Maintains a "release PR" that, when merged, tags vX.Y.Z, publishes a
+      # GitHub Release and updates CHANGELOG.md from the Conventional Commits.
+      # Pass a RELEASE_PLEASE_TOKEN (PAT) so the created tag triggers the Docker
+      # workflow; the default GITHUB_TOKEN cannot trigger other workflows.
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
