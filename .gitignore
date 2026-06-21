@@ -1,6 +1,9 @@
 # Go binary
 /gatecha
 
+# GoReleaser output
+/dist/
+
 # Data
 data/
 *.db

@@ -1,0 +1,50 @@
+# GoReleaser config — cross-compiles the self-contained binary (the Vue SPA is
+# embedded via go:embed, so the frontend must be built first; see the workflow)
+# and attaches the archives to the GitHub Release that release-please created.
+version: 2
+
+project_name: gatecha
+
+before:
+  hooks:
+    - go mod download
+
+builds:
+  - id: gatecha
+    main: ./cmd/gatecha
+    binary: gatecha
+    # Pure-Go SQLite (modernc.org/sqlite) — no cgo, so cross-compilation is clean.
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: gatecha
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: checksums.txt
+
+# release-please owns the changelog and the GitHub Release body.
+changelog:
+  disable: true
+
+release:
+  github:
+    owner: Upellift99
+    name: GateCHA
+  # release-please already created the Release + notes for this tag; only
+  # upload the binaries, don't recreate or overwrite the body.
+  mode: keep-existing

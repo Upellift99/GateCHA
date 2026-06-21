@@ -43,6 +43,24 @@ docker run -d -p 8080:8080 \
   ghcr.io/upellift99/gatecha:latest
 ```
 
+### Prebuilt binary (no Docker)
+
+GateCHA ships as a single self-contained binary — the web dashboard is embedded,
+so there are no extra files or runtime dependencies. Grab the archive for your
+platform from the [latest release](https://github.com/Upellift99/GateCHA/releases/latest)
+(`linux`/`darwin`/`windows`, `amd64`/`arm64`):
+
+```bash
+# Example: Linux x86_64 — check the releases page for the current version
+VERSION=0.3.0
+curl -fsSL -o gatecha.tar.gz \
+  "https://github.com/Upellift99/GateCHA/releases/download/v${VERSION}/gatecha_${VERSION}_linux_amd64.tar.gz"
+tar -xzf gatecha.tar.gz
+GATECHA_ADMIN_PASSWORD=your-password ./gatecha
+```
+
+Open `http://localhost:8080`. See [Configuration](#configuration) for all options.
+
 ### From Source
 
 ```bash
