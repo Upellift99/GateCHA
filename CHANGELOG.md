@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/Upellift99/GateCHA/compare/v0.2.1...v0.3.0) (2026-06-21)
+
+
+### Features
+
+* **ui:** link the footer version to its GitHub release ([#63](https://github.com/Upellift99/GateCHA/issues/63)) ([d296743](https://github.com/Upellift99/GateCHA/commit/d2967434060ba8d296e8e149dffae2728fbe2054))
+
 ## [0.2.1](https://github.com/Upellift99/GateCHA/compare/v0.2.0...v0.2.1) (2026-06-21)
 
 
