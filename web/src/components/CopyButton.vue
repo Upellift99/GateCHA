@@ -42,12 +42,12 @@ onBeforeUnmount(() => clearTimeout(timer))
     <svg v-else class="h-4 w-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
       <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
     </svg>
-    <!-- "Copied!" tooltip — absolutely positioned so it never shifts layout -->
-    <span
+    <!-- "Copied!" tooltip — <output> carries an implicit status role + aria-live;
+         absolutely positioned so it never shifts layout -->
+    <output
       v-if="copied"
-      role="status"
       class="pointer-events-none absolute -top-7 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-slate-900 px-1.5 py-0.5 text-xs font-medium text-white shadow"
-      >Copied!</span
+      >Copied!</output
     >
   </button>
 </template>
