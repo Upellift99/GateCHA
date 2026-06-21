@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/Upellift99/GateCHA/compare/v0.2.0...v0.2.1) (2026-06-21)
+
+
+### Bug Fixes
+
+* **sonar:** use &lt;output&gt; instead of role=status in CopyButton (S6819) ([#61](https://github.com/Upellift99/GateCHA/issues/61)) ([df69a18](https://github.com/Upellift99/GateCHA/commit/df69a182a4a7399e5bcf2b14e3b1b19619f2ecae))
+
 ## [0.2.0](https://github.com/Upellift99/GateCHA/compare/v0.1.0...v0.2.0) (2026-06-21)
 
 
