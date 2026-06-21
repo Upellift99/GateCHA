@@ -48,9 +48,9 @@ function failPct(c: CountryStat): number {
 
 <template>
   <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-    <div class="flex items-center justify-between mb-4 gap-2">
+    <div class="mb-4">
       <h2 class="text-lg font-semibold text-slate-900">{{ title }}</h2>
-      <span class="text-xs text-slate-400 text-right">privacy-first · country only, no IP stored</span>
+      <p class="text-xs text-slate-400 mt-0.5">privacy-first · country only, no IP stored</p>
     </div>
 
     <ul v-if="rows.length" class="space-y-3">

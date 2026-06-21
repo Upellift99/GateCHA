@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
 
@@ -10,14 +10,7 @@ const props = withDefaults(defineProps<{ showVersion?: boolean }>(), {
 const authStore = useAuthStore()
 const { isAuthenticated, version } = storeToRefs(authStore)
 
-const REPO_URL = 'https://github.com/Upellift99/GateCHA'
-
-// Deep-link clean semver (e.g. "0.2.1" / "v0.2.1") straight to its release;
-// fall back to the releases list for dev builds ("main", "0.2.1-3-gabc123").
-const releaseUrl = computed(() => {
-  const match = /^v?(\d+\.\d+\.\d+)$/.exec(version.value ?? '')
-  return match ? `${REPO_URL}/releases/tag/v${match[1]}` : `${REPO_URL}/releases`
-})
+const RELEASES_URL = 'https://github.com/Upellift99/GateCHA/releases'
 
 onMounted(() => {
   if (props.showVersion && isAuthenticated.value) authStore.fetchVersion()
@@ -30,14 +23,20 @@ onMounted(() => {
       class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-400"
     >
       <p>
-        <span class="font-semibold text-slate-500">Gate<span class="text-brand-600">CHA</span></span>
+        <a
+          href="https://gatecha.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="font-semibold text-slate-500 hover:text-brand-600 transition-colors"
+          >Gate<span class="text-brand-600">CHA</span></a
+        >
         <a
           v-if="showVersion && isAuthenticated && version"
-          :href="releaseUrl"
+          :href="RELEASES_URL"
           target="_blank"
           rel="noopener noreferrer"
           class="ml-2 tabular-nums hover:text-brand-600 transition-colors"
-          :title="`View release ${version} on GitHub`"
+          :title="`View releases on GitHub (current: ${version})`"
           >{{ version }}</a
         >
       </p>
