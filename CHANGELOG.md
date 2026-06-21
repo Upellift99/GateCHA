@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/Upellift99/GateCHA/compare/v0.1.0...v0.2.0) (2026-06-21)
+
+
+### Features
+
+* **ui:** icon copy buttons with tooltip + colored On/Off badges ([#59](https://github.com/Upellift99/GateCHA/issues/59)) ([b7dc04b](https://github.com/Upellift99/GateCHA/commit/b7dc04b221c3233ca716e4bb412e2b7e04dc4788))
+
 ## 0.1.0 (2026-06-21)
 
 
