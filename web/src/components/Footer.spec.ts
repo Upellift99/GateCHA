@@ -36,6 +36,26 @@ describe('Footer', () => {
     expect(mockApi.get).not.toHaveBeenCalled()
   })
 
+  it('deep-links a clean semver version to its GitHub release', () => {
+    const auth = useAuthStore()
+    auth.token = 'tok'
+    auth.version = '0.2.1'
+    const wrapper = mount(Footer)
+    const link = wrapper.findAll('a').find((a) => a.text() === '0.2.1')!
+    expect(link.attributes('href')).toBe('https://github.com/Upellift99/GateCHA/releases/tag/v0.2.1')
+    expect(link.attributes('target')).toBe('_blank')
+    expect(link.attributes('rel')).toContain('noopener')
+  })
+
+  it('links a dev build version to the releases list', () => {
+    const auth = useAuthStore()
+    auth.token = 'tok'
+    auth.version = 'main'
+    const wrapper = mount(Footer)
+    const link = wrapper.findAll('a').find((a) => a.text() === 'main')!
+    expect(link.attributes('href')).toBe('https://github.com/Upellift99/GateCHA/releases')
+  })
+
   it('does not show a version when logged out', () => {
     const wrapper = mount(Footer)
     expect(wrapper.text()).not.toContain('v1')
