@@ -40,3 +40,9 @@ updates:
       day: monday
       time: "06:00"
     open-pull-requests-limit: 5
+    groups:
+      # init and analyze must move together: CodeQL fails the run when the
+      # steps do not all use the same version of the action.
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"
