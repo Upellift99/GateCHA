@@ -25,6 +25,12 @@ updates:
       npm-dependencies:
         patterns:
           - "*"
+    ignore:
+      # TypeScript 7 (native port) drops the ./lib/tsc subpath export that
+      # vue-tsc relies on. Unignore once vue-tsc supports it.
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
 
   # GitHub Actions workflows
   - package-ecosystem: github-actions
