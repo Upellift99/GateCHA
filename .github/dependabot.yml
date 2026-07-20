@@ -9,9 +9,14 @@ updates:
       time: "06:00"
     open-pull-requests-limit: 5
     groups:
+      # Majors are deliberately left out so they open as individual PRs
+      # instead of riding along unreviewed inside a large group diff.
       go-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
 
   # npm (Vue frontend)
   - package-ecosystem: npm
@@ -22,9 +27,15 @@ updates:
       time: "06:00"
     open-pull-requests-limit: 5
     groups:
+      # Majors are deliberately left out so they open as individual PRs
+      # instead of riding along unreviewed inside a large group diff
+      # (pinia 3 -> 4 shipped this way in #99).
       npm-dependencies:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch
     ignore:
       # TypeScript 7 (native port) drops the ./lib/tsc subpath export that
       # vue-tsc relies on. Unignore once vue-tsc supports it.
