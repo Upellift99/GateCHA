@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
 
@@ -12,9 +12,16 @@ const { isAuthenticated, version } = storeToRefs(authStore)
 
 const RELEASES_URL = 'https://github.com/Upellift99/GateCHA/releases'
 
-onMounted(() => {
-  if (props.showVersion && isAuthenticated.value) authStore.fetchVersion()
-})
+// Watch rather than onMounted: this Footer lives in App.vue outside <router-view>,
+// so it mounts once on the login page and never remounts. onMounted alone meant the
+// version was never fetched after logging in. fetchVersion() is idempotent.
+watch(
+  () => props.showVersion && isAuthenticated.value,
+  (canShowVersion) => {
+    if (canShowVersion) authStore.fetchVersion()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
