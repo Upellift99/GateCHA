@@ -90,6 +90,34 @@ jobs:
       - name: Run go vet
         run: go vet ./...
 
+  # Catches vulnerabilities Dependabot cannot see, notably in the Go standard
+  # library, which is what let release binaries ship on a stale toolchain.
+  govulncheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26"
+
+      # Required: internal/dashboard uses //go:embed dist/*, so the directory
+      # must exist before any tool can load the packages.
+      - name: Build frontend (for embed)
+        run: |
+          cd web
+          npm ci
+          npm run build
+          cd ..
+          cp -r web/dist internal/dashboard/dist
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
+
+      - name: Scan for known vulnerabilities
+        run: govulncheck ./...
+
   test-mysql:
     runs-on: ubuntu-latest
     services:

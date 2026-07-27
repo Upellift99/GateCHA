@@ -20,7 +20,7 @@ COPY --from=frontend /build/web/dist ./internal/dashboard/dist
 RUN CGO_ENABLED=0 go build -tags "${BUILD_TAGS}" -ldflags="-s -w -X main.version=${VERSION}" -o /gatecha ./cmd/gatecha
 
 ### Stage 3: Final runtime image
-FROM alpine:3.19
+FROM alpine:3.24
 RUN apk add --no-cache ca-certificates tzdata
 RUN adduser -D -h /app gatecha
 WORKDIR /app
