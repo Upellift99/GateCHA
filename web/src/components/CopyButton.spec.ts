@@ -38,6 +38,14 @@ describe('CopyButton', () => {
     expect(wrapper.text()).not.toContain('Copied!')
   })
 
+  // Locks the a11y choice of <output> (implicit status role + aria-live) over a
+  // plain <div>, which is easy to lose in a refactor since both look identical.
+  it('renders the tooltip as <output> so screen readers announce it', async () => {
+    const wrapper = mount(CopyButton, { props: { value: 'v' } })
+    await wrapper.get('button').trigger('click')
+    expect(wrapper.html()).toContain('<output')
+  })
+
   it('applies the overlay variant styling', () => {
     const wrapper = mount(CopyButton, { props: { value: 'v', variant: 'overlay' } })
     expect(wrapper.get('button').classes()).toContain('bg-slate-700/80')
