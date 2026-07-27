@@ -60,6 +60,24 @@ describe('Footer', () => {
     expect(mockApi.get).not.toHaveBeenCalled()
   })
 
+  // Regression: Footer is mounted in App.vue outside <router-view>, so it mounts
+  // once on the login page (unauthenticated, showVersion=false) and never remounts.
+  // Fetching only in onMounted meant the version was never loaded after logging in.
+  it('fetches the version after logging in, without remounting', async () => {
+    mockApi.get.mockResolvedValue({ data: { version: '0.3.2' } })
+    const auth = useAuthStore()
+    const wrapper = mount(Footer, { props: { showVersion: false } })
+    expect(mockApi.get).not.toHaveBeenCalled()
+
+    // login: token appears and the route leaves the login page
+    auth.token = 'tok'
+    await wrapper.setProps({ showVersion: true })
+    await vi.waitFor(() => expect(mockApi.get).toHaveBeenCalledWith('/version'))
+    // waitFor the rendered output, not just the call: the version lands only after
+    // the request resolves and the reactive update flushes.
+    await vi.waitFor(() => expect(wrapper.text()).toContain('0.3.2'))
+  })
+
   it('never shows or fetches the version when showVersion is false (login page)', () => {
     const auth = useAuthStore()
     auth.token = 'tok'
