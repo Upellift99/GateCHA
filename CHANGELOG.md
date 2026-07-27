@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/Upellift99/GateCHA/compare/v0.3.1...v0.3.2) (2026-07-27)
+
+
+### Bug Fixes
+
+* **security:** build releases on a patched Go toolchain, move off EOL Alpine ([#108](https://github.com/Upellift99/GateCHA/issues/108)) ([ed85dd2](https://github.com/Upellift99/GateCHA/commit/ed85dd2e807742b878831f43e853fb473280f55c))
+
 ## [0.3.1](https://github.com/Upellift99/GateCHA/compare/v0.3.0...v0.3.1) (2026-06-21)
 
 
