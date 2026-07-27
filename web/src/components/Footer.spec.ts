@@ -73,8 +73,9 @@ describe('Footer', () => {
     auth.token = 'tok'
     await wrapper.setProps({ showVersion: true })
     await vi.waitFor(() => expect(mockApi.get).toHaveBeenCalledWith('/version'))
-    await wrapper.vm.$nextTick()
-    expect(wrapper.text()).toContain('0.3.2')
+    // waitFor the rendered output, not just the call: the version lands only after
+    // the request resolves and the reactive update flushes.
+    await vi.waitFor(() => expect(wrapper.text()).toContain('0.3.2'))
   })
 
   it('never shows or fetches the version when showVersion is false (login page)', () => {
