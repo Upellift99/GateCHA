@@ -122,6 +122,10 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
+        # Floating major tag on purpose: Dependabot cannot watch service images
+        # (its github-actions ecosystem only bumps `uses:` refs), so a pinned
+        # version here would rot unnoticed. A floating tag picks up patches on
+        # every run instead. CI-only, never shipped.
         image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: root
