@@ -57,3 +57,27 @@ updates:
       codeql-action:
         patterns:
           - "github/codeql-action*"
+
+  # Dockerfile base images. Without this block nothing watched them, which is how
+  # alpine:3.19 stayed in the runtime stage for ~9 months past its 2025-11-01 EOL
+  # (fixed in #108). govulncheck covers the Go side but not the image OS.
+  #
+  # node:*-alpine and golang:*-alpine are floating tags that pick up patches on
+  # every rebuild; alpine is pinned to a minor branch, so only Dependabot will
+  # tell us when a newer branch is out.
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 5
+    groups:
+      # Same policy as the other ecosystems: majors are deliberately left out so
+      # they open as individual PRs instead of riding along in a group diff.
+      docker-base-images:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
