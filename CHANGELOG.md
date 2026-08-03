@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/Upellift99/GateCHA/compare/v0.3.2...v0.3.3) (2026-08-03)
+
+
+### Bug Fixes
+
+* **dashboard:** show the build version in the footer after logging in ([#114](https://github.com/Upellift99/GateCHA/issues/114)) ([4c3ba67](https://github.com/Upellift99/GateCHA/commit/4c3ba67983ed27da076315f7c88838c526dcf87f))
+
 ## [0.3.2](https://github.com/Upellift99/GateCHA/compare/v0.3.1...v0.3.2) (2026-07-27)
 
 
