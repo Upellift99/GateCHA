@@ -2,6 +2,22 @@
 
 ## [0.3.4](https://github.com/Upellift99/GateCHA/compare/v0.3.3...v0.3.4) (2026-08-10)
 
+This is the first release where `ghcr.io/upellift99/gatecha:latest` means the
+newest release. Until now it tracked `main`, so anyone following the README or
+the bundled `docker-compose.yml` was running unreleased code without being told.
+Pulling `:latest` after this release moves you from a `main` build onto 0.3.4.
+If you deliberately wanted the development build, pin `:main` — it still exists.
+To approve minor upgrades by hand instead, pin `:0.3`.
+
+Also refreshes the embedded IP geolocation database (`phuslu/iploc`, #119),
+which improves country attribution in the traffic-by-country panel. It ships no
+code change, and would otherwise have sat unreleased on `main` indefinitely,
+since dependency bumps do not trigger a release on their own.
+
+Two npm advisories were closed along the way (`brace-expansion`, `nanoid`, #122).
+Neither reaches a running instance: both are build-tooling packages, and the
+container ships only the Go binary with the dashboard embedded. **This is not a
+security fix for operators and does not warrant an out-of-band upgrade.**
 
 ### Bug Fixes
 
