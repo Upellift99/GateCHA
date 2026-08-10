@@ -43,6 +43,18 @@ docker run -d -p 8080:8080 \
   ghcr.io/upellift99/gatecha:latest
 ```
 
+### Image tags
+
+| Tag | Points to | Use it when |
+|---|---|---|
+| `latest` | Newest published release | Default choice |
+| `0.3.3`, `0.3` | That exact release / newest patch in the 0.3 line | You want reproducible upgrades |
+| `main` | Latest commit on `main`, unreleased | Testing an unreleased fix |
+| `sha-<commit>` | One specific build | Pinning or bisecting |
+
+Pin `0.3` (or a full version) in production if you'd rather approve minor
+upgrades yourself — `latest` crosses minor versions as they ship.
+
 ### Prebuilt binary (no Docker)
 
 GateCHA ships as a single self-contained binary — the web dashboard is embedded,
