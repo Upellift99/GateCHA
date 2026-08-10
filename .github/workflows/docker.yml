@@ -11,6 +11,15 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+# Now that :latest follows the newest release tag, two tag builds running at
+# once could finish out of order and leave :latest on the older one. Put every
+# tag run in one group so they publish in sequence; branches and PRs keep their
+# own groups and still run in parallel. Never cancel — a cancelled run would
+# skip a publish rather than merely delay it.
+concurrency:
+  group: docker-${{ github.ref_type == 'tag' && 'release-tags' || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,16 +53,24 @@ jobs:
         uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # latest=auto applies :latest only on a non-prerelease semver tag push,
+          # so :latest is the newest release. It used to track the default branch,
+          # which meant the README's `docker run …:latest` handed operators an
+          # unreleased main build. Branch builds stay reachable as :main.
+          # Caveat: metadata-action does not compare against existing tags, so
+          # re-pushing an older tag would move :latest backwards. release-please
+          # only ever tags forward, so that case does not arise here.
+          flavor: |
+            latest=auto
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
 
       # metadata-action's version output is the branch name on branch pushes, so
-      # :latest images were baking main.version=main and the footer showed "main"
-      # instead of a version. Tags keep the clean semver; branches get a
+      # branch images would bake main.version=main and the footer would show
+      # "main" instead of a version. Tags keep the clean semver; branches get a
       # describe-based string like v0.3.2-3-g8f24823.
       - name: Resolve build version
         id: version
