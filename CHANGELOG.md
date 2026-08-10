@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/Upellift99/GateCHA/compare/v0.3.3...v0.3.4) (2026-08-10)
+
+
+### Bug Fixes
+
+* **ci:** point the :latest image at the newest release, not main ([#123](https://github.com/Upellift99/GateCHA/issues/123)) ([3933de8](https://github.com/Upellift99/GateCHA/commit/3933de80265af6583240e1d425a31ee4d522a7f8))
+
 ## [0.3.3](https://github.com/Upellift99/GateCHA/compare/v0.3.2...v0.3.3) (2026-08-03)
 
 
