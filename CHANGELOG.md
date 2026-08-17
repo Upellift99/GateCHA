@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.3.5](https://github.com/Upellift99/GateCHA/compare/v0.3.4...v0.3.5) (2026-08-17)
+
+**Upgrading is recommended.** Unlike 0.3.4, whose advisories never reached a
+running instance, this one rebuilds on a Go standard library that fixes three
+vulnerabilities reachable from the request-handling path: a post-handshake
+message flood in `crypto/tls` (GO-2026-6090), a missing `ReadHeaderTimeout` on
+the unencrypted HTTP/2 check in `net/http` (GO-2026-6089), and unbounded
+recursion in `encoding/asn1` (GO-2026-5972). All three are denial of service —
+no data disclosure, no remote code execution — but two sit directly on the
+listener GateCHA exposes, so an instance reachable from the internet can be made
+to stop answering challenges. Both the 0.3.4 binaries and the 0.3.4 container
+image are affected: both were built on go1.26.5, and the fixes landed in
+go1.26.6.
+
+This finishes what 0.3.2 (#108) started. That release stopped pinning the Go
+toolchain from `go.mod` so CI would follow the newest patch, and the
+`govulncheck` job was added to prove it. The pin was gone, but the follow-up
+never happened: `setup-go` consults the runner's tool cache before the version
+manifest, and the cached go1.26.5 satisfied a bare `1.26`, so every job — the
+scanner included — kept building against a stdlib a week out of date while
+reporting success. Setting `check-latest: true` is what forces the lookup
+(#128). Operators need do nothing here beyond upgrading; the change is entirely
+in CI.
+
+Also included: `golang.org/x/crypto` 0.55.0 (#125), which ships no behaviour
+change for GateCHA, a `pinia` patch in the dashboard (#126), and dev-only
+tooling bumps that never enter the image.
+
+### Bug Fixes
+
+* **ci:** make setup-go actually install the newest Go patch ([#128](https://github.com/Upellift99/GateCHA/issues/128)) ([8c17d37](https://github.com/Upellift99/GateCHA/commit/8c17d37f072f7a7bfc8aa99507cc8ab12ff0183d))
+
 ## [0.3.4](https://github.com/Upellift99/GateCHA/compare/v0.3.3...v0.3.4) (2026-08-10)
 
 This is the first release where `ghcr.io/upellift99/gatecha:latest` means the
