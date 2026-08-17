@@ -36,6 +36,11 @@ jobs:
           # binaries with 20 reachable stdlib vulnerabilities while the Docker
           # image (golang:1.26-alpine) was patched.
           go-version: "1.26"
+          # A bare major.minor alone is NOT enough: setup-go checks the runner's
+          # tool cache first, and any cached 1.26.x satisfies the spec, so the
+          # manifest holding the newest patch is never consulted. That is how CI
+          # kept building on go1.26.5 for days after 1.26.6 shipped.
+          check-latest: true
 
       - uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
