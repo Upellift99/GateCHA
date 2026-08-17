@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/Upellift99/GateCHA/compare/v0.3.4...v0.3.5) (2026-08-17)
+
+
+### Bug Fixes
+
+* **ci:** make setup-go actually install the newest Go patch ([#128](https://github.com/Upellift99/GateCHA/issues/128)) ([8c17d37](https://github.com/Upellift99/GateCHA/commit/8c17d37f072f7a7bfc8aa99507cc8ab12ff0183d))
+
 ## [0.3.4](https://github.com/Upellift99/GateCHA/compare/v0.3.3...v0.3.4) (2026-08-10)
 
 This is the first release where `ghcr.io/upellift99/gatecha:latest` means the
