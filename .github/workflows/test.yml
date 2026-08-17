@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.26"
+          check-latest: true
 
       - name: Build frontend (for embed)
         run: |
@@ -78,6 +79,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.26"
+          check-latest: true
 
       - name: Build frontend (for embed)
         run: |
@@ -92,6 +94,9 @@ jobs:
 
   # Catches vulnerabilities Dependabot cannot see, notably in the Go standard
   # library, which is what let release binaries ship on a stale toolchain.
+  # Every setup-go step here carries `check-latest: true`: without it setup-go
+  # accepts whatever 1.26.x the runner image already caches, so this job would
+  # scan an older stdlib than the one a fresh release actually builds against.
   govulncheck:
     runs-on: ubuntu-latest
     steps:
@@ -101,6 +106,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.26"
+          check-latest: true
 
       # Required: internal/dashboard uses //go:embed dist/*, so the directory
       # must exist before any tool can load the packages.
@@ -144,6 +150,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.26"
+          check-latest: true
 
       - name: Build frontend (for embed)
         run: |

@@ -60,6 +60,11 @@ make dev          # Run Go backend in dev mode
   bare `go-version: "1.26"` so setup-go resolves the latest patch; never switch back to
   `go-version-file: go.mod`, whose pinned `go 1.25.0` shipped binaries with 20 reachable
   stdlib vulnerabilities. The `govulncheck` CI job guards this. See #108.
+- The bare `go-version` above is necessary but **not sufficient**: setup-go looks in the
+  runner's tool cache before the version manifest, and any cached `1.26.x` satisfies the
+  spec. Every `setup-go` step therefore also sets `check-latest: true` — without it CI
+  stayed on go1.26.5 for a week after 1.26.6 fixed three reachable stdlib vulns. Add it to
+  any new `setup-go` step. The Dockerfile is unaffected: `golang:1.26-alpine` floats.
 
 ## Future Roadmap
 
