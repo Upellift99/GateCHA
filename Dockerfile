@@ -8,7 +8,7 @@ RUN npm run build
 
 ### Stage 2: Build Go backend
 # Pass --build-arg BUILD_TAGS=mysql to enable MySQL support.
-FROM golang:1.26-alpine AS backend
+FROM golang:1.27-alpine AS backend
 ARG BUILD_TAGS=""
 # Build version, surfaced in the dashboard footer. Pass --build-arg VERSION=v1.2.3.
 ARG VERSION=dev
