@@ -10,6 +10,11 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  # docker/build-push-action uploads a `.dockerbuild` build summary as a
+  # workflow artifact on every run. Nobody reads them, and they count against
+  # the 0.5 GB Actions storage quota: ~1000 of them had piled up across the
+  # personal repos by 2026-08-24, one per build, kept for the default 90 days.
+  DOCKER_BUILD_SUMMARY: false
 
 # Now that :latest follows the newest release tag, two tag builds running at
 # once could finish out of order and leave :latest on the older one. Put every
