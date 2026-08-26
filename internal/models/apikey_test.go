@@ -282,3 +282,81 @@ func TestListAPIKeysOmitsHMACSecret(t *testing.T) {
 		t.Error("GetAPIKeyByID must still return the HMAC secret")
 	}
 }
+
+func TestUpdateAPIKeyFieldsTouchesOnlyNamedColumns(t *testing.T) {
+	db := testutil.SetupTestDB(t)
+
+	key, err := models.CreateAPIKey(db, "Original", "original.com", 20000, 120, "SHA-512")
+	if err != nil {
+		t.Fatalf("CreateAPIKey failed: %v", err)
+	}
+
+	if err := models.UpdateAPIKeyFields(db, key.ID, map[string]any{"name": "Renamed"}); err != nil {
+		t.Fatalf("UpdateAPIKeyFields failed: %v", err)
+	}
+
+	got, err := models.GetAPIKeyByID(db, key.ID)
+	if err != nil {
+		t.Fatalf("GetAPIKeyByID failed: %v", err)
+	}
+	if got.Name != "Renamed" {
+		t.Errorf("expected the name to change, got %q", got.Name)
+	}
+	if got.Domain != "original.com" || got.MaxNumber != 20000 || got.ExpireSeconds != 120 || got.Algorithm != "SHA-512" {
+		t.Errorf("an unnamed column was overwritten: %+v", got)
+	}
+	if !got.Enabled {
+		t.Error("enabled was overwritten by a write that never named it")
+	}
+}
+
+func TestUpdateAPIKeyFieldsEmptyIsANoOp(t *testing.T) {
+	db := testutil.SetupTestDB(t)
+
+	key, err := models.CreateAPIKey(db, "Untouched", "u.com", 0, 0, "")
+	if err != nil {
+		t.Fatalf("CreateAPIKey failed: %v", err)
+	}
+
+	// GORM errors on an empty Updates map, so this has to be handled rather than
+	// forwarded: a tool call that changes nothing is not a failure.
+	if err := models.UpdateAPIKeyFields(db, key.ID, nil); err != nil {
+		t.Errorf("an empty update should be a no-op, got %v", err)
+	}
+	if err := models.UpdateAPIKeyFields(db, key.ID, map[string]any{}); err != nil {
+		t.Errorf("an empty update should be a no-op, got %v", err)
+	}
+
+	got, _ := models.GetAPIKeyByID(db, key.ID)
+	if got.Name != "Untouched" {
+		t.Errorf("an empty update changed the row: %+v", got)
+	}
+}
+
+func TestSetAPIKeyEnabledLeavesSettingsAlone(t *testing.T) {
+	db := testutil.SetupTestDB(t)
+
+	key, err := models.CreateAPIKey(db, "Site", "site.com", 20000, 120, "SHA-512")
+	if err != nil {
+		t.Fatalf("CreateAPIKey failed: %v", err)
+	}
+
+	if err := models.SetAPIKeyEnabled(db, key.ID, false); err != nil {
+		t.Fatalf("SetAPIKeyEnabled failed: %v", err)
+	}
+	got, _ := models.GetAPIKeyByID(db, key.ID)
+	if got.Enabled {
+		t.Error("expected the key to be disabled")
+	}
+	if got.Name != "Site" || got.Domain != "site.com" || got.MaxNumber != 20000 {
+		t.Errorf("flipping enabled overwrote other settings: %+v", got)
+	}
+
+	if err := models.SetAPIKeyEnabled(db, key.ID, true); err != nil {
+		t.Fatalf("SetAPIKeyEnabled failed: %v", err)
+	}
+	got, _ = models.GetAPIKeyByID(db, key.ID)
+	if !got.Enabled {
+		t.Error("expected the key to be enabled again")
+	}
+}

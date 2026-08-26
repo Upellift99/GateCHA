@@ -180,50 +180,44 @@ func registerMCPWriteTools(server *mcp.Server, db *gorm.DB) {
 			OpenWorldHint:   boolPtr(false),
 		},
 	}, func(_ context.Context, _ *mcp.CallToolRequest, in updateKeyInput) (*mcp.CallToolResult, mcpKeyView, error) {
-		existing, err := models.GetAPIKeyByID(db, in.ID)
-		if err != nil {
+		if _, err := models.GetAPIKeyByID(db, in.ID); err != nil {
 			return nil, mcpKeyView{}, fmt.Errorf("no key with ID %d", in.ID)
 		}
 
-		params := models.UpdateAPIKeyParams{
-			Name:               existing.Name,
-			Domain:             existing.Domain,
-			MaxNumber:          existing.MaxNumber,
-			ExpireSeconds:      existing.ExpireSeconds,
-			Algorithm:          existing.Algorithm,
-			RateLimitPerMin:    existing.RateLimitPerMin,
-			AdaptiveDifficulty: existing.AdaptiveDifficulty,
-			HISSampling:        existing.HISSampling,
-			// Enabled is carried through untouched: this tool must never be the
-			// thing that takes a live site's captcha down.
-			Enabled: existing.Enabled,
-		}
+		// Only the fields the caller actually sent are written. Nothing is read
+		// first and echoed back, so a concurrent disable_key cannot be undone by
+		// a rename that had already read the old value. "enabled" is absent from
+		// the input type, so it can never appear in this map.
+		fields := map[string]any{}
 		if in.Name != nil {
-			params.Name = *in.Name
+			fields["name"] = *in.Name
 		}
 		if in.Domain != nil {
-			params.Domain = *in.Domain
+			fields["domain"] = *in.Domain
 		}
 		if in.MaxNumber != nil {
-			params.MaxNumber = *in.MaxNumber
+			fields["max_number"] = *in.MaxNumber
 		}
 		if in.ExpireSeconds != nil {
-			params.ExpireSeconds = *in.ExpireSeconds
+			fields["expire_seconds"] = *in.ExpireSeconds
 		}
 		if in.Algorithm != nil {
-			params.Algorithm = *in.Algorithm
+			fields["algorithm"] = *in.Algorithm
 		}
 		if in.RateLimitPerMin != nil {
-			params.RateLimitPerMin = *in.RateLimitPerMin
+			fields["rate_limit_per_min"] = *in.RateLimitPerMin
 		}
 		if in.AdaptiveDifficulty != nil {
-			params.AdaptiveDifficulty = *in.AdaptiveDifficulty
+			fields["adaptive_difficulty"] = *in.AdaptiveDifficulty
 		}
 		if in.HISSampling != nil {
-			params.HISSampling = *in.HISSampling
+			fields["his_sampling"] = *in.HISSampling
 		}
 
-		return mcpApplyUpdate(db, in.ID, params)
+		if err := models.UpdateAPIKeyFields(db, in.ID, fields); err != nil {
+			return nil, mcpKeyView{}, fmt.Errorf("failed to update key %d: %w", in.ID, err)
+		}
+		return mcpReadBack(db, in.ID)
 	})
 
 	mcp.AddTool(server, &mcp.Tool{
@@ -256,27 +250,18 @@ func registerMCPWriteTools(server *mcp.Server, db *gorm.DB) {
 }
 
 func mcpSetEnabled(db *gorm.DB, id int64, enabled bool) (*mcp.CallToolResult, mcpKeyView, error) {
-	existing, err := models.GetAPIKeyByID(db, id)
-	if err != nil {
+	if _, err := models.GetAPIKeyByID(db, id); err != nil {
 		return nil, mcpKeyView{}, fmt.Errorf("no key with ID %d", id)
 	}
-	return mcpApplyUpdate(db, id, models.UpdateAPIKeyParams{
-		Name:               existing.Name,
-		Domain:             existing.Domain,
-		MaxNumber:          existing.MaxNumber,
-		ExpireSeconds:      existing.ExpireSeconds,
-		Algorithm:          existing.Algorithm,
-		RateLimitPerMin:    existing.RateLimitPerMin,
-		AdaptiveDifficulty: existing.AdaptiveDifficulty,
-		HISSampling:        existing.HISSampling,
-		Enabled:            enabled,
-	})
-}
-
-func mcpApplyUpdate(db *gorm.DB, id int64, params models.UpdateAPIKeyParams) (*mcp.CallToolResult, mcpKeyView, error) {
-	if err := models.UpdateAPIKey(db, id, params); err != nil {
+	if err := models.SetAPIKeyEnabled(db, id, enabled); err != nil {
 		return nil, mcpKeyView{}, fmt.Errorf("failed to update key %d: %w", id, err)
 	}
+	return mcpReadBack(db, id)
+}
+
+// mcpReadBack returns the key as it now stands, so a tool's answer reflects the
+// stored row rather than what the caller asked for.
+func mcpReadBack(db *gorm.DB, id int64) (*mcp.CallToolResult, mcpKeyView, error) {
 	updated, err := models.GetAPIKeyByID(db, id)
 	if err != nil {
 		return nil, mcpKeyView{}, fmt.Errorf("key %d disappeared after the update: %w", id, err)

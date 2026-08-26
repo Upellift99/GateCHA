@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"slices"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/Upellift99/GateCHA/internal/models"
@@ -455,6 +456,52 @@ func TestMCPToolAnnotations(t *testing.T) {
 			if tool.Annotations.DestructiveHint == nil || *tool.Annotations.DestructiveHint {
 				t.Errorf("%s should not be marked destructive", tool.Name)
 			}
+		}
+	}
+}
+
+// A rename racing a disable must not resurrect the key.
+//
+// Before the fix, both tools read the whole row and wrote it back, so a rename
+// that had read Enabled=true before the disable committed would write the key
+// back to enabled. Whichever order the two calls land in now, the outcome is
+// the same, because neither write touches a column it was not asked to change.
+func TestMCPConcurrentRenameDoesNotResurrectADisabledKey(t *testing.T) {
+	session, db, _ := connectWithTools(t, false)
+
+	for round := range 25 {
+		key, err := models.CreateAPIKey(db, "Live", "live.com", 0, 0, "")
+		if err != nil {
+			t.Fatalf("CreateAPIKey failed: %v", err)
+		}
+
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			session.CallTool(context.Background(), &mcp.CallToolParams{
+				Name:      "update_key",
+				Arguments: map[string]any{"id": key.ID, "name": "Renamed"},
+			})
+		}()
+		go func() {
+			defer wg.Done()
+			session.CallTool(context.Background(), &mcp.CallToolParams{
+				Name:      "disable_key",
+				Arguments: map[string]any{"id": key.ID},
+			})
+		}()
+		wg.Wait()
+
+		after, err := models.GetAPIKeyByID(db, key.ID)
+		if err != nil {
+			t.Fatalf("GetAPIKeyByID failed: %v", err)
+		}
+		if after.Enabled {
+			t.Fatalf("round %d: a concurrent rename re-enabled a disabled key", round)
+		}
+		if after.Name != "Renamed" {
+			t.Fatalf("round %d: the rename was lost: %q", round, after.Name)
 		}
 	}
 }
