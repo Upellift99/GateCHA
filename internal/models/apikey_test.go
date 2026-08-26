@@ -232,3 +232,53 @@ func TestRotateHMACSecret(t *testing.T) {
 		t.Error("expected stored secret to match returned secret")
 	}
 }
+
+func TestListAPIKeysOmitsHMACSecret(t *testing.T) {
+	db := testutil.SetupTestDB(t)
+
+	created, err := models.CreateAPIKey(db, "Listed", "listed.com", 10000, 100, "SHA-256")
+	if err != nil {
+		t.Fatalf("CreateAPIKey failed: %v", err)
+	}
+	if created.HMACSecret == "" {
+		t.Fatal("expected the created key to carry a secret")
+	}
+
+	keys, err := models.ListAPIKeys(db)
+	if err != nil {
+		t.Fatalf("ListAPIKeys failed: %v", err)
+	}
+	if len(keys) != 1 {
+		t.Fatalf("expected 1 key, got %d", len(keys))
+	}
+
+	if keys[0].HMACSecret != "" {
+		t.Error("ListAPIKeys must not return the HMAC secret")
+	}
+
+	// Omitting one column must not blank out the rest of the row.
+	if keys[0].ID != created.ID {
+		t.Errorf("expected ID %d, got %d", created.ID, keys[0].ID)
+	}
+	if keys[0].KeyID != created.KeyID {
+		t.Errorf("expected key_id %q, got %q", created.KeyID, keys[0].KeyID)
+	}
+	if keys[0].Name != "Listed" || keys[0].Domain != "listed.com" {
+		t.Errorf("unexpected name/domain: %q / %q", keys[0].Name, keys[0].Domain)
+	}
+	if keys[0].MaxNumber != 10000 || keys[0].ExpireSeconds != 100 {
+		t.Errorf("unexpected max_number/expire_seconds: %d / %d", keys[0].MaxNumber, keys[0].ExpireSeconds)
+	}
+	if !keys[0].Enabled {
+		t.Error("expected the key to stay enabled")
+	}
+
+	// The secret is still on disk and still reachable where it is needed.
+	fetched, err := models.GetAPIKeyByID(db, created.ID)
+	if err != nil {
+		t.Fatalf("GetAPIKeyByID failed: %v", err)
+	}
+	if fetched.HMACSecret != created.HMACSecret {
+		t.Error("GetAPIKeyByID must still return the HMAC secret")
+	}
+}

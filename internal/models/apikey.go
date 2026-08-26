@@ -120,9 +120,14 @@ func GetAPIKeyByID(db *gorm.DB, id int64) (*APIKey, error) {
 	return &key, nil
 }
 
+// ListAPIKeys returns every key without its HMAC secret. The listing feeds the
+// dashboard table, which never needs the secret; callers that do (key detail,
+// creation, rotation) go through GetAPIKeyByID or RotateHMACSecret instead.
+// Omitting the column keeps the whole secret set out of the response rather
+// than relying on the caller to strip it.
 func ListAPIKeys(db *gorm.DB) ([]APIKey, error) {
 	var keys []APIKey
-	return keys, db.Order("created_at desc").Find(&keys).Error
+	return keys, db.Omit("hmac_secret").Order("created_at desc").Find(&keys).Error
 }
 
 func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
