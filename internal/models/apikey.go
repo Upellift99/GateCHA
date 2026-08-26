@@ -111,6 +111,10 @@ func GetAPIKeyByKeyID(db *gorm.DB, keyID string) (*APIKey, error) {
 	return &key, nil
 }
 
+// byID is the WHERE clause every single-key write shares, spelled once so the
+// three writers cannot drift apart.
+const byID = "id = ?"
+
 func GetAPIKeyByID(db *gorm.DB, id int64) (*APIKey, error) {
 	var key APIKey
 	err := db.First(&key, id).Error
@@ -130,8 +134,29 @@ func ListAPIKeys(db *gorm.DB) ([]APIKey, error) {
 	return keys, db.Omit("hmac_secret").Order("created_at desc").Find(&keys).Error
 }
 
+// UpdateAPIKeyFields writes only the named columns, leaving every other one
+// alone.
+//
+// UpdateAPIKey writes the whole row, which forces callers into a
+// read-modify-write and makes concurrent edits lose updates: a rename that read
+// Enabled=true before a disable committed would write the key back to enabled.
+// Restricting the write to the fields that actually changed removes the race
+// rather than serialising around it. An empty map is a no-op, not an error.
+func UpdateAPIKeyFields(db *gorm.DB, id int64, fields map[string]any) error {
+	if len(fields) == 0 {
+		return nil
+	}
+	return db.Model(&APIKey{}).Where(byID, id).Updates(fields).Error
+}
+
+// SetAPIKeyEnabled flips only the enabled flag, so enabling or disabling a key
+// can never clobber a concurrent edit to its settings.
+func SetAPIKeyEnabled(db *gorm.DB, id int64, enabled bool) error {
+	return UpdateAPIKeyFields(db, id, map[string]any{"enabled": enabled})
+}
+
 func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
-	return db.Model(&APIKey{}).Where("id = ?", id).Updates(map[string]any{
+	return db.Model(&APIKey{}).Where(byID, id).Updates(map[string]any{
 		"name":                params.Name,
 		"domain":              params.Domain,
 		"max_number":          params.MaxNumber,
@@ -153,7 +178,7 @@ func RotateHMACSecret(db *gorm.DB, id int64) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := db.Model(&APIKey{}).Where("id = ?", id).Update("hmac_secret", secret).Error; err != nil {
+	if err := db.Model(&APIKey{}).Where(byID, id).Update("hmac_secret", secret).Error; err != nil {
 		return "", err
 	}
 	return secret, nil

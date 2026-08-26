@@ -20,6 +20,13 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 	if err != nil {
 		t.Fatalf("failed to open test db: %v", err)
 	}
+	// Match production: database.Open caps SQLite at a single connection. Without
+	// this, a second connection to ":memory:" opens a fresh empty database, so any
+	// test that touches the DB concurrently fails with "no such table".
+	if sqlDB, err := db.DB(); err == nil {
+		sqlDB.SetMaxOpenConns(1)
+	}
+
 	if err := database.RunMigrations(db, models.All()...); err != nil {
 		t.Fatalf("failed to run migrations: %v", err)
 	}
