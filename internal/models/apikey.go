@@ -111,6 +111,10 @@ func GetAPIKeyByKeyID(db *gorm.DB, keyID string) (*APIKey, error) {
 	return &key, nil
 }
 
+// byID is the WHERE clause every single-key write shares, spelled once so the
+// three writers cannot drift apart.
+const byID = "id = ?"
+
 func GetAPIKeyByID(db *gorm.DB, id int64) (*APIKey, error) {
 	var key APIKey
 	err := db.First(&key, id).Error
@@ -142,7 +146,7 @@ func UpdateAPIKeyFields(db *gorm.DB, id int64, fields map[string]any) error {
 	if len(fields) == 0 {
 		return nil
 	}
-	return db.Model(&APIKey{}).Where("id = ?", id).Updates(fields).Error
+	return db.Model(&APIKey{}).Where(byID, id).Updates(fields).Error
 }
 
 // SetAPIKeyEnabled flips only the enabled flag, so enabling or disabling a key
@@ -152,7 +156,7 @@ func SetAPIKeyEnabled(db *gorm.DB, id int64, enabled bool) error {
 }
 
 func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
-	return db.Model(&APIKey{}).Where("id = ?", id).Updates(map[string]any{
+	return db.Model(&APIKey{}).Where(byID, id).Updates(map[string]any{
 		"name":                params.Name,
 		"domain":              params.Domain,
 		"max_number":          params.MaxNumber,
@@ -174,7 +178,7 @@ func RotateHMACSecret(db *gorm.DB, id int64) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if err := db.Model(&APIKey{}).Where("id = ?", id).Update("hmac_secret", secret).Error; err != nil {
+	if err := db.Model(&APIKey{}).Where(byID, id).Update("hmac_secret", secret).Error; err != nil {
 		return "", err
 	}
 	return secret, nil
