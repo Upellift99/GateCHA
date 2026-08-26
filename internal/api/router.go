@@ -103,6 +103,18 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 		})
 	})
 
+	// MCP endpoint. Off unless an operator turns it on: once served, it is a
+	// second authentication path to full admin capability that bypasses the
+	// dashboard login and its captcha.
+	r.Group(func(r chi.Router) {
+		r.Use(MCPEnabledMiddleware(db))
+		if cfg.RateLimitEnabled {
+			r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
+		}
+		r.Use(MCPAuthMiddleware(db))
+		r.Handle("/mcp", MCPHandler(db, cfg.Version))
+	})
+
 	// Health check
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		sqlDB, err := db.DB()
