@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/Upellift99/GateCHA/internal/auth"
@@ -1137,5 +1138,62 @@ func TestPublicLoginConfig_CaptchaEnabled(t *testing.T) {
 	}
 	if resp["challenge_url"] == nil || resp["challenge_url"] == "" {
 		t.Error("expected challenge_url when captcha enabled")
+	}
+}
+
+func TestListKeysDoesNotExposeHMACSecret(t *testing.T) {
+	router, db := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	created, err := models.CreateAPIKey(db, "Listed", "listed.com", 10000, 100, "SHA-256")
+	if err != nil {
+		t.Fatalf("CreateAPIKey failed: %v", err)
+	}
+
+	req := httptest.NewRequest("GET", "/api/admin/keys", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("list: expected 200, got %d", w.Code)
+	}
+
+	body := w.Body.String()
+	if strings.Contains(body, created.HMACSecret) {
+		t.Error("the keys listing leaked an HMAC secret")
+	}
+	if strings.Contains(body, "hmac_secret") {
+		t.Error("the keys listing must not carry an hmac_secret field")
+	}
+
+	// The rest of the payload still has to be usable by the dashboard table.
+	var resp struct {
+		Keys []map[string]interface{} `json:"keys"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to decode listing: %v", err)
+	}
+	if len(resp.Keys) != 1 {
+		t.Fatalf("expected 1 key, got %d", len(resp.Keys))
+	}
+	if resp.Keys[0]["key_id"] != created.KeyID {
+		t.Errorf("expected key_id %q, got %v", created.KeyID, resp.Keys[0]["key_id"])
+	}
+	if resp.Keys[0]["name"] != "Listed" {
+		t.Errorf("expected name %q, got %v", "Listed", resp.Keys[0]["name"])
+	}
+
+	// The detail endpoint is where the secret is meant to surface.
+	req = httptest.NewRequest("GET", "/api/admin/keys/"+strconv.FormatInt(created.ID, 10), nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("get: expected 200, got %d", w.Code)
+	}
+	if !strings.Contains(w.Body.String(), created.HMACSecret) {
+		t.Error("the key detail endpoint should still return the HMAC secret")
 	}
 }
