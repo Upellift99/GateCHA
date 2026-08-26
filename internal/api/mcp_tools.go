@@ -102,9 +102,9 @@ func registerMCPReadTools(server *mcp.Server, db *gorm.DB) {
 			OpenWorldHint: boolPtr(false),
 		},
 	}, func(_ context.Context, _ *mcp.CallToolRequest, in getKeyInput) (*mcp.CallToolResult, mcpKeyView, error) {
-		key, err := models.GetAPIKeyByID(db, in.ID)
+		key, err := mcpFetchKey(db, in.ID)
 		if err != nil {
-			return nil, mcpKeyView{}, fmt.Errorf("no key with ID %d", in.ID)
+			return nil, mcpKeyView{}, err
 		}
 		return nil, mcpViewOf(key), nil
 	})
@@ -180,41 +180,11 @@ func registerMCPWriteTools(server *mcp.Server, db *gorm.DB) {
 			OpenWorldHint:   boolPtr(false),
 		},
 	}, func(_ context.Context, _ *mcp.CallToolRequest, in updateKeyInput) (*mcp.CallToolResult, mcpKeyView, error) {
-		if _, err := models.GetAPIKeyByID(db, in.ID); err != nil {
-			return nil, mcpKeyView{}, fmt.Errorf("no key with ID %d", in.ID)
+		if _, err := mcpFetchKey(db, in.ID); err != nil {
+			return nil, mcpKeyView{}, err
 		}
 
-		// Only the fields the caller actually sent are written. Nothing is read
-		// first and echoed back, so a concurrent disable_key cannot be undone by
-		// a rename that had already read the old value. "enabled" is absent from
-		// the input type, so it can never appear in this map.
-		fields := map[string]any{}
-		if in.Name != nil {
-			fields["name"] = *in.Name
-		}
-		if in.Domain != nil {
-			fields["domain"] = *in.Domain
-		}
-		if in.MaxNumber != nil {
-			fields["max_number"] = *in.MaxNumber
-		}
-		if in.ExpireSeconds != nil {
-			fields["expire_seconds"] = *in.ExpireSeconds
-		}
-		if in.Algorithm != nil {
-			fields["algorithm"] = *in.Algorithm
-		}
-		if in.RateLimitPerMin != nil {
-			fields["rate_limit_per_min"] = *in.RateLimitPerMin
-		}
-		if in.AdaptiveDifficulty != nil {
-			fields["adaptive_difficulty"] = *in.AdaptiveDifficulty
-		}
-		if in.HISSampling != nil {
-			fields["his_sampling"] = *in.HISSampling
-		}
-
-		if err := models.UpdateAPIKeyFields(db, in.ID, fields); err != nil {
+		if err := models.UpdateAPIKeyFields(db, in.ID, mcpUpdateFields(in)); err != nil {
 			return nil, mcpKeyView{}, fmt.Errorf("failed to update key %d: %w", in.ID, err)
 		}
 		return mcpReadBack(db, in.ID)
@@ -249,9 +219,53 @@ func registerMCPWriteTools(server *mcp.Server, db *gorm.DB) {
 	})
 }
 
+// mcpFetchKey looks a key up and, when it is missing, returns the one wording
+// every tool uses for it. A client sees the same sentence whichever tool it
+// called with a bad ID.
+func mcpFetchKey(db *gorm.DB, id int64) (*models.APIKey, error) {
+	key, err := models.GetAPIKeyByID(db, id)
+	if err != nil {
+		return nil, fmt.Errorf("no key with ID %d", id)
+	}
+	return key, nil
+}
+
+// mcpUpdateFields maps the fields the caller actually sent onto the columns to
+// write. Nothing is read first and echoed back, so a concurrent disable_key
+// cannot be undone by a rename that had already read the old value. "enabled"
+// is absent from updateKeyInput, so it can never appear in this map.
+func mcpUpdateFields(in updateKeyInput) map[string]any {
+	fields := map[string]any{}
+	if in.Name != nil {
+		fields["name"] = *in.Name
+	}
+	if in.Domain != nil {
+		fields["domain"] = *in.Domain
+	}
+	if in.MaxNumber != nil {
+		fields["max_number"] = *in.MaxNumber
+	}
+	if in.ExpireSeconds != nil {
+		fields["expire_seconds"] = *in.ExpireSeconds
+	}
+	if in.Algorithm != nil {
+		fields["algorithm"] = *in.Algorithm
+	}
+	if in.RateLimitPerMin != nil {
+		fields["rate_limit_per_min"] = *in.RateLimitPerMin
+	}
+	if in.AdaptiveDifficulty != nil {
+		fields["adaptive_difficulty"] = *in.AdaptiveDifficulty
+	}
+	if in.HISSampling != nil {
+		fields["his_sampling"] = *in.HISSampling
+	}
+	return fields
+}
+
 func mcpSetEnabled(db *gorm.DB, id int64, enabled bool) (*mcp.CallToolResult, mcpKeyView, error) {
-	if _, err := models.GetAPIKeyByID(db, id); err != nil {
-		return nil, mcpKeyView{}, fmt.Errorf("no key with ID %d", id)
+	if _, err := mcpFetchKey(db, id); err != nil {
+		return nil, mcpKeyView{}, err
 	}
 	if err := models.SetAPIKeyEnabled(db, id, enabled); err != nil {
 		return nil, mcpKeyView{}, fmt.Errorf("failed to update key %d: %w", id, err)

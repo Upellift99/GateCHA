@@ -281,8 +281,8 @@ func TestMCPUpdateKeyLeavesOmittedFieldsAlone(t *testing.T) {
 	if updated.Name != "Renamed" {
 		t.Errorf("expected the name to change, got %q", updated.Name)
 	}
-	// This is the trap: UpdateAPIKey writes every column, so an omitted field
-	// must be read back from the existing row rather than sent as a zero value.
+	// This is the trap: an omitted field must not reach the write at all. Sending
+	// it as a zero value would blank the column.
 	if updated.Domain != "original.com" {
 		t.Errorf("omitting domain blanked it: %q", updated.Domain)
 	}
@@ -439,24 +439,48 @@ func TestMCPToolAnnotations(t *testing.T) {
 	}
 
 	for _, tool := range res.Tools {
-		if tool.Annotations == nil {
-			t.Errorf("%s has no annotations", tool.Name)
-			continue
+		assertToolAnnotations(t, tool.Name, tool.Annotations)
+	}
+}
+
+// The read tools are checked on ReadOnlyHint; every write tool has to state
+// explicitly whether it is destructive, and exactly one of them is. A tool
+// missing from both tables fails rather than passing unchecked, so adding one
+// without deciding what its consent prompt says is not possible.
+var (
+	mcpReadOnlyTools    = map[string]bool{"list_keys": true, "get_key": true}
+	mcpDestructiveTools = map[string]bool{
+		"create_key":  false,
+		"update_key":  false,
+		"enable_key":  false,
+		"disable_key": true,
+	}
+)
+
+func assertToolAnnotations(t *testing.T, name string, ann *mcp.ToolAnnotations) {
+	t.Helper()
+
+	if ann == nil {
+		t.Errorf("%s has no annotations", name)
+		return
+	}
+	if mcpReadOnlyTools[name] {
+		if !ann.ReadOnlyHint {
+			t.Errorf("%s should be marked read-only", name)
 		}
-		switch tool.Name {
-		case "list_keys", "get_key":
-			if !tool.Annotations.ReadOnlyHint {
-				t.Errorf("%s should be marked read-only", tool.Name)
-			}
-		case "disable_key":
-			if tool.Annotations.DestructiveHint == nil || !*tool.Annotations.DestructiveHint {
-				t.Error("disable_key should be marked destructive")
-			}
-		default:
-			if tool.Annotations.DestructiveHint == nil || *tool.Annotations.DestructiveHint {
-				t.Errorf("%s should not be marked destructive", tool.Name)
-			}
-		}
+		return
+	}
+	destructive, known := mcpDestructiveTools[name]
+	if !known {
+		t.Errorf("%s is not covered by this test", name)
+		return
+	}
+	if ann.DestructiveHint == nil {
+		t.Errorf("%s does not say whether it is destructive", name)
+		return
+	}
+	if *ann.DestructiveHint != destructive {
+		t.Errorf("%s: DestructiveHint is %v, want %v", name, *ann.DestructiveHint, destructive)
 	}
 }
 
