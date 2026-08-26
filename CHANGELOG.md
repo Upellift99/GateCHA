@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/Upellift99/GateCHA/compare/v0.4.0...v0.5.0) (2026-08-26)
+
+
+### Features
+
+* **admin:** add revocable per-person MCP tokens and an endpoint toggle ([#141](https://github.com/Upellift99/GateCHA/issues/141)) ([e62e673](https://github.com/Upellift99/GateCHA/commit/e62e6730cff6e981ea71678210f0459f1b1ac9f4))
+* **api:** expose the API key management tools over MCP ([#144](https://github.com/Upellift99/GateCHA/issues/144)) ([21f0726](https://github.com/Upellift99/GateCHA/commit/21f0726994922f6ec8ea6abd5065e1a780eb43e3))
+* **api:** serve the MCP endpoint over streamable HTTP ([#143](https://github.com/Upellift99/GateCHA/issues/143)) ([799b973](https://github.com/Upellift99/GateCHA/commit/799b973d413c82a60f488de36b77a3f6328eacca)), closes [#140](https://github.com/Upellift99/GateCHA/issues/140)
+
 ## [0.4.0](https://github.com/Upellift99/GateCHA/compare/v0.3.5...v0.4.0) (2026-08-26)
 
 
