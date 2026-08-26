@@ -88,6 +88,11 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 			r.Delete(keysIDRoute, adminHandler.DeleteKey)
 			r.Post(keysIDRoute+"/rotate-secret", adminHandler.RotateSecret)
 
+			// MCP tokens (long-lived credentials for the MCP endpoint)
+			r.Get("/mcp-tokens", adminHandler.ListMCPTokens)
+			r.Post("/mcp-tokens", adminHandler.CreateMCPToken)
+			r.Delete("/mcp-tokens/{id}", adminHandler.DeleteMCPToken)
+
 			// Statistics
 			r.Get("/stats/overview", adminHandler.StatsOverview)
 			r.Get("/stats/keys-summary", adminHandler.KeysStatsSummary)

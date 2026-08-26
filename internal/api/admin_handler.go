@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Upellift99/GateCHA/internal/altcha"
 	"github.com/Upellift99/GateCHA/internal/auth"
@@ -19,6 +20,7 @@ const (
 	errInvalidKeyID   = "invalid key ID"
 	errKeyNotFound    = "key not found"
 	errFetchStats     = "failed to fetch stats"
+	errUpdateSettings = "failed to update settings"
 )
 
 type AdminHandler struct {
@@ -453,20 +455,36 @@ func (h *AdminHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 // GET /api/admin/settings
 func (h *AdminHandler) GetSettings(w http.ResponseWriter, r *http.Request) {
-	enabled, err := models.GetLoginCaptchaEnabled(h.DB)
+	settings, err := h.readSettings()
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch settings"})
 		return
 	}
-	writeJSON(w, http.StatusOK, map[string]interface{}{
-		"login_captcha_enabled": enabled,
-	})
+	writeJSON(w, http.StatusOK, settings)
+}
+
+// readSettings gathers every exposed setting. Settings are added here rather
+// than inline in the handlers so the read and write paths cannot drift apart.
+func (h *AdminHandler) readSettings() (map[string]interface{}, error) {
+	captcha, err := models.GetLoginCaptchaEnabled(h.DB)
+	if err != nil {
+		return nil, err
+	}
+	mcp, err := models.GetMCPEnabled(h.DB)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]interface{}{
+		"login_captcha_enabled": captcha,
+		"mcp_enabled":           mcp,
+	}, nil
 }
 
 // PUT /api/admin/settings
 func (h *AdminHandler) UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		LoginCaptchaEnabled *bool `json:"login_captcha_enabled"`
+		MCPEnabled          *bool `json:"mcp_enabled"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
@@ -474,22 +492,99 @@ func (h *AdminHandler) UpdateSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.LoginCaptchaEnabled != nil {
-		val := "false"
 		if *req.LoginCaptchaEnabled {
-			val = "true"
 			if _, err := models.EnsureLoginCaptchaAPIKey(h.DB); err != nil {
 				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to init captcha key"})
 				return
 			}
 		}
-		if err := models.SetSetting(h.DB, models.SettingLoginCaptchaEnabled, val); err != nil {
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update settings"})
+		if err := models.SetSetting(h.DB, models.SettingLoginCaptchaEnabled, boolSetting(*req.LoginCaptchaEnabled)); err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": errUpdateSettings})
 			return
 		}
 	}
 
-	enabled, _ := models.GetLoginCaptchaEnabled(h.DB)
-	writeJSON(w, http.StatusOK, map[string]interface{}{
-		"login_captcha_enabled": enabled,
+	if req.MCPEnabled != nil {
+		if err := models.SetSetting(h.DB, models.SettingMCPEnabled, boolSetting(*req.MCPEnabled)); err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": errUpdateSettings})
+			return
+		}
+	}
+
+	settings, err := h.readSettings()
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch settings"})
+		return
+	}
+	writeJSON(w, http.StatusOK, settings)
+}
+
+func boolSetting(v bool) string {
+	if v {
+		return "true"
+	}
+	return "false"
+}
+
+// GET /api/admin/mcp-tokens
+func (h *AdminHandler) ListMCPTokens(w http.ResponseWriter, r *http.Request) {
+	tokens, err := models.ListMCPTokens(h.DB)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to list mcp tokens"})
+		return
+	}
+	if tokens == nil {
+		tokens = []models.MCPToken{}
+	}
+	writeJSON(w, http.StatusOK, map[string]interface{}{"tokens": tokens})
+}
+
+// POST /api/admin/mcp-tokens
+func (h *AdminHandler) CreateMCPToken(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Name     string `json:"name"`
+		ReadOnly bool   `json:"read_only"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
+		return
+	}
+
+	name := strings.TrimSpace(req.Name)
+	if name == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "name is required"})
+		return
+	}
+
+	token, secret, err := models.CreateMCPToken(h.DB, name, req.ReadOnly)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create mcp token"})
+		return
+	}
+
+	// The secret is returned exactly once, like an API key's HMAC secret.
+	writeJSON(w, http.StatusCreated, map[string]interface{}{
+		"token":  token,
+		"secret": secret,
 	})
+}
+
+// DELETE /api/admin/mcp-tokens/{id}
+func (h *AdminHandler) DeleteMCPToken(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid token ID"})
+		return
+	}
+
+	deleted, err := models.DeleteMCPToken(h.DB, id)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to delete mcp token"})
+		return
+	}
+	if !deleted {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "token not found"})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"status": "deleted"})
 }

@@ -27,28 +27,25 @@ func SetupTestMySQL(t *testing.T) *gorm.DB {
 		t.Fatalf("failed to connect to MySQL: %v", err)
 	}
 
-	// Drop tables in dependency order (referencing tables first) so no FK
-	// constraint violation occurs. Each statement is independent and safe to
-	// run even if the table does not yet exist.
-	for _, table := range []string{
-		"consumed_challenges", // references api_keys
-		"daily_stats",         // references api_keys
-		"settings",
-		"api_keys",
-		"admin_users",
-	} {
-		if err := db.Exec("DROP TABLE IF EXISTS `" + table + "`").Error; err != nil {
-			t.Fatalf("failed to drop table %s: %v", table, err)
+	// Reset the schema between runs. The table list is derived from models.All()
+	// rather than written out again: this helper used to carry its own hardcoded
+	// list, which had silently drifted and left rows from earlier runs behind on
+	// a shared database. models.All() is in dependency order (parents first), so
+	// dropping in reverse removes referencing tables before the ones they point
+	// at and no foreign key constraint is violated.
+	all := models.All()
+	for i := len(all) - 1; i >= 0; i-- {
+		stmt := &gorm.Statement{DB: db}
+		if err := stmt.Parse(all[i]); err != nil {
+			t.Fatalf("failed to resolve table name for %T: %v", all[i], err)
+		}
+		// Safe to run even when the table does not exist yet.
+		if err := db.Exec("DROP TABLE IF EXISTS `" + stmt.Schema.Table + "`").Error; err != nil {
+			t.Fatalf("failed to drop table %s: %v", stmt.Schema.Table, err)
 		}
 	}
 
-	if err := database.RunMigrations(db,
-		&models.AdminUser{},
-		&models.APIKey{},
-		&models.ConsumedChallenge{},
-		&models.DailyStat{},
-		&models.Setting{},
-	); err != nil {
+	if err := database.RunMigrations(db, models.All()...); err != nil {
 		t.Fatalf("failed to run migrations: %v", err)
 	}
 

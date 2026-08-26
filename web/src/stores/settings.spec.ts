@@ -19,7 +19,8 @@ describe('settings store', () => {
 
   it('initializes with default settings', () => {
     const store = useSettingsStore()
-    expect(store.settings).toEqual({ login_captcha_enabled: false })
+    // Both toggles default to off: MCP is a second path to admin access.
+    expect(store.settings).toEqual({ login_captcha_enabled: false, mcp_enabled: false })
     expect(store.loading).toBe(false)
   })
 

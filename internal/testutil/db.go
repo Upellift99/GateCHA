@@ -20,15 +20,7 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 	if err != nil {
 		t.Fatalf("failed to open test db: %v", err)
 	}
-	if err := database.RunMigrations(db,
-		&models.AdminUser{},
-		&models.APIKey{},
-		&models.ConsumedChallenge{},
-		&models.DailyStat{},
-		&models.DailyCountryStat{},
-		&models.HISSample{},
-		&models.Setting{},
-	); err != nil {
+	if err := database.RunMigrations(db, models.All()...); err != nil {
 		t.Fatalf("failed to run migrations: %v", err)
 	}
 	t.Cleanup(func() {
