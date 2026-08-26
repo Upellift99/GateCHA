@@ -315,6 +315,63 @@ func TestMCPUpdateKeyLeavesOmittedFieldsAlone(t *testing.T) {
 	}
 }
 
+// Every field update_key accepts must actually land.
+//
+// The other update tests only assert that *omitted* fields survive, so an entry
+// dropped from the field map fails none of them: the field simply stops being
+// written and the old value is preserved, which is what those tests expect.
+// Checked with a mutation per field.
+func TestMCPUpdateKeyWritesEveryFieldItAccepts(t *testing.T) {
+	session, db, _ := connectWithTools(t, false)
+
+	key, err := models.CreateAPIKey(db, "Before", "before.com", 10000, 60, "SHA-256")
+	if err != nil {
+		t.Fatalf("CreateAPIKey failed: %v", err)
+	}
+
+	var updated mcpKeyView
+	mustCall(t, session, "update_key", map[string]any{
+		"id":                  key.ID,
+		"name":                "After",
+		"domain":              "after.com",
+		"max_number":          50000,
+		"expire_seconds":      300,
+		"algorithm":           "SHA-512",
+		"rate_limit_per_min":  120,
+		"adaptive_difficulty": true,
+		"his_sampling":        true,
+	}, &updated)
+
+	for _, c := range []struct {
+		field string
+		got   any
+		want  any
+	}{
+		{"name", updated.Name, "After"},
+		{"domain", updated.Domain, "after.com"},
+		{"max_number", updated.MaxNumber, int64(50000)},
+		{"expire_seconds", updated.ExpireSeconds, 300},
+		{"algorithm", updated.Algorithm, "SHA-512"},
+		{"rate_limit_per_min", updated.RateLimitPerMin, 120},
+		{"adaptive_difficulty", updated.AdaptiveDifficulty, true},
+		{"his_sampling", updated.HISSampling, true},
+	} {
+		if c.got != c.want {
+			t.Errorf("%s was not written: got %v, want %v", c.field, c.got, c.want)
+		}
+	}
+
+	// The view is built by reading the row back, but assert the stored row too,
+	// so this cannot pass on an answer that never reached the database.
+	stored, err := models.GetAPIKeyByID(db, key.ID)
+	if err != nil {
+		t.Fatalf("GetAPIKeyByID failed: %v", err)
+	}
+	if !stored.HISSampling || !stored.AdaptiveDifficulty || stored.Name != "After" {
+		t.Errorf("the stored row does not match the answer: %+v", stored)
+	}
+}
+
 // 0 disables the per-key limit, so it has to be distinguishable from "omitted".
 func TestMCPUpdateKeyAcceptsExplicitZero(t *testing.T) {
 	session, db, _ := connectWithTools(t, false)
