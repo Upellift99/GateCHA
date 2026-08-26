@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/Upellift99/GateCHA/compare/v0.3.5...v0.4.0) (2026-08-26)
+
+
+### Features
+
+* **dashboard:** search and paginate the API keys list ([#137](https://github.com/Upellift99/GateCHA/issues/137)) ([41c893c](https://github.com/Upellift99/GateCHA/commit/41c893c0469a3d64b311c3540d1b17abbccee85e)), closes [#136](https://github.com/Upellift99/GateCHA/issues/136)
+
+
+### Bug Fixes
+
+* **api:** stop returning HMAC secrets from the keys listing ([#139](https://github.com/Upellift99/GateCHA/issues/139)) ([d98d488](https://github.com/Upellift99/GateCHA/commit/d98d48853328a36240951bb86c6dc0e5bdf8820c))
+
 ## [0.3.5](https://github.com/Upellift99/GateCHA/compare/v0.3.4...v0.3.5) (2026-08-17)
 
 **Upgrading is recommended.** Unlike 0.3.4, whose advisories never reached a
