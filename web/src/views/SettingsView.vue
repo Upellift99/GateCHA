@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import api from '../lib/api'
 import { useSettingsStore } from '../stores/settings'
+import MCPTokensPanel from '../components/MCPTokensPanel.vue'
 
 const currentPassword = ref('')
 const newPassword = ref('')
@@ -143,5 +144,7 @@ async function toggleCaptcha(event: Event) {
         </div>
       </div>
     </div>
+
+    <MCPTokensPanel />
   </div>
 </template>

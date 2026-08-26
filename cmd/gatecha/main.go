@@ -56,15 +56,7 @@ func main() {
 		}
 	}()
 
-	if err := database.RunMigrations(db,
-		&models.AdminUser{},
-		&models.APIKey{},
-		&models.ConsumedChallenge{},
-		&models.DailyStat{},
-		&models.DailyCountryStat{},
-		&models.HISSample{},
-		&models.Setting{},
-	); err != nil {
+	if err := database.RunMigrations(db, models.All()...); err != nil {
 		slog.Error("failed to run migrations", "error", err)
 		os.Exit(1)
 	}

@@ -19,6 +19,7 @@ type Setting struct {
 const (
 	SettingLoginCaptchaEnabled  = "login_captcha_enabled"
 	SettingLoginCaptchaAPIKeyID = "login_captcha_api_key_id"
+	SettingMCPEnabled           = "mcp_enabled"
 )
 
 // GetSetting retrieves a single setting value by key.
@@ -44,6 +45,14 @@ func SetSetting(db *gorm.DB, key, value string) error {
 // GetLoginCaptchaEnabled returns whether the login CAPTCHA is enabled.
 func GetLoginCaptchaEnabled(db *gorm.DB) (bool, error) {
 	v, err := GetSetting(db, SettingLoginCaptchaEnabled)
+	return v == "true", err
+}
+
+// GetMCPEnabled returns whether the MCP endpoint is served. It defaults to
+// false: the endpoint is a second authentication path to full admin capability,
+// so an operator has to turn it on deliberately.
+func GetMCPEnabled(db *gorm.DB) (bool, error) {
+	v, err := GetSetting(db, SettingMCPEnabled)
 	return v == "true", err
 }
 

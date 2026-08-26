@@ -1197,3 +1197,161 @@ func TestListKeysDoesNotExposeHMACSecret(t *testing.T) {
 		t.Error("the key detail endpoint should still return the HMAC secret")
 	}
 }
+
+func TestMCPTokenCRUD(t *testing.T) {
+	router, db := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	// Create
+	body, _ := json.Marshal(map[string]interface{}{"name": "Martijn laptop", "read_only": true})
+	req := httptest.NewRequest("POST", "/api/admin/mcp-tokens", bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusCreated {
+		t.Fatalf("create: expected 201, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var created struct {
+		Token  models.MCPToken `json:"token"`
+		Secret string          `json:"secret"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &created); err != nil {
+		t.Fatalf("failed to decode create response: %v", err)
+	}
+	if !strings.HasPrefix(created.Secret, models.MCPTokenPrefix) {
+		t.Errorf("expected a %s secret, got %q", models.MCPTokenPrefix, created.Secret)
+	}
+	if !created.Token.ReadOnly {
+		t.Error("read_only was not stored")
+	}
+	// The secret must authenticate, proving the response and storage agree.
+	if _, err := models.AuthenticateMCPToken(db, created.Secret); err != nil {
+		t.Errorf("the returned secret does not authenticate: %v", err)
+	}
+
+	// List: the secret is gone for good.
+	req = httptest.NewRequest("GET", "/api/admin/mcp-tokens", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("list: expected 200, got %d", w.Code)
+	}
+	listBody := w.Body.String()
+	if strings.Contains(listBody, created.Secret) {
+		t.Error("the token listing leaked a secret")
+	}
+	if strings.Contains(listBody, "token_hash") {
+		t.Error("the token listing must not carry the digest")
+	}
+	if !strings.Contains(listBody, created.Token.Display) {
+		t.Error("the listing should show the token's display prefix")
+	}
+
+	// Delete
+	idStr := strconv.FormatInt(created.Token.ID, 10)
+	req = httptest.NewRequest("DELETE", "/api/admin/mcp-tokens/"+idStr, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("delete: expected 200, got %d", w.Code)
+	}
+	if _, err := models.AuthenticateMCPToken(db, created.Secret); err == nil {
+		t.Error("a revoked token must stop authenticating")
+	}
+
+	// Deleting again reports not-found rather than a silent success.
+	req = httptest.NewRequest("DELETE", "/api/admin/mcp-tokens/"+idStr, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Errorf("second delete: expected 404, got %d", w.Code)
+	}
+}
+
+func TestMCPTokenRequiresName(t *testing.T) {
+	router, _ := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	for _, name := range []string{"", "   "} {
+		body, _ := json.Marshal(map[string]interface{}{"name": name})
+		req := httptest.NewRequest("POST", "/api/admin/mcp-tokens", bytes.NewReader(body))
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("name %q: expected 400, got %d", name, w.Code)
+		}
+	}
+}
+
+func TestMCPTokenEndpointsRequireAdmin(t *testing.T) {
+	router, _ := setupTestRouter(t)
+
+	requests := []*http.Request{
+		httptest.NewRequest("GET", "/api/admin/mcp-tokens", nil),
+		httptest.NewRequest("POST", "/api/admin/mcp-tokens", bytes.NewReader([]byte(`{"name":"x"}`))),
+		httptest.NewRequest("DELETE", "/api/admin/mcp-tokens/1", nil),
+	}
+	for _, req := range requests {
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("%s %s: expected 401, got %d", req.Method, req.URL.Path, w.Code)
+		}
+	}
+}
+
+func TestSettingsExposesMCPToggle(t *testing.T) {
+	router, db := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	// Default: off.
+	req := httptest.NewRequest("GET", "/api/admin/settings", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	var settings map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &settings)
+	if settings["mcp_enabled"] != false {
+		t.Errorf("expected mcp_enabled to default to false, got %v", settings["mcp_enabled"])
+	}
+
+	// Turning MCP on must not disturb the captcha setting.
+	if err := models.SetSetting(db, models.SettingLoginCaptchaEnabled, "true"); err != nil {
+		t.Fatalf("SetSetting failed: %v", err)
+	}
+
+	body, _ := json.Marshal(map[string]interface{}{"mcp_enabled": true})
+	req = httptest.NewRequest("PUT", "/api/admin/settings", bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("update: expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	json.Unmarshal(w.Body.Bytes(), &settings)
+	if settings["mcp_enabled"] != true {
+		t.Errorf("expected mcp_enabled true, got %v", settings["mcp_enabled"])
+	}
+	if settings["login_captcha_enabled"] != true {
+		t.Error("updating one setting must not clear another")
+	}
+
+	stored, err := models.GetMCPEnabled(db)
+	if err != nil || !stored {
+		t.Errorf("expected the toggle to persist, got %v (err %v)", stored, err)
+	}
+}

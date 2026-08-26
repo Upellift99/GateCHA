@@ -4,10 +4,11 @@ import api from '../lib/api'
 
 export interface Settings {
   login_captcha_enabled: boolean
+  mcp_enabled: boolean
 }
 
 export const useSettingsStore = defineStore('settings', () => {
-  const settings = ref<Settings>({ login_captcha_enabled: false })
+  const settings = ref<Settings>({ login_captcha_enabled: false, mcp_enabled: false })
   const loading = ref(false)
 
   async function fetchSettings() {
