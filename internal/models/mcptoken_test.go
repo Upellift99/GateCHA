@@ -30,6 +30,11 @@ func TestCreateMCPTokenReturnsSecretOnce(t *testing.T) {
 	if token.LastUsedAt != nil {
 		t.Error("a fresh token should have no last-used timestamp")
 	}
+	// The project stores every date in UTC. Checked on the freshly built value:
+	// asserting the location after a round-trip would test the driver instead.
+	if token.CreatedAt.Location() != time.UTC {
+		t.Errorf("expected CreatedAt in UTC, got %v", token.CreatedAt.Location())
+	}
 
 	// The secret must not be recoverable from storage.
 	if strings.Contains(token.TokenHash, secret) || token.TokenHash == secret {

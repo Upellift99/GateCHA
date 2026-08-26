@@ -75,7 +75,7 @@ func CreateMCPToken(db *gorm.DB, name string, readOnly bool) (*MCPToken, string,
 		TokenHash: HashMCPToken(secret),
 		Display:   secret[:mcpTokenDisplayLen],
 		ReadOnly:  readOnly,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
 	}
 	if err := db.Create(token).Error; err != nil {
 		return nil, "", err
@@ -131,6 +131,6 @@ func AuthenticateMCPToken(db *gorm.DB, secret string) (*MCPToken, error) {
 
 // TouchMCPToken records that a token was just used.
 func TouchMCPToken(db *gorm.DB, id int64) error {
-	now := time.Now()
+	now := time.Now().UTC()
 	return db.Model(&MCPToken{}).Where("id = ?", id).Update("last_used_at", now).Error
 }
