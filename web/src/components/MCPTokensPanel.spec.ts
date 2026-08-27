@@ -161,10 +161,12 @@ describe('MCPTokensPanel', () => {
     const wrapper = mountPanel()
     await flushPromises()
 
-    const pill = wrapper.get('#mcpToggle ~ div')
+    const pill = wrapper.get('#mcpToggle ~ span')
     const label = pill.element.closest('label')
     expect(label).not.toBeNull()
     expect(label!.getAttribute('for')).toBe('mcpToggle')
+    // The label also has to carry the text, or it is an empty label (Web:S6853).
+    expect(label!.textContent).toContain('MCP endpoint')
   })
 
   it('reverts the toggle and reports when the update fails', async () => {

@@ -105,10 +105,12 @@ describe('SettingsView', () => {
   it('wraps the visible captcha switch in a label bound to the checkbox', () => {
     const wrapper = mountView()
 
-    const pill = wrapper.get('#loginCaptchaToggle ~ div')
+    const pill = wrapper.get('#loginCaptchaToggle ~ span')
     const label = pill.element.closest('label')
     expect(label).not.toBeNull()
     expect(label!.getAttribute('for')).toBe('loginCaptchaToggle')
+    // The label also has to carry the text, or it is an empty label (Web:S6853).
+    expect(label!.textContent).toContain('Login CAPTCHA')
   })
 
   it('reverts captcha toggle on error', async () => {

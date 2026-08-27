@@ -119,14 +119,17 @@ async function toggleCaptcha(event: Event) {
         {{ settingsError }}
       </div>
 
-      <div class="flex items-center justify-between">
-        <div>
-          <label for="loginCaptchaToggle" class="text-sm font-medium text-slate-700">Login CAPTCHA</label>
-          <p class="text-xs text-slate-500 mt-0.5">
+      <!-- One label around the whole row: the checkbox is sr-only, so the pill
+           beside it is the only thing a user can click and it has to sit inside
+           a label to activate anything. See #146. -->
+      <label for="loginCaptchaToggle" class="flex items-center justify-between cursor-pointer">
+        <span>
+          <span class="block text-sm font-medium text-slate-700">Login CAPTCHA</span>
+          <span class="block text-xs text-slate-500 mt-0.5">
             Require an ALTCHA proof-of-work challenge before signing in.
-          </p>
-        </div>
-        <label for="loginCaptchaToggle" class="relative inline-flex items-center cursor-pointer">
+          </span>
+        </span>
+        <span class="relative inline-flex items-center shrink-0 ml-4">
           <input
             id="loginCaptchaToggle"
             type="checkbox"
@@ -135,14 +138,14 @@ async function toggleCaptcha(event: Event) {
             :disabled="settingsStore.loading"
             @change="toggleCaptcha"
           />
-          <div class="w-11 h-6 bg-slate-200 peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer
-                      peer-checked:after:translate-x-full peer-checked:after:border-white
-                      after:content-[''] after:absolute after:top-0.5 after:left-[2px]
-                      after:bg-white after:border-slate-300 after:border after:rounded-full
-                      after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600
-                      peer-disabled:opacity-50"></div>
-        </label>
-      </div>
+          <span class="block w-11 h-6 bg-slate-200 peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer
+                       peer-checked:after:translate-x-full peer-checked:after:border-white
+                       after:content-[''] after:absolute after:top-0.5 after:left-[2px]
+                       after:bg-white after:border-slate-300 after:border after:rounded-full
+                       after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600
+                       peer-disabled:opacity-50"></span>
+        </span>
+      </label>
     </div>
 
     <MCPTokensPanel />
