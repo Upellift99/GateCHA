@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/Upellift99/GateCHA/compare/v0.5.1...v0.6.0) (2026-08-27)
+
+
+### Features
+
+* **his:** serve an embeddable interaction-signal collector ([#150](https://github.com/Upellift99/GateCHA/issues/150)) ([61d9d23](https://github.com/Upellift99/GateCHA/commit/61d9d23456c347eb7d5837b68edb80bf884ab9b3))
+
 ## [0.5.1](https://github.com/Upellift99/GateCHA/compare/v0.5.0...v0.5.1) (2026-08-27)
 
 
