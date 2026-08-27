@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/Upellift99/GateCHA/compare/v0.5.0...v0.5.1) (2026-08-27)
+
+
+### Bug Fixes
+
+* **dashboard:** make the settings toggles clickable ([#147](https://github.com/Upellift99/GateCHA/issues/147)) ([2aea568](https://github.com/Upellift99/GateCHA/commit/2aea568de6bfe9b281221f4d6d0e9ec6fc5c4230)), closes [#146](https://github.com/Upellift99/GateCHA/issues/146)
+
 ## [0.5.0](https://github.com/Upellift99/GateCHA/compare/v0.4.0...v0.5.0) (2026-08-26)
 
 
