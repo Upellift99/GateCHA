@@ -74,7 +74,7 @@ function formatDate(value: string | null): string {
           This is a second way in to full admin access, so it stays off until you need it.
         </p>
       </div>
-      <div class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+      <label for="mcpToggle" class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
         <input
           id="mcpToggle"
           type="checkbox"
@@ -89,7 +89,7 @@ function formatDate(value: string | null): string {
                     after:bg-white after:border-slate-300 after:border after:rounded-full
                     after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600
                     peer-disabled:opacity-50"></div>
-      </div>
+      </label>
     </div>
 
     <div v-if="newSecret" class="rounded-md border border-amber-300 bg-amber-50 p-4 space-y-2">

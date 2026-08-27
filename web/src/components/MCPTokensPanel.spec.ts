@@ -153,6 +153,20 @@ describe('MCPTokensPanel', () => {
     expect(useSettingsStore().settings.mcp_enabled).toBe(true)
   })
 
+  // The checkbox is sr-only, so the only thing a user can click is the pill drawn
+  // next to it. That pill has to sit inside a label bound to the input, otherwise
+  // the switch is inert. jsdom does not implement label activation, so this is
+  // asserted structurally rather than by clicking. Regression test for #146.
+  it('wraps the visible endpoint switch in a label bound to the checkbox', async () => {
+    const wrapper = mountPanel()
+    await flushPromises()
+
+    const pill = wrapper.get('#mcpToggle ~ div')
+    const label = pill.element.closest('label')
+    expect(label).not.toBeNull()
+    expect(label!.getAttribute('for')).toBe('mcpToggle')
+  })
+
   it('reverts the toggle and reports when the update fails', async () => {
     mockApi.put.mockRejectedValue(new Error('nope'))
 

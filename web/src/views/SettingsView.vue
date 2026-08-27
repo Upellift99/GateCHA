@@ -126,7 +126,7 @@ async function toggleCaptcha(event: Event) {
             Require an ALTCHA proof-of-work challenge before signing in.
           </p>
         </div>
-        <div class="relative inline-flex items-center cursor-pointer">
+        <label for="loginCaptchaToggle" class="relative inline-flex items-center cursor-pointer">
           <input
             id="loginCaptchaToggle"
             type="checkbox"
@@ -141,7 +141,7 @@ async function toggleCaptcha(event: Event) {
                       after:bg-white after:border-slate-300 after:border after:rounded-full
                       after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600
                       peer-disabled:opacity-50"></div>
-        </div>
+        </label>
       </div>
     </div>
 

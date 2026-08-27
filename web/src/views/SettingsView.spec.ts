@@ -98,6 +98,19 @@ describe('SettingsView', () => {
     expect(store.settings.login_captcha_enabled).toBe(true)
   })
 
+  // The checkbox is sr-only, so the only thing a user can click is the pill drawn
+  // next to it. That pill has to sit inside a label bound to the input, otherwise
+  // the switch is inert. jsdom does not implement label activation, so this is
+  // asserted structurally rather than by clicking. Regression test for #146.
+  it('wraps the visible captcha switch in a label bound to the checkbox', () => {
+    const wrapper = mountView()
+
+    const pill = wrapper.get('#loginCaptchaToggle ~ div')
+    const label = pill.element.closest('label')
+    expect(label).not.toBeNull()
+    expect(label!.getAttribute('for')).toBe('loginCaptchaToggle')
+  })
+
   it('reverts captcha toggle on error', async () => {
     mockApi.put.mockRejectedValue(new Error('fail'))
     mockApi.get.mockResolvedValue({ data: { login_captcha_enabled: false } })
