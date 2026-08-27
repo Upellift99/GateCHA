@@ -121,6 +121,15 @@ describe('ApiKeyDetailView', () => {
     expect(text).toContain('</' + 'script>')
   })
 
+  // Integrators kept asking how to switch Monitor into blocking (see #149); the
+  // page has to say plainly that there is nothing to switch.
+  it('states that Monitor does not block', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('never blocked')
+  })
+
   it('toggles key enabled state', async () => {
     mockApi.put.mockResolvedValue({ data: { ...mockKey, enabled: false } })
     mockApi.get.mockResolvedValue({ data: { ...mockKey, enabled: false } })
