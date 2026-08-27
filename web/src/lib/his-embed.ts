@@ -11,7 +11,7 @@
 //   - on submit of a form that carries an ALTCHA widget or payload, writes
 //     those aggregates as JSON into a hidden `gatecha_his_signals` field, for
 //     the server to forward to POST /api/v1/verify
-//   - exposes `window.gatechaHIS` for integrations that call /verify from JS
+//   - exposes `globalThis.gatechaHIS` for integrations that call /verify from JS
 //
 // It never reads field values, pointer coordinates or key contents; see ./his.
 
@@ -60,21 +60,23 @@ export function install(): void {
   document.addEventListener('submit', handleSubmit, true)
   ensureCollector()
 
-  window.gatechaHIS = {
+  globalThis.gatechaHIS = {
     signals: () => ensureCollector().signals(),
     stop: () => collector?.stop(),
   }
 }
 
 declare global {
-  interface Window {
-    gatechaHIS?: {
-      /** Aggregates collected so far, ready to send as `his_signals`. */
-      signals(): HISSignals
-      /** Detach listeners. */
-      stop(): void
-    }
-  }
+  // Declared on the global scope rather than on Window so `globalThis` sees it.
+  // eslint-disable-next-line no-var
+  var gatechaHIS:
+    | {
+        /** Aggregates collected so far, ready to send as `his_signals`. */
+        signals(): HISSignals
+        /** Detach listeners. */
+        stop(): void
+      }
+    | undefined
 }
 
 install()

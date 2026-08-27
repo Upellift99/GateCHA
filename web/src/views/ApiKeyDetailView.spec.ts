@@ -110,6 +110,17 @@ describe('ApiKeyDetailView', () => {
     expect(wrapper.text()).toContain('challenge=')
   })
 
+  // The closing tag cannot be written literally in the component, so assert the
+  // rendered snippet is a complete script tag a user can paste as-is.
+  it('renders a complete HIS collector snippet', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('/api/public/his.js')
+    expect(text).toContain('</' + 'script>')
+  })
+
   it('toggles key enabled state', async () => {
     mockApi.put.mockResolvedValue({ data: { ...mockKey, enabled: false } })
     mockApi.get.mockResolvedValue({ data: { ...mockKey, enabled: false } })

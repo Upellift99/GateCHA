@@ -67,8 +67,14 @@ const widgetSnippet = computed(() => {
 // Kept separate from the widget snippet on purpose: collecting interaction
 // signals is an opt-in an integrator makes deliberately, not something that
 // arrives by copying the standard snippet.
+// The snippet ends in a closing script tag, which cannot appear literally
+// anywhere in this block (comments included): the SFC parser would end the
+// block there. Escaping the slash works but reads as a stray escape to linters
+// (S6535), so the tag is assembled from two pieces instead.
+const SCRIPT_CLOSE = '</' + 'script>'
+
 const hisSnippet = computed(
-  () => `<script src="${instanceOrigin.value}/api/public/his.js" defer><\/script>`,
+  () => `<script src="${instanceOrigin.value}/api/public/his.js" defer>${SCRIPT_CLOSE}`,
 )
 
 const hisTotals = computed(() => ({

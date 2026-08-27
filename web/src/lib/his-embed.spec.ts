@@ -72,8 +72,8 @@ describe('his-embed', () => {
   it('exposes the collector on window for JS-driven integrations', () => {
     install()
 
-    expect(typeof window.gatechaHIS?.signals).toBe('function')
-    expect(window.gatechaHIS!.signals().duration_ms).toBeGreaterThanOrEqual(0)
-    expect(() => window.gatechaHIS!.stop()).not.toThrow()
+    expect(typeof globalThis.gatechaHIS?.signals).toBe('function')
+    expect(globalThis.gatechaHIS!.signals().duration_ms).toBeGreaterThanOrEqual(0)
+    expect(() => globalThis.gatechaHIS!.stop()).not.toThrow()
   })
 })
