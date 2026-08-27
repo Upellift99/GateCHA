@@ -100,8 +100,9 @@ describe('SettingsView', () => {
 
   // The checkbox is sr-only, so the only thing a user can click is the pill drawn
   // next to it. That pill has to sit inside a label bound to the input, otherwise
-  // the switch is inert. jsdom does not implement label activation, so this is
-  // asserted structurally rather than by clicking. Regression test for #146.
+  // the switch is inert. happy-dom (this suite's environment) does not implement
+  // label activation, so this is asserted structurally rather than by clicking.
+  // Regression test for #146.
   it('wraps the visible captcha switch in a label bound to the checkbox', () => {
     const wrapper = mountView()
 

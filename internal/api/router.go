@@ -47,6 +47,8 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	// Public endpoints (no auth, used by login page)
 	r.Route("/api/public", func(r chi.Router) {
 		r.Get("/login-config", publicHandler.LoginConfig)
+		// Client-side HIS collector for third-party integrations.
+		r.Get("/his.js", publicHandler.HISCollector)
 	})
 
 	// Public API (API key auth)

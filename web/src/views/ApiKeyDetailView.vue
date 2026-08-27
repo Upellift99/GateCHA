@@ -64,6 +64,19 @@ const widgetSnippet = computed(() => {
 ></altcha-widget>`
 })
 
+// Kept separate from the widget snippet on purpose: collecting interaction
+// signals is an opt-in an integrator makes deliberately, not something that
+// arrives by copying the standard snippet.
+// The snippet ends in a closing script tag, which cannot appear literally
+// anywhere in this block (comments included): the SFC parser would end the
+// block there. Escaping the slash works but reads as a stray escape to linters
+// (S6535), so the tag is assembled from two pieces instead.
+const SCRIPT_CLOSE = '</' + 'script>'
+
+const hisSnippet = computed(
+  () => `<script src="${instanceOrigin.value}/api/public/his.js" defer>${SCRIPT_CLOSE}`,
+)
+
 const hisTotals = computed(() => ({
   observations: statsStore.keyStats.reduce((s, d) => s + (d.his_observations || 0), 0),
   suspected: statsStore.keyStats.reduce((s, d) => s + (d.his_bot_suspected || 0), 0),
@@ -178,6 +191,22 @@ const hisTotals = computed(() => ({
         <CopyButton
           :value="widgetSnippet"
           label="Copy snippet"
+          variant="overlay"
+          class="absolute top-2 right-2"
+        />
+      </div>
+
+      <h3 class="text-sm font-medium text-slate-700 mt-6 mb-1">Interaction signals (optional)</h3>
+      <p class="text-xs text-slate-500 mb-2">
+        Add this alongside the widget to score how visitors interact, on top of the proof of work.
+        It fills a hidden <code class="font-mono">gatecha_his_signals</code> field that your backend
+        forwards to <code class="font-mono">/verify</code>. Aggregates only, and it never blocks.
+      </p>
+      <div class="relative">
+        <pre class="bg-slate-900 text-green-400 text-sm p-4 rounded-lg overflow-x-auto"><code>{{ hisSnippet }}</code></pre>
+        <CopyButton
+          :value="hisSnippet"
+          label="Copy HIS snippet"
           variant="overlay"
           class="absolute top-2 right-2"
         />

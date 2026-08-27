@@ -99,7 +99,7 @@ Log in to the dashboard at `http://localhost:8080`, go to **API Keys**, and crea
 <form action="/your-endpoint" method="POST">
   <!-- your form fields -->
   <altcha-widget
-    challengeurl="https://your-gatecha-host/api/v1/challenge?apiKey=gk_your_key_id"
+    challenge="https://your-gatecha-host/api/v1/challenge?apiKey=gk_your_key_id"
   ></altcha-widget>
   <button type="submit">Submit</button>
 </form>
@@ -121,6 +121,54 @@ if resp.json().get('ok'):
     pass
 ```
 
+### 4. Optional: collect interaction signals (HIS)
+
+Alongside the proof of work, GateCHA can score *how* a visitor interacted with the
+page: pointer travel, scroll and touch counts, typing rhythm and timings. This is
+the Human Interaction Signature (HIS). It records aggregates only, never
+coordinates, timestamps, key contents or field values.
+
+Load the collector your own instance serves:
+
+```html
+<script src="https://your-gatecha-host/api/public/his.js" defer></script>
+```
+
+It attaches to any form containing an ALTCHA widget and, on submit, fills a hidden
+`gatecha_his_signals` field with a JSON object. Forward that value to `/verify`:
+
+```python
+import json
+
+resp = requests.post(
+    'https://your-gatecha-host/api/v1/verify?apiKey=gk_your_key_id',
+    json={
+        'payload': request.form.get('altcha'),
+        'his_signals': json.loads(request.form.get('gatecha_his_signals') or 'null'),
+    },
+)
+```
+
+Calling `/verify` from the browser instead? Read the same object from
+`window.gatechaHIS.signals()`.
+
+HIS never blocks. Scores are recorded and surfaced on the dashboard and per key.
+Enabling **HIS sampling** on a key additionally stores the raw aggregates so the
+key detail page can show you the score distribution.
+
+To build your own collector, `his_signals` is this object, all numeric:
+
+| Field | Meaning |
+|-------|---------|
+| `duration_ms` | Length of the observed interaction window |
+| `time_to_first_ms` | Delay until the first interaction event, `-1` if none |
+| `pointer_events` | Sampled pointer/mouse move events |
+| `pointer_distance` | Total pointer path length, CSS pixels |
+| `scrolls` | Scroll events |
+| `touches` | Touch events |
+| `keydowns` | Key-down events |
+| `key_interval_stdev_ms` | Standard deviation of inter-keydown intervals |
+
 ## API Endpoints
 
 ### Public (API Key auth via `?apiKey=gk_xxx`)
@@ -129,6 +177,12 @@ if resp.json().get('ok'):
 |--------|----------|-------------|
 | `GET` | `/api/v1/challenge` | Generate a PoW challenge |
 | `POST` | `/api/v1/verify` | Verify a solution |
+
+### Public (no auth)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/public/his.js` | Client-side HIS collector, see [step 4](#4-optional-collect-interaction-signals-his) |
 
 ### Admin (JWT auth via `Authorization: Bearer`)
 

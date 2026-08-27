@@ -10,6 +10,14 @@ import (
 //go:embed dist/*
 var assets embed.FS
 
+// CollectorJS returns the standalone HIS collector script produced by the
+// frontend build (web/src/lib/his-embed.ts). It is served to third-party sites
+// so they can emit `his_signals` without vendoring a copy that could drift from
+// what the server scores.
+func CollectorJS() ([]byte, error) {
+	return assets.ReadFile("dist/his.js")
+}
+
 func SPAHandler() http.Handler {
 	fsys, _ := fs.Sub(assets, "dist")
 	fileServer := http.FileServer(http.FS(fsys))
