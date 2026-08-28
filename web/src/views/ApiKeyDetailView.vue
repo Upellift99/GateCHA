@@ -223,6 +223,7 @@ const hisTotals = computed(() => ({
       </div>
       <p class="text-xs text-slate-500 mb-4">
         Monitor is currently the only mode: suspected requests are counted, never blocked.
+        There is no setting to turn blocking on yet.
       </p>
       <StatsChart v-if="statsStore.keyStats.length" :data="statsStore.keyStats" />
       <p v-else class="text-slate-500 text-center py-12">No data yet</p>

@@ -128,6 +128,9 @@ describe('ApiKeyDetailView', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('never blocked')
+    // The question in #149 was "how do I turn it on", so saying it never blocks
+    // is only half an answer: the page also has to say there is no switch.
+    expect(wrapper.text()).toContain('no setting to turn blocking on')
   })
 
   it('toggles key enabled state', async () => {
