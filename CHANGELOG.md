@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/Upellift99/GateCHA/compare/v0.6.0...v0.6.1) (2026-08-28)
+
+
+### Bug Fixes
+
+* **ui:** say plainly that HIS Monitor does not enforce ([#152](https://github.com/Upellift99/GateCHA/issues/152)) ([1e4da93](https://github.com/Upellift99/GateCHA/commit/1e4da93c4ad77bce785d5863c1faaf28de71f761))
+
 ## [0.6.0](https://github.com/Upellift99/GateCHA/compare/v0.5.1...v0.6.0) (2026-08-27)
 
 
