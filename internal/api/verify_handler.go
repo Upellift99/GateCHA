@@ -32,6 +32,16 @@ type verifyRequest struct {
 type verifyResponse struct {
 	OK    bool   `json:"ok"`
 	Error string `json:"error,omitempty"`
+	// HISBotScore is the Monitor-mode interaction score in [0,1], where higher
+	// means more bot-like. Mind the polarity: it is the reverse of reCAPTCHA's
+	// convention, which is why the field is not called "score". It is a pointer
+	// so that "no signals were sent" stays distinguishable from a legitimate
+	// score of 0; a client that ships no collector is not thereby a human.
+	HISBotScore *float64 `json:"his_bot_score,omitempty"`
+	// HISBotSuspected is HISBotScore judged against the Monitor suspect
+	// threshold, for callers who would rather not choose a number themselves.
+	// Omitted alongside the score.
+	HISBotSuspected *bool `json:"his_bot_suspected,omitempty"`
 }
 
 func (h *VerifyHandler) recordFail(apiKeyID int64, country string) {
@@ -70,11 +80,22 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Monitor HIS before outcome branching so bot-like attempts that fail the
-	// PoW are still observed. Never affects the response.
-	recordHISMonitor(h.DB, key, req.HISSignals)
+	// PoW are still observed. Never affects the verification outcome.
+	hisOut := recordHISMonitor(h.DB, key, req.HISSignals)
+
+	// respond attaches the Monitor score to every reply from here on, failures
+	// included: a submission can fail the PoW and still be worth scoring, and a
+	// caller enforcing its own threshold wants both cases.
+	respond := func(status int, res verifyResponse) {
+		if hisOut != nil {
+			res.HISBotScore = &hisOut.Score
+			res.HISBotSuspected = &hisOut.Suspected
+		}
+		writeJSON(w, status, res)
+	}
 
 	if req.Payload == "" {
-		writeJSON(w, http.StatusBadRequest, verifyResponse{OK: false, Error: "missing payload"})
+		respond(http.StatusBadRequest, verifyResponse{OK: false, Error: "missing payload"})
 		return
 	}
 
@@ -82,14 +103,14 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoded, err := base64.StdEncoding.DecodeString(req.Payload)
 	if err != nil {
 		h.recordFail(key.ID, country)
-		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload encoding"})
+		respond(http.StatusOK, verifyResponse{OK: false, Error: "invalid payload encoding"})
 		return
 	}
 
 	var payload lib.Payload
 	if err := json.Unmarshal(decoded, &payload); err != nil {
 		h.recordFail(key.ID, country)
-		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid payload format"})
+		respond(http.StatusOK, verifyResponse{OK: false, Error: "invalid payload format"})
 		return
 	}
 
@@ -97,13 +118,13 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ok, err := altcha.VerifyPayload(key.HMACSecret, req.Payload)
 	if err != nil {
 		h.recordFail(key.ID, country)
-		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "verification failed"})
+		respond(http.StatusOK, verifyResponse{OK: false, Error: "verification failed"})
 		return
 	}
 
 	if !ok {
 		h.recordFail(key.ID, country)
-		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "invalid_solution"})
+		respond(http.StatusOK, verifyResponse{OK: false, Error: "invalid_solution"})
 		return
 	}
 
@@ -111,12 +132,12 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	consumed, err := models.IsConsumed(h.DB, payload.Challenge)
 	if err != nil {
 		slog.Error("failed to check consumed", "error", err, "api_key_id", key.ID)
-		writeJSON(w, http.StatusInternalServerError, verifyResponse{OK: false, Error: "internal error"})
+		respond(http.StatusInternalServerError, verifyResponse{OK: false, Error: "internal error"})
 		return
 	}
 	if consumed {
 		h.recordFail(key.ID, country)
-		writeJSON(w, http.StatusOK, verifyResponse{OK: false, Error: "already_used"})
+		respond(http.StatusOK, verifyResponse{OK: false, Error: "already_used"})
 		return
 	}
 
@@ -131,5 +152,5 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.recordCountry(key.ID, country, true)
 
 	slog.Debug("verify success", "api_key_id", key.ID)
-	writeJSON(w, http.StatusOK, verifyResponse{OK: true})
+	respond(http.StatusOK, verifyResponse{OK: true})
 }

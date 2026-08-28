@@ -169,6 +169,39 @@ To build your own collector, `his_signals` is this object, all numeric:
 | `keydowns` | Key-down events |
 | `key_interval_stdev_ms` | Standard deviation of inter-keydown intervals |
 
+#### Reading the score back
+
+When a request carries `his_signals`, `/verify` returns the Monitor score
+alongside the verification outcome, so your backend can apply its own threshold
+without waiting for server-side enforcement:
+
+```json
+{ "ok": true, "his_bot_score": 0.7, "his_bot_suspected": false }
+```
+
+**`his_bot_score` runs from 0 to 1 where higher means more bot-like.** This is the
+reverse of reCAPTCHA's convention, where the score measures confidence that the
+visitor is human. Copying a reCAPTCHA rule across ("reject below 0.6") would
+reject your humans and pass the bots.
+
+`his_bot_suspected` is that score judged against GateCHA's own threshold
+(`>= 0.8`), the same rule the dashboard counters use, for when you would rather
+not own a number.
+
+Two things to know before picking a threshold:
+
+- **Both fields are absent when the request carried no `his_signals`.** Absent is
+  not 0. A visitor whose collector never ran is not thereby a human, so treat the
+  missing fields as "no opinion" rather than as a clean score.
+- **The score moves in steps of 0.1**, being a handful of additive penalties and
+  credits, so 0.6 against 0.8 is a real choice while 0.65 against 0.7 is not.
+  Read it as a few tiers, not as a probability. A submission with no motion at
+  all sits at 0.7 on its own, deliberately below the suspect threshold, because
+  keyboard-only and assistive-technology users look like that too.
+
+The fields ride along with failed verifications as well, which are often the ones
+worth inspecting.
+
 ## API Endpoints
 
 ### Public (API Key auth via `?apiKey=gk_xxx`)
