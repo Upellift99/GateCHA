@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/Upellift99/GateCHA/compare/v0.6.1...v0.7.0) (2026-08-28)
+
+
+### Features
+
+* **api:** return the HIS score from /verify ([#156](https://github.com/Upellift99/GateCHA/issues/156)) ([6f1bdad](https://github.com/Upellift99/GateCHA/commit/6f1bdad5a32eaea9d20f35a6b3cb2fc0c05980cd))
+
 ## [0.6.1](https://github.com/Upellift99/GateCHA/compare/v0.6.0...v0.6.1) (2026-08-28)
 
 
