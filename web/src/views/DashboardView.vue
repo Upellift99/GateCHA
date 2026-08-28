@@ -72,7 +72,9 @@ onMounted(() => {
           <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200">Monitor mode</span>
         </div>
         <p class="text-sm text-slate-500 mb-4">
-          Observes interaction behavior to estimate automation probability. In Monitor mode it only records — it never blocks a verification.
+          Observes interaction behavior to estimate automation probability. Monitor is currently the
+          only mode: suspected requests are counted here and never blocked. Acting on the score is
+          not available yet, so there is no setting to switch on.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatsSummaryCard label="HIS Observations" :value="statsStore.overview.total_his_observations" color="blue" />
