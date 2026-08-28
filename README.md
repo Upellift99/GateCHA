@@ -54,17 +54,17 @@ docker run -d -p 8080:8080 \
 | `sha-<commit>` | One specific build | Pinning or bisecting |
 
 Pin `0.3` (or a full version) in production if you'd rather approve minor
-upgrades yourself — `latest` crosses minor versions as they ship.
+upgrades yourself, since `latest` crosses minor versions as they ship.
 
 ### Prebuilt binary (no Docker)
 
-GateCHA ships as a single self-contained binary — the web dashboard is embedded,
+GateCHA ships as a single self-contained binary with the web dashboard embedded,
 so there are no extra files or runtime dependencies. Grab the archive for your
 platform from the [latest release](https://github.com/Upellift99/GateCHA/releases/latest)
 (`linux`/`darwin`/`windows`, `amd64`/`arm64`):
 
 ```bash
-# Example: Linux x86_64 — check the releases page for the current version
+# Example: Linux x86_64. Check the releases page for the current version
 VERSION=0.3.0
 curl -fsSL -o gatecha.tar.gz \
   "https://github.com/Upellift99/GateCHA/releases/download/v${VERSION}/gatecha_${VERSION}_linux_amd64.tar.gz"
@@ -317,7 +317,7 @@ docker compose -f docker-compose.mysql.yml up -d
 |----------|---------|-------------|
 | `GATECHA_LISTEN_ADDR` | `:8080` | Listen address |
 | `GATECHA_DB_DRIVER` | `sqlite` | Database driver: `sqlite` always available; `mysql` requires the mysql build variant |
-| `GATECHA_DB_DSN` | `./data/gatecha.db` | Database DSN — file path for SQLite, connection string for MySQL (e.g. `user:pass@tcp(host:3306)/dbname?parseTime=true`) |
+| `GATECHA_DB_DSN` | `./data/gatecha.db` | Database DSN: file path for SQLite, connection string for MySQL (e.g. `user:pass@tcp(host:3306)/dbname?parseTime=true`) |
 | `GATECHA_SECRET_KEY` | *(auto-generated)* | JWT signing secret |
 | `GATECHA_ADMIN_USERNAME` | `admin` | Admin username |
 | `GATECHA_ADMIN_PASSWORD` | *(auto-generated)* | Admin password |
