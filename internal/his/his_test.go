@@ -73,3 +73,32 @@ func TestScore_PointerTravelMitigatesNoMotionAbsence(t *testing.T) {
 		t.Errorf("meaningful pointer travel should avoid bot suspicion, got %.2f", got)
 	}
 }
+
+// The weights are all multiples of 0.1, so scores must land on that ladder
+// exactly. Summed as raw float64 this combination is 0.8999999999999999, which
+// would reach an integrator's "score >= 0.9" as false.
+func TestScore_LandsOnTheTenthsLadder(t *testing.T) {
+	got := Score(Signals{DurationMs: 10, TimeToFirstMs: -1})
+	if got != 0.9 {
+		t.Errorf("score = %v, want exactly 0.9", got)
+	}
+}
+
+// An empty sample and a sample reporting "no interaction happened" are not the
+// same claim, and must not score the same: the first is missing data, the
+// second is evidence.
+func TestScore_EmptySampleIsNotEvidenceButSilenceIs(t *testing.T) {
+	absent := Score(Signals{})
+	if absent != noEvidenceScore {
+		t.Errorf("empty sample = %v, want the no-evidence tier %v", absent, noEvidenceScore)
+	}
+	if IsBotSuspected(absent) {
+		t.Error("a missing collector must not be suspected on its own")
+	}
+
+	// Same emptiness, but the collector ran and reported no first interaction.
+	reported := Score(Signals{TimeToFirstMs: -1})
+	if !IsBotSuspected(reported) {
+		t.Errorf("a collector reporting no interaction should be suspected, got %v", reported)
+	}
+}

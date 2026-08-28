@@ -12,6 +12,8 @@
 // never change a verification outcome based on it.
 package his
 
+import "math"
+
 // Signals is the privacy-preserving aggregate of a single interaction window,
 // produced by the client collector. All fields are optional; a zero value means
 // "not observed". Negative sentinels (-1) distinguish "no interaction happened"
@@ -51,6 +53,11 @@ const (
 	mPointerTravel = 0.30 // credit for meaningful pointer travel
 	mKeyJitter     = 0.20 // credit for natural typing jitter
 
+	// noEvidenceScore is what a sample carrying no data at all is worth: bot-ward,
+	// but short of BotSuspectThreshold, since a missing collector is not proof of
+	// automation. Equals wNoMotion + wNoPointerPath by construction.
+	noEvidenceScore = 0.70
+
 	instantSolveMs  = 200 // below this, a solve is suspiciously fast
 	instantFirstMs  = 50  // below this, the first event is suspiciously early
 	pointerTravelPx = 50.0
@@ -62,6 +69,17 @@ const (
 // (a zero value) lean bot-ward but never reach certainty on their own, since a
 // missing collector is not proof of automation.
 func Score(s Signals) float64 {
+	// A wholly empty sample states one fact, not four: nothing was observed.
+	// Charging it every penalty in turn made an absent collector the single most
+	// damning signal the heuristic can produce, which contradicts the paragraph
+	// above. It only ever stayed under 1.0 by float rounding error. It stops at
+	// the no-evidence tier instead, the same score as a sample that reported
+	// real timings but no motion at all, and like that one it stays below
+	// BotSuspectThreshold.
+	if s == (Signals{}) {
+		return noEvidenceScore
+	}
+
 	score := 0.0
 
 	motion := s.PointerEvents + s.Scrolls + s.Touches
@@ -87,7 +105,16 @@ func Score(s Signals) float64 {
 		score -= mKeyJitter
 	}
 
-	return clamp01(score)
+	return round2(clamp01(score))
+}
+
+// round2 snaps the score to two decimals. Every weight above is a multiple of
+// 0.1, so the heuristic is a ladder in tenths by construction, but summing them
+// as float64 lands on values like 0.8999999999999999. Left alone that leaks out
+// of the API and quietly breaks the obvious integration ("score >= 0.9"), and it
+// misfiles samples one bucket low in the calibration histogram.
+func round2(v float64) float64 {
+	return math.Round(v*100) / 100
 }
 
 // IsBotSuspected reports whether the score meets the Monitor suspect threshold.
