@@ -34,6 +34,8 @@ watch(
       previouslyFocused = null
     }
   },
+  // A caller that mounts this already open still needs focus moved in.
+  { immediate: true },
 )
 
 function focusables(): HTMLElement[] {

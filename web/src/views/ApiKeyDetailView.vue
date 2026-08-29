@@ -17,6 +17,7 @@ const statsStore = useStatsStore()
 const key = ref<APIKey | null>(null)
 const showSecret = ref(false)
 const showDeleteConfirm = ref(false)
+const deleting = ref(false)
 
 const keyId = computed(() => Number(route.params.id))
 
@@ -33,8 +34,16 @@ onMounted(async () => {
 })
 
 async function handleDelete() {
-  await keysStore.deleteKey(keyId.value)
-  router.push('/keys')
+  // The dialog stays up until the navigation happens, so without this a second
+  // click sends a second DELETE.
+  if (deleting.value) return
+  deleting.value = true
+  try {
+    await keysStore.deleteKey(keyId.value)
+    router.push('/keys')
+  } finally {
+    deleting.value = false
+  }
 }
 
 async function handleRotateSecret() {
@@ -240,6 +249,7 @@ const hisTotals = computed(() => ({
       title="Delete API Key?"
       confirm-label="Delete"
       tone="danger"
+      :busy="deleting"
       @cancel="showDeleteConfirm = false"
       @confirm="handleDelete"
     >

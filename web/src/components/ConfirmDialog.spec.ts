@@ -72,6 +72,14 @@ describe('ConfirmDialog', () => {
     wrapper.unmount()
   })
 
+  it('moves focus in even when it is mounted already open', async () => {
+    const wrapper = mountDialog()
+    await nextTick()
+
+    expect((document.activeElement as HTMLElement | null)?.textContent?.trim()).toBe('Cancel')
+    wrapper.unmount()
+  })
+
   it('disables the confirm button while busy', () => {
     const wrapper = mountDialog({ confirmLabel: 'Revoke', busy: true })
     const confirm = wrapper.findAll('[role="dialog"] button').find((b) => b.text() === 'Revoke')
