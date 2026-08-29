@@ -7,6 +7,7 @@ import StatsChart from '../components/StatsChart.vue'
 import CountryTraffic from '../components/CountryTraffic.vue'
 import HISCalibrationPanel from '../components/HISCalibrationPanel.vue'
 import CopyButton from '../components/CopyButton.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -234,17 +235,17 @@ const hisTotals = computed(() => ({
     <HISCalibrationPanel v-if="key.his_sampling" :key-id="key.id" />
 
 
-    <!-- Delete Confirmation -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 max-w-sm mx-4">
-        <h3 class="text-lg font-medium text-slate-900 mb-2">Delete API Key?</h3>
-        <p class="text-sm text-slate-500 mb-4">This will permanently delete <strong>{{ key.name || key.key_id }}</strong> and all its statistics. This action cannot be undone.</p>
-        <div class="flex justify-end gap-2">
-          <button @click="showDeleteConfirm = false" class="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200">Cancel</button>
-          <button @click="handleDelete" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Delete</button>
-        </div>
-      </div>
-    </div>
+    <ConfirmDialog
+      :open="showDeleteConfirm"
+      title="Delete API Key?"
+      confirm-label="Delete"
+      tone="danger"
+      @cancel="showDeleteConfirm = false"
+      @confirm="handleDelete"
+    >
+      This will permanently delete <strong class="font-medium text-slate-700">{{ key.name || key.key_id }}</strong>
+      and all its statistics. This action cannot be undone.
+    </ConfirmDialog>
   </div>
   <div v-else class="text-center py-12 text-slate-500">Loading...</div>
 </template>

@@ -114,30 +114,54 @@ describe('MCPTokensPanel', () => {
     expect(mockApi.post).toHaveBeenCalledWith('/mcp-tokens', { name: 'Padded', read_only: false })
   })
 
-  it('confirms before revoking and skips the call when declined', async () => {
-    globalThis.confirm = vi.fn(() => false)
-
+  it('confirms before revoking and skips the call when dismissed', async () => {
     const wrapper = mountPanel()
     await flushPromises()
 
     await wrapper.find('button[aria-label="Revoke Martijn laptop"]').trigger('click')
+    await nextTick()
+
+    const dialog = wrapper.get('[role="dialog"]')
+    expect(dialog.text()).toContain('Revoke this token?')
+    expect(dialog.text()).toContain('Martijn laptop')
+
+    await dialog.findAll('button').find((b) => b.text() === 'Cancel')!.trigger('click')
     await flushPromises()
 
-    expect(globalThis.confirm).toHaveBeenCalled()
     expect(mockApi.delete).not.toHaveBeenCalled()
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
   })
 
   it('revokes a single token when confirmed', async () => {
-    globalThis.confirm = vi.fn(() => true)
     mockApi.delete.mockResolvedValue({ data: {} })
 
     const wrapper = mountPanel()
     await flushPromises()
 
     await wrapper.find('button[aria-label="Revoke CI"]').trigger('click')
+    await nextTick()
+
+    const confirm = wrapper.get('[role="dialog"]').findAll('button').find((b) => b.text() === 'Revoke')
+    await confirm!.trigger('click')
     await flushPromises()
 
     expect(mockApi.delete).toHaveBeenCalledWith('/mcp-tokens/2')
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+  })
+
+  it('keeps the dialog closed and reports when revoking fails', async () => {
+    mockApi.delete.mockRejectedValue(new Error('nope'))
+
+    const wrapper = mountPanel()
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Revoke CI"]').trigger('click')
+    await nextTick()
+    await wrapper.get('[role="dialog"]').findAll('button').find((b) => b.text() === 'Revoke')!.trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Failed to revoke token.')
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
   })
 
   it('toggles the endpoint through the settings store', async () => {
