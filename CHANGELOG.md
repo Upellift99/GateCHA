@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/Upellift99/GateCHA/compare/v0.7.0...v0.7.1) (2026-08-29)
+
+
+### Bug Fixes
+
+* **ui:** widen the settings page, centre the toggle knob, drop confirm() ([#158](https://github.com/Upellift99/GateCHA/issues/158)) ([0211df1](https://github.com/Upellift99/GateCHA/commit/0211df1fd8988d0ac14cdc69e6403bba2d211508))
+
 ## [0.7.0](https://github.com/Upellift99/GateCHA/compare/v0.6.1...v0.7.0) (2026-08-28)
 
 
