@@ -16,9 +16,9 @@ function onChange(event: Event) {
 </script>
 
 <template>
-  <!-- The caller wraps this in a <label for="id"> carrying the text: the checkbox
-       is sr-only, so the pill is the only clickable thing and it has to sit inside
-       that label to activate anything. See #146. -->
+  <!-- The caller wraps this in a label bound to the same id, carrying the text:
+       the checkbox is sr-only, so the pill is the only clickable thing and it has
+       to sit inside that label to activate anything. See #146. -->
   <span class="inline-flex shrink-0 items-center">
     <input
       :id="id"
