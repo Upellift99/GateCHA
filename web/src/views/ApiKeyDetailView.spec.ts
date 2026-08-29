@@ -166,13 +166,38 @@ describe('ApiKeyDetailView', () => {
     expect(wrapper.text()).toContain('Delete API Key?')
 
     // Confirm delete — find the confirm button inside the modal
-    const modalButtons = wrapper.findAll('.fixed button')
+    const modalButtons = wrapper.findAll('dialog button')
     const confirmDelete = modalButtons.find(b => b.text() === 'Delete')
     await confirmDelete!.trigger('click')
     await flushPromises()
 
     expect(mockApi.delete).toHaveBeenCalledWith('/keys/1')
     expect(mockPush).toHaveBeenCalledWith('/keys')
+  })
+
+  // The dialog stays up until the navigation lands, so an impatient second click
+  // used to send a second DELETE.
+  it('sends one delete however many times the button is clicked', async () => {
+    let resolveDelete: (value: unknown) => void = () => {}
+    mockApi.delete.mockReturnValue(new Promise((resolve) => { resolveDelete = resolve }))
+    mockApi.get
+      .mockReset()
+      .mockResolvedValueOnce({ data: mockKey })
+      .mockResolvedValueOnce({ data: { days: [] } })
+      .mockResolvedValue({ data: { keys: [] } })
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.findAll('button').find(b => b.text() === 'Delete')!.trigger('click')
+    const confirmDelete = wrapper.findAll('dialog button').find(b => b.text() === 'Delete')
+    await confirmDelete!.trigger('click')
+    await confirmDelete!.trigger('click')
+
+    resolveDelete({})
+    await flushPromises()
+
+    expect(mockApi.delete).toHaveBeenCalledTimes(1)
   })
 
   it('rotates secret with confirmation', async () => {

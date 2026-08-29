@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue'
 import { useSettingsStore } from '../stores/settings'
 import { useMCPTokensStore } from '../stores/mcptokens'
 import CopyButton from './CopyButton.vue'
+import ConfirmDialog from './ConfirmDialog.vue'
+import ToggleSwitch from './ToggleSwitch.vue'
 
 const settingsStore = useSettingsStore()
 const store = useMCPTokensStore()
@@ -18,8 +20,7 @@ onMounted(() => {
   store.fetchTokens()
 })
 
-async function toggleMCP(event: Event) {
-  const checked = (event.target as HTMLInputElement).checked
+async function toggleMCP(checked: boolean) {
   error.value = ''
   try {
     await settingsStore.updateSettings({ mcp_enabled: checked })
@@ -44,13 +45,29 @@ async function createToken() {
   }
 }
 
-async function revokeToken(id: number, tokenName: string) {
-  if (!globalThis.confirm(`Revoke "${tokenName}"? Any client using it will stop working.`)) return
+// Kept past the close so the name does not blank out mid fade-out; the dialog's
+// own flag is what opens and closes it.
+const revokeTarget = ref<{ id: number; name: string } | null>(null)
+const revokeOpen = ref(false)
+const revoking = ref(false)
+
+function askRevoke(id: number, tokenName: string) {
+  revokeTarget.value = { id, name: tokenName }
+  revokeOpen.value = true
+}
+
+async function confirmRevoke() {
+  const target = revokeTarget.value
+  if (!target) return
   error.value = ''
+  revoking.value = true
   try {
-    await store.revokeToken(id)
+    await store.revokeToken(target.id)
   } catch {
     error.value = 'Failed to revoke token.'
+  } finally {
+    revoking.value = false
+    revokeOpen.value = false
   }
 }
 
@@ -77,22 +94,13 @@ function formatDate(value: string | null): string {
           This is a second way in to full admin access, so it stays off until you need it.
         </span>
       </span>
-      <span class="relative inline-flex items-center shrink-0 ml-4">
-        <input
-          id="mcpToggle"
-          type="checkbox"
-          class="sr-only peer"
-          :checked="settingsStore.settings.mcp_enabled"
-          :disabled="settingsStore.loading"
-          @change="toggleMCP"
-        />
-        <span class="block w-11 h-6 bg-slate-200 peer-focus:ring-2 peer-focus:ring-teal-500 rounded-full peer
-                     peer-checked:after:translate-x-full peer-checked:after:border-white
-                     after:content-[''] after:absolute after:top-0.5 after:left-[2px]
-                     after:bg-white after:border-slate-300 after:border after:rounded-full
-                     after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600
-                     peer-disabled:opacity-50"></span>
-      </span>
+      <ToggleSwitch
+        id="mcpToggle"
+        class="ml-4"
+        :model-value="settingsStore.settings.mcp_enabled"
+        :disabled="settingsStore.loading"
+        @update:model-value="toggleMCP"
+      />
     </label>
 
     <div v-if="newSecret" class="rounded-md border border-amber-300 bg-amber-50 p-4 space-y-2">
@@ -161,7 +169,7 @@ function formatDate(value: string | null): string {
               type="button"
               class="text-red-600 hover:text-red-800"
               :aria-label="`Revoke ${token.name}`"
-              @click="revokeToken(token.id, token.name)"
+              @click="askRevoke(token.id, token.name)"
             >
               Revoke
             </button>
@@ -169,5 +177,19 @@ function formatDate(value: string | null): string {
         </tr>
       </tbody>
     </table>
+
+    <ConfirmDialog
+      :open="revokeOpen"
+      title="Revoke this token?"
+      confirm-label="Revoke"
+      tone="danger"
+      :busy="revoking"
+      @cancel="revokeOpen = false"
+      @confirm="confirmRevoke"
+    >
+      <strong class="font-medium text-slate-700">{{ revokeTarget?.name }}</strong> stops working
+      the moment you confirm, and any client still using it will start failing. Revoking cannot be
+      undone: issue a new token instead.
+    </ConfirmDialog>
   </div>
 </template>
