@@ -166,7 +166,7 @@ describe('ApiKeyDetailView', () => {
     expect(wrapper.text()).toContain('Delete API Key?')
 
     // Confirm delete — find the confirm button inside the modal
-    const modalButtons = wrapper.findAll('.fixed button')
+    const modalButtons = wrapper.findAll('dialog button')
     const confirmDelete = modalButtons.find(b => b.text() === 'Delete')
     await confirmDelete!.trigger('click')
     await flushPromises()
@@ -190,7 +190,7 @@ describe('ApiKeyDetailView', () => {
     await flushPromises()
 
     await wrapper.findAll('button').find(b => b.text() === 'Delete')!.trigger('click')
-    const confirmDelete = wrapper.findAll('.fixed button').find(b => b.text() === 'Delete')
+    const confirmDelete = wrapper.findAll('dialog button').find(b => b.text() === 'Delete')
     await confirmDelete!.trigger('click')
     await confirmDelete!.trigger('click')
 

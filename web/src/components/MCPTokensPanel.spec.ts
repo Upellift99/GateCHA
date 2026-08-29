@@ -121,7 +121,7 @@ describe('MCPTokensPanel', () => {
     await wrapper.find('button[aria-label="Revoke Martijn laptop"]').trigger('click')
     await nextTick()
 
-    const dialog = wrapper.get('[role="dialog"]')
+    const dialog = wrapper.get('dialog')
     expect(dialog.text()).toContain('Revoke this token?')
     expect(dialog.text()).toContain('Martijn laptop')
 
@@ -129,7 +129,7 @@ describe('MCPTokensPanel', () => {
     await flushPromises()
 
     expect(mockApi.delete).not.toHaveBeenCalled()
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect((wrapper.get('dialog').element as HTMLDialogElement).open).toBe(false)
   })
 
   it('revokes a single token when confirmed', async () => {
@@ -141,12 +141,12 @@ describe('MCPTokensPanel', () => {
     await wrapper.find('button[aria-label="Revoke CI"]').trigger('click')
     await nextTick()
 
-    const confirm = wrapper.get('[role="dialog"]').findAll('button').find((b) => b.text() === 'Revoke')
+    const confirm = wrapper.get('dialog').findAll('button').find((b) => b.text() === 'Revoke')
     await confirm!.trigger('click')
     await flushPromises()
 
     expect(mockApi.delete).toHaveBeenCalledWith('/mcp-tokens/2')
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect((wrapper.get('dialog').element as HTMLDialogElement).open).toBe(false)
   })
 
   it('keeps the dialog closed and reports when revoking fails', async () => {
@@ -157,11 +157,11 @@ describe('MCPTokensPanel', () => {
 
     await wrapper.find('button[aria-label="Revoke CI"]').trigger('click')
     await nextTick()
-    await wrapper.get('[role="dialog"]').findAll('button').find((b) => b.text() === 'Revoke')!.trigger('click')
+    await wrapper.get('dialog').findAll('button').find((b) => b.text() === 'Revoke')!.trigger('click')
     await flushPromises()
 
     expect(wrapper.text()).toContain('Failed to revoke token.')
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+    expect((wrapper.get('dialog').element as HTMLDialogElement).open).toBe(false)
   })
 
   it('toggles the endpoint through the settings store', async () => {
