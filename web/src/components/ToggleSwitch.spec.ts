@@ -28,38 +28,58 @@ describe('ToggleSwitch', () => {
     expect(mountSwitch({ disabled: true }).get('input').attributes('disabled')).toBeDefined()
   })
 
-  // The checkbox is sr-only, so the pill is the only visible target and it has to
-  // stay a sibling of the input: the peer-checked styling depends on it. See #146.
-  it('draws the pill as a sibling of the checkbox', () => {
-    const wrapper = mountSwitch()
-    const pill = wrapper.get('#demoToggle ~ span')
-    expect(pill.classes()).toContain('peer-checked:bg-teal-600')
+  // The checkbox is sr-only, so the switch is the only visible target and it has
+  // to stay a sibling of the input: the focus ring is a peer variant. See #146.
+  it('draws the switch as a sibling of the checkbox', () => {
+    const svg = mountSwitch().get('#demoToggle ~ svg')
+    expect(svg.attributes('viewBox')).toBe('0 0 44 24')
+    expect(svg.classes()).toEqual(expect.arrayContaining(['h-6', 'w-11']))
   })
 
-  // The knob is absolutely positioned, so it needs the pill itself as its
-  // containing block; against any other box it drifts off the pill's midline.
-  it('positions the knob against the pill, centred on its midline', () => {
-    const pill = mountSwitch().get('#demoToggle ~ span')
-    expect(pill.classes()).toContain('relative')
-    expect(pill.classes()).toContain('after:top-1/2')
-    expect(pill.classes()).toContain('after:-translate-y-1/2')
+  // The switch is one SVG rather than a box with an ::after knob because a box
+  // and its pseudo-element snap to whole device pixels independently, which
+  // splits the track unevenly above and below the knob at fractional page
+  // scales. Both shapes have to stay inside the same coordinate system for the
+  // gap to be antialiased symmetrically.
+  it('draws the track and the knob in one coordinate system', () => {
+    const svg = mountSwitch().get('#demoToggle ~ svg')
+    expect(svg.find('rect').exists()).toBe(true)
+    expect(svg.find('circle').exists()).toBe(true)
   })
 
-  // The three sizes are one sum: a 44px pill holding a 16px knob inset by 4px
-  // leaves exactly 20px of travel. Changing one without the others either strands
-  // the knob short of the edge or pushes it out of the pill. The 4px is the part
-  // that is easy to shave back: it is what keeps solid teal visible between the
-  // knob and the pill's cap once antialiasing has taken its share.
-  it('keeps the knob inset on both ends of its travel', () => {
-    const pill = mountSwitch().get('#demoToggle ~ span')
-    expect(pill.classes()).toEqual(expect.arrayContaining(['w-11', 'after:w-4', 'after:left-1']))
-    expect(pill.classes()).toContain('peer-checked:after:translate-x-5')
+  // The numbers are one sum: a knob of r=8 centred at 12 leaves 4 units of track
+  // on every side of a 44x24 box, and 20 units of travel to the other end.
+  // Changing one without the others either strands the knob short of the edge or
+  // pushes it through the cap.
+  it('leaves the same track on every side of the knob', () => {
+    const circle = mountSwitch().get('#demoToggle ~ svg circle')
+    expect(circle.attributes('cx')).toBe('12')
+    expect(circle.attributes('cy')).toBe('12')
+    expect(circle.attributes('r')).toBe('8')
+    expect(mountSwitch({ modelValue: true }).get('#demoToggle ~ svg circle').classes()).toContain(
+      'translate-x-5',
+    )
+  })
+
+  // A stroke is centred on the path, so it pushes the knob's antialiased edge
+  // half a unit past r=8 and brings back the uneven rounding the SVG removes.
+  it('draws the knob without a stroke', () => {
+    const circle = mountSwitch().get('#demoToggle ~ svg circle')
+    expect(circle.attributes('stroke')).toBeUndefined()
+    expect(circle.classes().some((c) => c.startsWith('stroke-'))).toBe(false)
+  })
+
+  it('colours the track from the bound value', () => {
+    expect(mountSwitch().get('#demoToggle ~ svg rect').classes()).toContain('fill-slate-200')
+    expect(mountSwitch({ modelValue: true }).get('#demoToggle ~ svg rect').classes()).toContain(
+      'fill-teal-600',
+    )
   })
 
   // A ring left behind by a mouse click reads as a permanent outline, so the
   // focus ring is keyboard only.
   it('rings only on keyboard focus', () => {
-    const classes = mountSwitch().get('#demoToggle ~ span').classes()
+    const classes = mountSwitch().get('#demoToggle ~ svg').classes()
     expect(classes).toContain('peer-focus-visible:ring-2')
     expect(classes.some((c) => c.startsWith('peer-focus:'))).toBe(false)
   })
