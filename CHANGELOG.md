@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/Upellift99/GateCHA/compare/v0.7.1...v0.7.2) (2026-08-30)
+
+
+### Bug Fixes
+
+* **ui:** give the switch knob clearance that survives browser zoom ([#160](https://github.com/Upellift99/GateCHA/issues/160)) ([e8b3bbc](https://github.com/Upellift99/GateCHA/commit/e8b3bbcde8991117d009c448a53d71598fcb008f))
+
 ## [0.7.1](https://github.com/Upellift99/GateCHA/compare/v0.7.0...v0.7.1) (2026-08-29)
 
 
