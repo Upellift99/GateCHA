@@ -32,16 +32,20 @@ function onChange(event: Event) {
          centred on its midline, so it stays centred whatever the pill's box
          ends up being.
 
-         An 18px knob inset by 3px rather than a 20px one inset by 2px: at a
-         browser zoom of 87.5% a 2px gap is 1.75 physical pixels, which the
-         antialiasing of two curved edges eats entirely, and the knob reads as
-         bulging out of the pill. 3px survives it. The travel is unchanged:
-         44 - 18 - 3 - 3 is still 20px. -->
+         A 16px knob inset by 4px. The inset has to clear two antialiased curves
+         at once, the pill's cap and the knob, and each eats about 1.5 physical
+         pixels: measured against the rendered pixels, a 3px inset leaves 1px of
+         solid teal at the resting end at 100% and none at 87.5%, so the knob
+         reads as bursting through the cap. 4px leaves 2px and 1px. The gap above
+         the knob is bounded by the pill's straight edge instead, which is why it
+         looked fine there all along and the fault seemed to be a centring one.
+         The travel is unchanged: 44 - 16 - 4 - 4 is still 20px. See #160,
+         which fixed the centring and left this. -->
     <span
       class="relative block h-6 w-11 rounded-full bg-slate-200 transition-colors
              peer-checked:bg-teal-600 peer-focus-visible:ring-2
              peer-focus-visible:ring-teal-500 peer-disabled:opacity-50
-             after:absolute after:top-1/2 after:left-0.75 after:h-4.5 after:w-4.5
+             after:absolute after:top-1/2 after:left-1 after:h-4 after:w-4
              after:-translate-y-1/2 after:rounded-full after:border
              after:border-slate-300 after:bg-white after:shadow-sm
              after:transition-all after:content-['']
