@@ -106,7 +106,7 @@ describe('SettingsView', () => {
   it('wraps the visible captcha switch in a label bound to the checkbox', () => {
     const wrapper = mountView()
 
-    const pill = wrapper.get('#loginCaptchaToggle ~ span')
+    const pill = wrapper.get('#loginCaptchaToggle ~ svg')
     const label = pill.element.closest('label')
     expect(label).not.toBeNull()
     expect(label!.getAttribute('for')).toBe('loginCaptchaToggle')

@@ -186,7 +186,7 @@ describe('MCPTokensPanel', () => {
     const wrapper = mountPanel()
     await flushPromises()
 
-    const pill = wrapper.get('#mcpToggle ~ span')
+    const pill = wrapper.get('#mcpToggle ~ svg')
     const label = pill.element.closest('label')
     expect(label).not.toBeNull()
     expect(label!.getAttribute('for')).toBe('mcpToggle')
