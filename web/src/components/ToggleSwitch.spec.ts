@@ -45,12 +45,14 @@ describe('ToggleSwitch', () => {
     expect(pill.classes()).toContain('after:-translate-y-1/2')
   })
 
-  // The three sizes are one sum: a 44px pill holding an 18px knob inset by 3px
+  // The three sizes are one sum: a 44px pill holding a 16px knob inset by 4px
   // leaves exactly 20px of travel. Changing one without the others either strands
-  // the knob short of the edge or pushes it out of the pill.
+  // the knob short of the edge or pushes it out of the pill. The 4px is the part
+  // that is easy to shave back: it is what keeps solid teal visible between the
+  // knob and the pill's cap once antialiasing has taken its share.
   it('keeps the knob inset on both ends of its travel', () => {
     const pill = mountSwitch().get('#demoToggle ~ span')
-    expect(pill.classes()).toEqual(expect.arrayContaining(['w-11', 'after:w-4.5', 'after:left-0.75']))
+    expect(pill.classes()).toEqual(expect.arrayContaining(['w-11', 'after:w-4', 'after:left-1']))
     expect(pill.classes()).toContain('peer-checked:after:translate-x-5')
   })
 
