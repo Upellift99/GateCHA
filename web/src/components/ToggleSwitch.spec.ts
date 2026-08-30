@@ -44,4 +44,21 @@ describe('ToggleSwitch', () => {
     expect(pill.classes()).toContain('after:top-1/2')
     expect(pill.classes()).toContain('after:-translate-y-1/2')
   })
+
+  // The three sizes are one sum: a 44px pill holding an 18px knob inset by 3px
+  // leaves exactly 20px of travel. Changing one without the others either strands
+  // the knob short of the edge or pushes it out of the pill.
+  it('keeps the knob inset on both ends of its travel', () => {
+    const pill = mountSwitch().get('#demoToggle ~ span')
+    expect(pill.classes()).toEqual(expect.arrayContaining(['w-11', 'after:w-4.5', 'after:left-0.75']))
+    expect(pill.classes()).toContain('peer-checked:after:translate-x-5')
+  })
+
+  // A ring left behind by a mouse click reads as a permanent outline, so the
+  // focus ring is keyboard only.
+  it('rings only on keyboard focus', () => {
+    const classes = mountSwitch().get('#demoToggle ~ span').classes()
+    expect(classes).toContain('peer-focus-visible:ring-2')
+    expect(classes.some((c) => c.startsWith('peer-focus:'))).toBe(false)
+  })
 })
