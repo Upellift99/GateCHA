@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/Upellift99/GateCHA/compare/v0.7.3...v0.7.4) (2026-08-30)
+
+
+### Bug Fixes
+
+* **ui:** draw the switch as one SVG so the track splits evenly ([#164](https://github.com/Upellift99/GateCHA/issues/164)) ([0df89c3](https://github.com/Upellift99/GateCHA/commit/0df89c3dd9e27d55426fee47b37b28aa6b419930))
+
 ## [0.7.3](https://github.com/Upellift99/GateCHA/compare/v0.7.2...v0.7.3) (2026-08-30)
 
 
