@@ -32,8 +32,5 @@
     "vite": "^8.2.2",
     "vitest": "^4.0.18",
     "vue-tsc": "^3.3.11"
-  },
-  "overrides": {
-    "js-beautify": "^2.0.3"
   }
 }

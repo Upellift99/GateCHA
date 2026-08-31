@@ -47,15 +47,6 @@ make dev          # Run Go backend in dev mode
 
 ## Known Constraints
 
-- `web/package.json` forces `overrides: { "js-beautify": "^2.0.3" }`. `@vue/test-utils`
-  pins `js-beautify: ^1.14.9`, whose `editorconfig`/`minimatch@9` subtree carries
-  `brace-expansion@2.x` and an unfixable OOM advisory (GHSA-mh99-v99m-4gvg). Override the
-  **parent**, not `brace-expansion` itself: 5.x exports an object rather than a callable,
-  so `minimatch@9`'s `const expand = require('brace-expansion')` would throw on any brace
-  pattern. Nothing in the test suite reaches that path, so it would fail in production use
-  rather than in CI — which is why the parent override is the safe form. Drop it once
-  `@vue/test-utils` widens its range; check `npm view @vue/test-utils@latest dependencies`.
-  See #107.
 - Release binaries and the Docker image must build on the same Go minor. Workflows use a
   bare `go-version: "1.26"` so setup-go resolves the latest patch; never switch back to
   `go-version-file: go.mod`, whose pinned `go 1.25.0` shipped binaries with 20 reachable
