@@ -169,6 +169,32 @@ To build your own collector, `his_signals` is this object, all numeric:
 | `keydowns` | Key-down events |
 | `key_interval_stdev_ms` | Standard deviation of inter-keydown intervals |
 
+#### Checking that the signals actually arrive
+
+The collector fails quietly by design: a form that never gets a hidden field just
+submits normally. So verify it rather than assume it.
+
+**The counter that answers the question is `HIS Observations` on the dashboard
+overview**, with a per-key equivalent on the `HIS Monitor` line of each key detail
+page. It counts every `/verify` call that carried `his_signals`, whether or not
+sampling is on. If it stays at zero after real submissions, the signals are not
+reaching `/verify` and the collector is the thing to look at, not the score.
+
+Three more places worth a glance:
+
+- the `/verify` response carries `his_bot_score` whenever signals were received,
+  and omits it entirely when they were not;
+- the browser console warns when the collector loads on a page with no form it can
+  attach to, which catches a widget mounted outside the `<form>`;
+- the calibration histogram on the key detail page needs **HIS sampling** switched
+  on, and only stores samples from that moment forward, so a freshly enabled key
+  shows nothing until new traffic arrives.
+
+The usual causes of a stuck counter are a widget sitting outside the `<form>`, a
+form posted with `fetch` that fires no native submit event (read
+`globalThis.gatechaHIS.signals()` yourself in that case), and a backend that does
+not forward the hidden `gatecha_his_signals` field into the `/verify` body.
+
 #### Reading the score back
 
 When a request carries `his_signals`, `/verify` returns the Monitor score
