@@ -2,15 +2,33 @@
 import { computed, onMounted, ref } from 'vue'
 import { useStatsStore, type HISCalibration } from '../stores/stats'
 
-const props = defineProps<{ keyId?: number }>()
+const props = defineProps<{
+  keyId?: number
+  /**
+   * Scored observations for this key over the same window. Counted for every
+   * request carrying `his_signals` whether or not sampling is on, so it is what
+   * separates "the collector never reaches /verify" from "sampling was switched
+   * on after those requests came in".
+   */
+  observations?: number
+}>()
+
+/** Shared by the query and the copy below, so the two cannot drift apart. */
+const DAYS = 30
 
 const stats = useStatsStore()
 const cal = ref<HISCalibration | null>(null)
 const loading = ref(true)
+const failed = ref(false)
 
 onMounted(async () => {
   try {
-    cal.value = await stats.fetchHISCalibration(props.keyId)
+    cal.value = await stats.fetchHISCalibration(props.keyId, DAYS)
+  } catch {
+    // Kept distinct from "no samples". A failed request used to fall through to
+    // the empty state, which told the reader to enable sampling on a key that
+    // already had it enabled: a diagnosis that was both wrong and unactionable.
+    failed.value = true
   } finally {
     loading.value = false
   }
@@ -40,6 +58,12 @@ function barClass(loValue: number, threshold: number): string {
     </p>
 
     <p v-if="loading" class="text-slate-400 text-center py-8 text-sm">Loading…</p>
+
+    <p v-else-if="failed" class="text-slate-500 text-sm py-6">
+      Could not load the calibration data. This says nothing about how many samples exist.
+      Reload the page; if it keeps failing, your session may have expired, or this instance
+      may predate 0.6.0, when the endpoint was added.
+    </p>
 
     <template v-else-if="cal && cal.samples > 0">
       <div class="grid grid-cols-3 gap-4 mb-5">
@@ -80,8 +104,43 @@ function barClass(loValue: number, threshold: number): string {
       </div>
     </template>
 
-    <p v-else class="text-slate-400 text-center py-8 text-sm">
-      No samples yet. Enable <span class="font-medium text-slate-500">HIS sampling</span> on this key to collect calibration data.
-    </p>
+    <div v-else class="text-sm text-slate-500 py-6 space-y-3">
+      <p>
+        <span class="font-medium text-slate-700">HIS sampling is on for this key</span>, and no
+        sample has been stored in the last {{ DAYS }} days.
+      </p>
+
+      <template v-if="observations && observations > 0">
+        <p>
+          Signals are reaching <code class="text-xs bg-slate-100 rounded px-1 py-0.5">/verify</code>:
+          {{ observations.toLocaleString() }} scored in the same window. Samples are only stored from
+          the moment sampling is switched on, so the histogram fills from now on.
+        </p>
+      </template>
+
+      <template v-else>
+        <p>
+          No <code class="text-xs bg-slate-100 rounded px-1 py-0.5">his_signals</code> reached
+          <code class="text-xs bg-slate-100 rounded px-1 py-0.5">/verify</code> at all in that window,
+          so the collector is not getting through. The usual causes:
+        </p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>the ALTCHA widget sits outside the <code class="text-xs bg-slate-100 rounded px-1 py-0.5">&lt;form&gt;</code>, so the collector never recognises the form;</li>
+          <li>the form is posted with <code class="text-xs bg-slate-100 rounded px-1 py-0.5">fetch</code> and fires no native submit event. Read <code class="text-xs bg-slate-100 rounded px-1 py-0.5">globalThis.gatechaHIS.signals()</code> yourself instead;</li>
+          <li>your backend does not forward the hidden <code class="text-xs bg-slate-100 rounded px-1 py-0.5">gatecha_his_signals</code> field into the <code class="text-xs bg-slate-100 rounded px-1 py-0.5">/verify</code> body. It does not travel on its own.</li>
+        </ul>
+        <p>
+          The browser console also reports it when the collector finds no form to attach to. Full
+          integration steps are in
+          <a
+            class="text-brand-600 hover:text-brand-700 underline"
+            href="https://github.com/Upellift99/GateCHA#4-optional-collect-interaction-signals-his"
+            target="_blank"
+            rel="noopener"
+            >README step 4</a
+          >.
+        </p>
+      </template>
+    </div>
   </div>
 </template>

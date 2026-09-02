@@ -1,5 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { FIELD_NAME, isProtectedForm, handleSubmit, install } from './his-embed'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import {
+  FIELD_NAME,
+  isProtectedForm,
+  handleSubmit,
+  install,
+  warnIfNoProtectedForm,
+} from './his-embed'
 
 function makeForm(inner: string): HTMLFormElement {
   document.body.innerHTML = `<form>${inner}</form>`
@@ -67,6 +73,42 @@ describe('his-embed', () => {
 
   it('ignores submit events from non-form targets', () => {
     expect(() => handleSubmit({ target: document.body } as unknown as Event)).not.toThrow()
+  })
+
+  describe('warnIfNoProtectedForm', () => {
+    let warn: ReturnType<typeof vi.spyOn>
+
+    beforeEach(() => {
+      warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    })
+
+    afterEach(() => {
+      warn.mockRestore()
+    })
+
+    it('stays quiet when a protected form is present', () => {
+      makeForm('<altcha-widget></altcha-widget>')
+      warnIfNoProtectedForm()
+
+      expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('names the widget-outside-the-form case, the likeliest mistake', () => {
+      document.body.innerHTML = '<altcha-widget></altcha-widget><form><input name="q" /></form>'
+      warnIfNoProtectedForm()
+
+      expect(warn).toHaveBeenCalledTimes(1)
+      expect(String(warn.mock.calls[0][0])).toContain('not inside a <form>')
+    })
+
+    it('reports a page with no widget at all, and points at the JS path', () => {
+      document.body.innerHTML = '<form><input name="q" /></form>'
+      warnIfNoProtectedForm()
+
+      const message = String(warn.mock.calls[0][0])
+      expect(message).toContain('no ALTCHA widget was found')
+      expect(message).toContain('globalThis.gatechaHIS.signals()')
+    })
   })
 
   it('exposes the collector on window for JS-driven integrations', () => {

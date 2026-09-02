@@ -241,7 +241,11 @@ const hisTotals = computed(() => ({
 
     <CountryTraffic :countries="statsStore.keyCountries" />
 
-    <HISCalibrationPanel v-if="key.his_sampling" :key-id="key.id" />
+    <HISCalibrationPanel
+      v-if="key.his_sampling"
+      :key-id="key.id"
+      :observations="hisTotals.observations"
+    />
 
 
     <ConfirmDialog

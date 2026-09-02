@@ -42,12 +42,35 @@ describe('HISCalibrationPanel', () => {
     expect(wrapper.findAll('.h-32 > div')).toHaveLength(10)
   })
 
-  it('shows an empty state and prompts to enable sampling when there are no samples', async () => {
+  it('points at the collector when no sample and no observation arrived', async () => {
     mockApi.get.mockResolvedValue({ data: calibration(0) })
+    const wrapper = mount(HISCalibrationPanel, { props: { keyId: 2, observations: 0 } })
+    await flushPromises()
+
+    // The panel only renders when sampling is on, so it must never suggest
+    // enabling it: that was the whole defect.
+    expect(wrapper.text()).not.toContain('Enable')
+    expect(wrapper.text()).toContain('HIS sampling is on for this key')
+    expect(wrapper.text()).toContain('globalThis.gatechaHIS.signals()')
+  })
+
+  it('says the histogram is merely young when signals are arriving', async () => {
+    mockApi.get.mockResolvedValue({ data: calibration(0) })
+    const wrapper = mount(HISCalibrationPanel, { props: { keyId: 2, observations: 120 } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('120')
+    expect(wrapper.text()).toContain('fills from now on')
+    // Signals are getting through, so the integration hints would be misleading.
+    expect(wrapper.text()).not.toContain('not getting through')
+  })
+
+  it('reports a failed request as a failed request, not as an empty histogram', async () => {
+    mockApi.get.mockRejectedValue(new Error('401'))
     const wrapper = mount(HISCalibrationPanel, { props: { keyId: 2 } })
     await flushPromises()
 
-    expect(wrapper.text()).toContain('No samples yet')
-    expect(wrapper.text()).toContain('HIS sampling')
+    expect(wrapper.text()).toContain('Could not load')
+    expect(wrapper.text()).not.toContain('HIS sampling is on for this key')
   })
 })
