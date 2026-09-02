@@ -54,11 +54,57 @@ export function handleSubmit(event: Event): void {
   }
 }
 
+/**
+ * How long to wait after load before deciding no form will ever show up.
+ * Frameworks routinely mount their forms after the load event, so an immediate
+ * check would cry wolf on perfectly working integrations.
+ */
+const WARN_DELAY_MS = 2000
+
+/**
+ * Says out loud that the script is loaded but has nothing to attach to. Until
+ * this existed the failure was entirely silent: the hidden field was never
+ * written, `/verify` received no `his_signals`, and the only visible symptom was
+ * an empty calibration panel days later.
+ */
+export function warnIfNoProtectedForm(): void {
+  const forms = Array.from(document.querySelectorAll('form'))
+  if (forms.some(isProtectedForm)) return
+
+  const orphanWidget = document.querySelector('altcha-widget, [name="altcha"]') !== null
+  const [cause, fix] = orphanWidget
+    ? [
+        'an ALTCHA widget on this page sits outside every <form>',
+        'Move the widget inside the form it protects',
+      ]
+    : [
+        'no ALTCHA widget was found on this page',
+        'If this page submits with fetch rather than a native submit, read ' +
+          'globalThis.gatechaHIS.signals() yourself and send it as his_signals on /verify',
+      ]
+
+  console.warn(
+    `[GateCHA HIS] Collector loaded, but ${cause}, so no interaction signals will be ` +
+      `attached on submit. ${fix}. ` +
+      'See https://github.com/Upellift99/GateCHA#4-optional-collect-interaction-signals-his',
+  )
+}
+
+function scheduleFormCheck(): void {
+  const check = () => setTimeout(warnIfNoProtectedForm, WARN_DELAY_MS)
+  if (document.readyState === 'complete') {
+    check()
+  } else {
+    globalThis.addEventListener('load', check, { once: true })
+  }
+}
+
 export function install(): void {
   // Capture phase, so the field is present before a framework's own submit
   // handler serialises the form.
   document.addEventListener('submit', handleSubmit, true)
   ensureCollector()
+  scheduleFormCheck()
 
   globalThis.gatechaHIS = {
     signals: () => ensureCollector().signals(),
