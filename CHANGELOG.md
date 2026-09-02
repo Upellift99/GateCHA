@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.5](https://github.com/Upellift99/GateCHA/compare/v0.7.4...v0.7.5) (2026-09-02)
+
+
+### Bug Fixes
+
+* **ui:** tell the four HIS calibration empty states apart ([#171](https://github.com/Upellift99/GateCHA/issues/171)) ([e0e763f](https://github.com/Upellift99/GateCHA/commit/e0e763f5a86c9f1fb6adc0d3bea0b8440d130111))
+
 ## [0.7.4](https://github.com/Upellift99/GateCHA/compare/v0.7.3...v0.7.4) (2026-08-30)
 
 
