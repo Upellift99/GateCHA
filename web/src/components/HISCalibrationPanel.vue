@@ -52,11 +52,6 @@ function barClass(loValue: number, threshold: number): string {
       <h2 class="text-lg font-semibold text-slate-900">HIS calibration</h2>
       <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">score distribution</span>
     </div>
-    <p class="text-sm text-slate-500 mb-4">
-      Where stored samples fall on the automation-probability scale. Bars at or past the
-      suspect threshold are counted as bot-suspected. Use this to pick an enforcement threshold.
-    </p>
-
     <p v-if="loading" class="text-slate-400 text-center py-8 text-sm">Loading…</p>
 
     <p v-else-if="failed" class="text-slate-500 text-sm py-6">
@@ -66,6 +61,13 @@ function barClass(loValue: number, threshold: number): string {
     </p>
 
     <template v-else-if="cal && cal.samples > 0">
+      <!-- Describes the histogram, so it belongs with the histogram: printed
+           above the empty states it explained bars that were not there. -->
+      <p class="text-sm text-slate-500 mb-4">
+        Where stored samples fall on the automation-probability scale. Bars at or past the
+        suspect threshold are counted as bot-suspected. Use this to pick an enforcement threshold.
+      </p>
+
       <div class="grid grid-cols-3 gap-4 mb-5">
         <div>
           <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Samples</p>

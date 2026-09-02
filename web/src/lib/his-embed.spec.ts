@@ -98,7 +98,9 @@ describe('his-embed', () => {
       warnIfNoProtectedForm()
 
       expect(warn).toHaveBeenCalledTimes(1)
-      expect(String(warn.mock.calls[0][0])).toContain('not inside a <form>')
+      const message = String(warn.mock.calls[0][0])
+      expect(message).toContain('sits outside every <form>')
+      expect(message).toContain('Move the widget inside the form')
     })
 
     it('reports a page with no widget at all, and points at the JS path', () => {
@@ -108,6 +110,9 @@ describe('his-embed', () => {
       const message = String(warn.mock.calls[0][0])
       expect(message).toContain('no ALTCHA widget was found')
       expect(message).toContain('globalThis.gatechaHIS.signals()')
+      // Telling someone to move a widget they do not have would send them
+      // hunting for it.
+      expect(message).not.toContain('Move the widget')
     })
   })
 

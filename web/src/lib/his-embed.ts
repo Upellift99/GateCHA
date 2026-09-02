@@ -72,14 +72,20 @@ export function warnIfNoProtectedForm(): void {
   if (forms.some(isProtectedForm)) return
 
   const orphanWidget = document.querySelector('altcha-widget, [name="altcha"]') !== null
-  const cause = orphanWidget
-    ? 'an ALTCHA widget is on the page but not inside a <form>'
-    : 'no ALTCHA widget was found on this page'
+  const [cause, fix] = orphanWidget
+    ? [
+        'an ALTCHA widget on this page sits outside every <form>',
+        'Move the widget inside the form it protects',
+      ]
+    : [
+        'no ALTCHA widget was found on this page',
+        'If this page submits with fetch rather than a native submit, read ' +
+          'globalThis.gatechaHIS.signals() yourself and send it as his_signals on /verify',
+      ]
 
   console.warn(
     `[GateCHA HIS] Collector loaded, but ${cause}, so no interaction signals will be ` +
-      'attached on submit. Move the widget inside the form, or read ' +
-      'globalThis.gatechaHIS.signals() yourself and send it as his_signals on /verify. ' +
+      `attached on submit. ${fix}. ` +
       'See https://github.com/Upellift99/GateCHA#4-optional-collect-interaction-signals-his',
   )
 }
