@@ -109,19 +109,26 @@ func GetHISCalibration(db *gorm.DB, apiKeyID *int64, days int, threshold float64
 	}
 
 	// Score histogram: bucket by floor(score*10), clamped to the last bucket.
+	//
+	// FLOOR rather than a CAST: the type names CAST accepts are dialect
+	// specific, and `CAST(x AS INTEGER)` is a syntax error on MySQL, which
+	// wants `SIGNED`. That made the whole endpoint 500 on every MySQL-backed
+	// instance. FLOOR is standard and behaves identically on both. It returns
+	// a float on SQLite and an integer on MySQL, so the bucket is scanned as a
+	// float and truncated here rather than by the driver.
 	type bucketRow struct {
-		Bucket int
+		Bucket float64
 		Count  int
 	}
 	var buckets []bucketRow
 	if err := scope(db.Model(&HISSample{})).
-		Select("CAST(score * 10 AS INTEGER) AS bucket, COUNT(*) AS count").
+		Select("FLOOR(score * 10) AS bucket, COUNT(*) AS count").
 		Group("bucket").
 		Scan(&buckets).Error; err != nil {
 		return nil, err
 	}
 	for _, b := range buckets {
-		idx := b.Bucket
+		idx := int(b.Bucket)
 		if idx < 0 {
 			idx = 0
 		}

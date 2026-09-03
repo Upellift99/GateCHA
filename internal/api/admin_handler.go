@@ -421,6 +421,10 @@ func (h *AdminHandler) HISCalibration(w http.ResponseWriter, r *http.Request) {
 
 	cal, err := models.GetHISCalibration(h.DB, keyID, days, his.BotSuspectThreshold)
 	if err != nil {
+		// Logged, not just returned: the response body is deliberately vague,
+		// and without this an operator hitting the 500 had nothing to report
+		// and no way to tell a query failure from an empty result.
+		slog.Error("failed to fetch HIS calibration", "error", err, "key_id", keyID, "days", days)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch calibration"})
 		return
 	}

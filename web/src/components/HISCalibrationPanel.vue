@@ -56,8 +56,8 @@ function barClass(loValue: number, threshold: number): string {
 
     <p v-else-if="failed" class="text-slate-500 text-sm py-6">
       Could not load the calibration data. This says nothing about how many samples exist.
-      Reload the page; if it keeps failing, your session may have expired, or this instance
-      may predate 0.6.0, when the endpoint was added.
+      Reload the page; if it keeps failing, your session may have expired, or the request
+      failed server side, in which case the instance log records the reason.
     </p>
 
     <template v-else-if="cal && cal.samples > 0">
