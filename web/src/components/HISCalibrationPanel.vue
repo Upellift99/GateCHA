@@ -41,6 +41,24 @@ const suspectedPct = computed(() => {
   return Math.round((cal.value.suspected / cal.value.samples) * 100)
 })
 
+/**
+ * Milliseconds read badly at both ends of the range this reports: a collector
+ * window is either a few hundred milliseconds or tens of seconds, and "23140"
+ * makes the reader do the division. Seconds from one second up, with a single
+ * decimal so a short window keeps its precision.
+ */
+const avgWindow = computed(() => {
+  const ms = cal.value?.avg_duration_ms ?? 0
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  return `${(ms / 1000).toFixed(1)}s`
+})
+
+const avgPointer = computed(() => {
+  const n = cal.value?.avg_pointer_events ?? 0
+  // Averages below 1 are the interesting case here, so do not round them to 0.
+  return n > 0 && n < 1 ? n.toFixed(1) : Math.round(n).toLocaleString()
+})
+
 function barClass(loValue: number, threshold: number): string {
   return loValue + 1e-9 >= threshold ? 'bg-red-400' : 'bg-brand-500'
 }
@@ -68,7 +86,7 @@ function barClass(loValue: number, threshold: number): string {
         suspect threshold are counted as bot-suspected. Use this to pick an enforcement threshold.
       </p>
 
-      <div class="grid grid-cols-3 gap-4 mb-5">
+      <div class="grid grid-cols-3 lg:grid-cols-5 gap-4 mb-5">
         <div>
           <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Samples</p>
           <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ cal.samples.toLocaleString() }}</p>
@@ -80,6 +98,20 @@ function barClass(loValue: number, threshold: number): string {
         <div>
           <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">No motion</p>
           <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ Math.round(cal.no_motion_pct) }}<span class="text-base text-slate-400">%</span></p>
+        </div>
+        <!-- Both of these were already computed, returned by the endpoint and
+             typed in the store, and then dropped on the floor by this panel.
+             Average window length is what separates the two readings of a
+             no-motion sample: a window open for tens of seconds that saw
+             nothing is automation, one that lasted a few hundred milliseconds
+             is a collector that started too late to observe anything. -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Avg window</p>
+          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ avgWindow }}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Avg pointer</p>
+          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ avgPointer }}</p>
         </div>
       </div>
 
@@ -99,10 +131,27 @@ function barClass(loValue: number, threshold: number): string {
           ></div>
         </div>
       </div>
-      <div class="flex justify-between mt-1 text-[10px] text-slate-400 tabular-nums">
-        <span>0.0</span>
-        <span class="text-red-500">▲ threshold {{ cal.threshold.toFixed(2) }}</span>
-        <span>1.0</span>
+      <!-- The marker is absolutely positioned at the threshold rather than
+           being the middle child of a justify-between row, which centred it at
+           0.5 whatever the threshold was and had it pointing three buckets
+           away from the red/teal split it is supposed to explain. `left` is a
+           plain percentage of the axis; the bars carry a 4px gap, which puts
+           the 0.8 mark inside the gap between bucket 7 and bucket 8 rather
+           than on a bar, so no correction for it is needed. -->
+      <div class="relative mt-1 h-8 text-[10px] text-slate-400 tabular-nums">
+        <span class="absolute left-0">0.0</span>
+        <span class="absolute right-0">1.0</span>
+        <!-- The arrow is centred on the threshold and the caption is stacked
+             under it, rather than centring the caption and letting the arrow
+             sit wherever its own width puts it. A glyph that points has to
+             point at the right column. -->
+        <span
+          class="absolute -translate-x-1/2 flex flex-col items-center leading-tight text-red-500"
+          :style="{ left: cal.threshold * 100 + '%' }"
+        >
+          <span aria-hidden="true">▲</span>
+          <span class="whitespace-nowrap">threshold {{ cal.threshold.toFixed(2) }}</span>
+        </span>
       </div>
     </template>
 
