@@ -28,7 +28,10 @@ func recordHISMonitor(db *gorm.DB, key *models.APIKey, signals *his.Signals) *hi
 		return nil
 	}
 	score := his.Score(*signals)
-	suspected := his.IsBotSuspected(score)
+	// The key's own threshold, not the package default: one number decides what
+	// this key calls automation, so the counters, the reported flag, the
+	// calibration marker and any enforcement all agree with each other.
+	suspected := his.IsBotSuspectedAt(score, key.SuspectThreshold())
 	slog.Info("his monitor sample", "api_key_id", key.ID, "score", score, "bot_suspected", suspected)
 	if err := models.IncrementHISObservation(db, key.ID, suspected); err != nil {
 		slog.Error("failed to increment his observation", "error", err, "api_key_id", key.ID)

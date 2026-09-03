@@ -21,6 +21,17 @@ const deleting = ref(false)
 
 const keyId = computed(() => Number(route.params.id))
 
+/**
+ * Mirrors the server's own fallback (models.APIKey.SuspectThreshold): an
+ * out-of-range or absent value means the default applies, not "reject
+ * everything". Reading it through one computed also keeps the badge, the
+ * caption and the settings row from ever disagreeing.
+ */
+const suspectThreshold = computed(() => {
+  const t = key.value?.his_threshold
+  return typeof t === 'number' && t > 0 && t <= 1 ? t : 0.8
+})
+
 const domainList = computed(() =>
   (key.value?.domain ?? '')
     .split(/[\n,]/)
@@ -190,6 +201,19 @@ const hisTotals = computed(() => ({
             >{{ key.his_sampling ? 'On' : 'Off' }}</span>
           </dd>
         </div>
+        <div>
+          <dt class="text-sm font-medium text-slate-500">Block suspected bots</dt>
+          <dd class="mt-1">
+            <span
+              :class="key.his_enforce ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-600'"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+            >{{ key.his_enforce ? 'Blocking' : 'Monitor only' }}</span>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-slate-500">Suspect threshold</dt>
+          <dd class="mt-1 text-sm text-slate-900 tabular-nums">{{ suspectThreshold.toFixed(2) }}</dd>
+        </div>
       </dl>
     </div>
 
@@ -231,9 +255,14 @@ const hisTotals = computed(() => ({
         <span class="text-slate-900">{{ hisTotals.observations.toLocaleString() }} observed</span>
         <span class="text-slate-900">{{ hisTotals.suspected.toLocaleString() }} bot-suspected</span>
       </div>
-      <p class="text-xs text-slate-500 mb-4">
-        Monitor is currently the only mode: suspected requests are counted, never blocked.
-        There is no setting to turn blocking on yet.
+      <p v-if="key.his_enforce" class="text-xs text-slate-500 mb-4">
+        Blocking is on for this key: a verification scoring
+        {{ suspectThreshold.toFixed(2) }} or above is rejected with
+        <code class="font-mono">bot_suspected</code> and counted as a failed verification.
+      </p>
+      <p v-else class="text-xs text-slate-500 mb-4">
+        Monitor mode: suspected requests are counted and reported, never blocked. Turn on
+        "Block suspected bots" in this key's settings to act on the score.
       </p>
       <StatsChart v-if="statsStore.keyStats.length" :data="statsStore.keyStats" />
       <p v-else class="text-slate-500 text-center py-12">No data yet</p>

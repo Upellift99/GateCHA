@@ -14,6 +14,8 @@ export interface APIKey {
   rate_limit_per_min: number
   adaptive_difficulty: boolean
   his_sampling: boolean
+  his_enforce: boolean
+  his_threshold: number
   enabled: boolean
   created_at: string
   updated_at: string
@@ -38,7 +40,7 @@ export const useApiKeysStore = defineStore('apikeys', () => {
     }
   }
 
-  async function createKey(payload: { name: string; domain: string; max_number: number; expire_seconds: number; algorithm?: string; rate_limit_per_min?: number; adaptive_difficulty?: boolean; his_sampling?: boolean }) {
+  async function createKey(payload: { name: string; domain: string; max_number: number; expire_seconds: number; algorithm?: string; rate_limit_per_min?: number; adaptive_difficulty?: boolean; his_sampling?: boolean; his_enforce?: boolean; his_threshold?: number }) {
     const { data } = await api.post('/keys', payload)
     await fetchKeys()
     return data as APIKey

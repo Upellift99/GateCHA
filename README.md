@@ -152,9 +152,12 @@ resp = requests.post(
 Calling `/verify` from the browser instead? Read the same object from
 `window.gatechaHIS.signals()`.
 
-HIS never blocks. Scores are recorded and surfaced on the dashboard and per key.
-Enabling **HIS sampling** on a key additionally stores the raw aggregates so the
-key detail page can show you the score distribution.
+HIS does not block until you say so. Out of the box it runs in Monitor mode:
+scores are recorded and surfaced on the dashboard and per key, and every
+verification outcome is decided by the proof of work alone. Enabling **HIS
+sampling** on a key additionally stores the raw aggregates so the key detail page
+can show you the score distribution. Blocking is a separate per-key switch,
+covered in [Blocking on the score](#blocking-on-the-score).
 
 To build your own collector, `his_signals` is this object, all numeric:
 
@@ -210,9 +213,9 @@ reverse of reCAPTCHA's convention, where the score measures confidence that the
 visitor is human. Copying a reCAPTCHA rule across ("reject below 0.6") would
 reject your humans and pass the bots.
 
-`his_bot_suspected` is that score judged against GateCHA's own threshold
-(`>= 0.8`), the same rule the dashboard counters use, for when you would rather
-not own a number.
+`his_bot_suspected` is that score judged against the key's suspect threshold
+(`>= 0.8` unless you changed it), the same rule the dashboard counters and any
+blocking use, for when you would rather not own a number.
 
 Two things to know before picking a threshold:
 
@@ -227,6 +230,40 @@ Two things to know before picking a threshold:
 
 The fields ride along with failed verifications as well, which are often the ones
 worth inspecting.
+
+#### Blocking on the score
+
+Once you have read your own histogram, a key can reject suspected requests itself
+instead of only reporting them. Two per-key settings, both on the key's edit page:
+
+- **Block suspected bots**, off by default;
+- **Suspect threshold**, `0.8` by default, anywhere in `(0, 1]`.
+
+A rejected verification answers `200` with the usual failure shape, plus the score
+that caused it, and counts as a failed verification in the statistics:
+
+```json
+{ "ok": false, "error": "bot_suspected", "his_bot_score": 0.9, "his_bot_suspected": true }
+```
+
+Four things worth knowing before you switch it on:
+
+- **It only ever acts on requests that carried `his_signals`.** A site whose
+  collector never runs sends nothing, is scored not at all, and passes untouched
+  whatever the switch says. Enforcement cannot lock out an integration that never
+  had HIS in the first place.
+- **The proof of work keeps precedence.** A submission that failed the maths is
+  reported as `invalid_solution`, never as `bot_suspected`, so a broken widget is
+  not misread as an automation wave.
+- **The threshold is one number with one meaning.** It drives the blocking, the
+  reported `his_bot_suspected`, the Monitor counters and the calibration marker
+  together. Lowering it therefore raises the bot-suspected figure on your
+  dashboard by design; that is the same question asked with your number.
+- **Think hard before going at or below 0.70.** That is the exact score of a
+  sample whose collector ran and observed nothing at all, and a keyboard-only or
+  screen-reader visitor produces it just as an automated submission does. On some
+  sites that tier is overwhelmingly automation, and the operators who have checked
+  do lower the threshold; it is not a default anyone should inherit unread.
 
 ## API Endpoints
 
