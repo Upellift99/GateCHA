@@ -186,18 +186,19 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		AdaptiveDifficulty bool   `json:"adaptive_difficulty"`
 		HISSampling        bool   `json:"his_sampling"`
 		HISEnforce         bool   `json:"his_enforce"`
-		// 0 means "not supplied": the model default applies. A caller wanting a
-		// different threshold sends it explicitly, and out-of-range values are
-		// rejected rather than clamped, since a silently corrected threshold is
-		// a silently different blocking policy.
-		HISThreshold float64 `json:"his_threshold"`
+		// A pointer so that omitting the field selects the model default while
+		// an explicit value is always honoured or refused. Spelled as a plain
+		// float it made `{"his_threshold": 0}` indistinguishable from silence,
+		// so the caller was answered 201 with a policy they had not asked for,
+		// where the update path rejects the same body.
+		HISThreshold *float64 `json:"his_threshold"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
 		return
 	}
 
-	if req.HISThreshold != 0 && !validHISThreshold(req.HISThreshold) {
+	if req.HISThreshold != nil && !validHISThreshold(*req.HISThreshold) {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidHISThreshold})
 		return
 	}
@@ -210,11 +211,8 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 
 	// CreateAPIKey keeps its narrow signature; apply the optional advanced levers
 	// as a follow-up update so create stays a single source of defaults.
-	hisThreshold := key.HISThreshold
-	if req.HISThreshold != 0 {
-		hisThreshold = req.HISThreshold
-	}
-	if req.RateLimitPerMin > 0 || req.AdaptiveDifficulty || req.HISSampling || req.HISEnforce || req.HISThreshold != 0 {
+	hisThreshold := orNil(req.HISThreshold, key.SuspectThreshold())
+	if req.RateLimitPerMin > 0 || req.AdaptiveDifficulty || req.HISSampling || req.HISEnforce || req.HISThreshold != nil {
 		if err := models.UpdateAPIKey(h.DB, key.ID, models.UpdateAPIKeyParams{
 			Name:               key.Name,
 			Domain:             key.Domain,

@@ -186,6 +186,12 @@ func registerMCPWriteTools(server *mcp.Server, db *gorm.DB) {
 			OpenWorldHint:   boolPtr(false),
 		},
 	}, func(_ context.Context, _ *mcp.CallToolRequest, in updateKeyInput) (*mcp.CallToolResult, mcpKeyView, error) {
+		// Refused, never dropped: silently ignoring a threshold the caller
+		// supplied would report success while the old blocking policy stayed in
+		// force, which is the one outcome an agent cannot detect.
+		if in.HISThreshold != nil && !validHISThreshold(*in.HISThreshold) {
+			return nil, mcpKeyView{}, fmt.Errorf("his_threshold %v is invalid: %s", *in.HISThreshold, errInvalidHISThreshold)
+		}
 		if _, err := mcpFetchKey(db, in.ID); err != nil {
 			return nil, mcpKeyView{}, err
 		}
@@ -269,9 +275,9 @@ func mcpUpdateFields(in updateKeyInput) map[string]any {
 	if in.HISEnforce != nil {
 		fields["his_enforce"] = *in.HISEnforce
 	}
-	// Out-of-range values are dropped rather than written: 0 in particular would
-	// mean "treat every scored request as automation".
-	if in.HISThreshold != nil && validHISThreshold(*in.HISThreshold) {
+	// Validated by the caller, which refuses the whole update rather than
+	// letting an out-of-range value through or dropping it in silence.
+	if in.HISThreshold != nil {
 		fields["his_threshold"] = *in.HISThreshold
 	}
 	return fields

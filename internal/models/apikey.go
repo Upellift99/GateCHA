@@ -214,8 +214,13 @@ func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
 		"adaptive_difficulty": params.AdaptiveDifficulty,
 		"his_sampling":        params.HISSampling,
 		"his_enforce":         params.HISEnforce,
-		"his_threshold":       params.HISThreshold,
-		"enabled":             params.Enabled,
+		// Normalised, not written raw: this whole-row update takes a struct, so
+		// a caller who simply does not care about the threshold leaves the field
+		// at 0, which on an enforcing key would mean "reject everything". The
+		// handlers validate and refuse an out-of-range value long before here;
+		// this is the net under a caller who never named it at all.
+		"his_threshold": (&APIKey{HISThreshold: params.HISThreshold}).SuspectThreshold(),
+		"enabled":       params.Enabled,
 	}).Error
 }
 

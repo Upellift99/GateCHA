@@ -358,3 +358,64 @@ func TestUpdateKey_PartialUpdateConventions(t *testing.T) {
 		t.Errorf("rate_limit_per_min = %d, an explicit 0 must be written", after.RateLimitPerMin)
 	}
 }
+
+// Create refuses an explicit out-of-range threshold instead of treating it as
+// an absent field. Spelled as a plain float it made `{"his_threshold": 0}`
+// indistinguishable from silence, so the caller was answered 201 with a policy
+// they had not asked for, while the update path rejected the same body.
+func TestCreateKey_RejectsExplicitInvalidThreshold(t *testing.T) {
+	router, _ := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	for _, bad := range []float64{0, -0.2, 1.4} {
+		body, _ := json.Marshal(map[string]interface{}{"name": "Nope", "his_threshold": bad})
+		req := httptest.NewRequest("POST", "/api/admin/keys", bytes.NewReader(body))
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("threshold %v: status = %d, want 400", bad, w.Code)
+		}
+	}
+}
+
+func TestCreateKey_AppliesTheDefaultAndAnExplicitThreshold(t *testing.T) {
+	router, db := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	create := func(payload map[string]interface{}) *models.APIKey {
+		t.Helper()
+		body, _ := json.Marshal(payload)
+		req := httptest.NewRequest("POST", "/api/admin/keys", bytes.NewReader(body))
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		if w.Code != http.StatusCreated {
+			t.Fatalf("status = %d, want 201: %s", w.Code, w.Body.String())
+		}
+		var created models.APIKey
+		if err := json.NewDecoder(w.Body).Decode(&created); err != nil {
+			t.Fatalf("decode: %v", err)
+		}
+		stored, err := models.GetAPIKeyByID(db, created.ID)
+		if err != nil {
+			t.Fatalf("reload: %v", err)
+		}
+		return stored
+	}
+
+	// Omitted: the default, and blocking off.
+	plain := create(map[string]interface{}{"name": "Default"})
+	if plain.HISThreshold != models.DefaultHISThreshold || plain.HISEnforce {
+		t.Errorf("default key = threshold %v enforce %v", plain.HISThreshold, plain.HISEnforce)
+	}
+
+	// Supplied: honoured, including alongside the switch.
+	tuned := create(map[string]interface{}{"name": "Tuned", "his_enforce": true, "his_threshold": 0.5})
+	if tuned.HISThreshold != 0.5 || !tuned.HISEnforce {
+		t.Errorf("tuned key = threshold %v enforce %v, want 0.5 / true", tuned.HISThreshold, tuned.HISEnforce)
+	}
+}
