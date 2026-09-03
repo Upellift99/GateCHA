@@ -65,16 +65,20 @@ onMounted(() => {
         </StatsSummaryCard>
       </div>
 
-      <!-- HIS (Human Interaction Signature) — Monitor mode -->
+      <!-- HIS (Human Interaction Signature) — instance-wide totals.
+           Deliberately not labelled "Monitor mode" any more: blocking is a
+           per-key switch, and this panel aggregates every key, so it cannot
+           honestly claim the whole instance is in Monitor. -->
       <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-lg font-semibold text-slate-900">Human Interaction Signature</h2>
-          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200">Monitor mode</span>
+          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200">all keys</span>
         </div>
         <p class="text-sm text-slate-500 mb-4">
-          Observes interaction behavior to estimate automation probability. Monitor is currently the
-          only mode: suspected requests are counted here and never blocked. Acting on the score is
-          not available yet, so there is no setting to switch on.
+          Observes interaction behavior to estimate automation probability. Counted here for every
+          scored request across every key, whether or not that key acts on the score. Blocking is
+          off by default and switched on per key, on the key's own settings page, once its
+          calibration histogram tells you where to put the threshold.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatsSummaryCard label="HIS Observations" :value="statsStore.overview.total_his_observations" color="blue" />

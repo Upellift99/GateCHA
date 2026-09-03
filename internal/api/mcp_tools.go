@@ -17,19 +17,21 @@ import (
 // structural means no tool can leak it by forgetting to strip it: the type
 // simply cannot carry one. create_key returns its own type instead.
 type mcpKeyView struct {
-	ID                 int64  `json:"id"`
-	KeyID              string `json:"key_id"`
-	Name               string `json:"name"`
-	Domain             string `json:"domain"`
-	Enabled            bool   `json:"enabled"`
-	MaxNumber          int64  `json:"max_number"`
-	ExpireSeconds      int    `json:"expire_seconds"`
-	Algorithm          string `json:"algorithm"`
-	RateLimitPerMin    int    `json:"rate_limit_per_min"`
-	AdaptiveDifficulty bool   `json:"adaptive_difficulty"`
-	HISSampling        bool   `json:"his_sampling"`
-	CreatedAt          string `json:"created_at"`
-	UpdatedAt          string `json:"updated_at"`
+	ID                 int64   `json:"id"`
+	KeyID              string  `json:"key_id"`
+	Name               string  `json:"name"`
+	Domain             string  `json:"domain"`
+	Enabled            bool    `json:"enabled"`
+	MaxNumber          int64   `json:"max_number"`
+	ExpireSeconds      int     `json:"expire_seconds"`
+	Algorithm          string  `json:"algorithm"`
+	RateLimitPerMin    int     `json:"rate_limit_per_min"`
+	AdaptiveDifficulty bool    `json:"adaptive_difficulty"`
+	HISSampling        bool    `json:"his_sampling"`
+	HISEnforce         bool    `json:"his_enforce"`
+	HISThreshold       float64 `json:"his_threshold"`
+	CreatedAt          string  `json:"created_at"`
+	UpdatedAt          string  `json:"updated_at"`
 }
 
 func mcpViewOf(key *models.APIKey) mcpKeyView {
@@ -45,6 +47,8 @@ func mcpViewOf(key *models.APIKey) mcpKeyView {
 		RateLimitPerMin:    key.RateLimitPerMin,
 		AdaptiveDifficulty: key.AdaptiveDifficulty,
 		HISSampling:        key.HISSampling,
+		HISEnforce:         key.HISEnforce,
+		HISThreshold:       key.SuspectThreshold(),
 		CreatedAt:          key.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt:          key.UpdatedAt.UTC().Format(time.RFC3339),
 	}
@@ -133,15 +137,17 @@ type createKeyOutput struct {
 }
 
 type updateKeyInput struct {
-	ID                 int64   `json:"id" jsonschema:"numeric ID of the key to update"`
-	Name               *string `json:"name,omitempty" jsonschema:"omit to leave unchanged"`
-	Domain             *string `json:"domain,omitempty" jsonschema:"omit to leave unchanged; an empty string widens the key to any domain"`
-	MaxNumber          *int64  `json:"max_number,omitempty" jsonschema:"omit to leave unchanged"`
-	ExpireSeconds      *int    `json:"expire_seconds,omitempty" jsonschema:"omit to leave unchanged"`
-	Algorithm          *string `json:"algorithm,omitempty" jsonschema:"omit to leave unchanged"`
-	RateLimitPerMin    *int    `json:"rate_limit_per_min,omitempty" jsonschema:"requests per minute for this key; 0 means unlimited; omit to leave unchanged"`
-	AdaptiveDifficulty *bool   `json:"adaptive_difficulty,omitempty" jsonschema:"omit to leave unchanged"`
-	HISSampling        *bool   `json:"his_sampling,omitempty" jsonschema:"omit to leave unchanged"`
+	ID                 int64    `json:"id" jsonschema:"numeric ID of the key to update"`
+	Name               *string  `json:"name,omitempty" jsonschema:"omit to leave unchanged"`
+	Domain             *string  `json:"domain,omitempty" jsonschema:"omit to leave unchanged; an empty string widens the key to any domain"`
+	MaxNumber          *int64   `json:"max_number,omitempty" jsonschema:"omit to leave unchanged"`
+	ExpireSeconds      *int     `json:"expire_seconds,omitempty" jsonschema:"omit to leave unchanged"`
+	Algorithm          *string  `json:"algorithm,omitempty" jsonschema:"omit to leave unchanged"`
+	RateLimitPerMin    *int     `json:"rate_limit_per_min,omitempty" jsonschema:"requests per minute for this key; 0 means unlimited; omit to leave unchanged"`
+	AdaptiveDifficulty *bool    `json:"adaptive_difficulty,omitempty" jsonschema:"omit to leave unchanged"`
+	HISSampling        *bool    `json:"his_sampling,omitempty" jsonschema:"omit to leave unchanged"`
+	HISEnforce         *bool    `json:"his_enforce,omitempty" jsonschema:"reject verifications whose HIS score reaches his_threshold; off by default; omit to leave unchanged"`
+	HISThreshold       *float64 `json:"his_threshold,omitempty" jsonschema:"score in (0,1] at or above which this key treats a sample as automation; higher means more bot-like; default 0.8; omit to leave unchanged"`
 }
 
 type keyIDInput struct {
@@ -180,6 +186,12 @@ func registerMCPWriteTools(server *mcp.Server, db *gorm.DB) {
 			OpenWorldHint:   boolPtr(false),
 		},
 	}, func(_ context.Context, _ *mcp.CallToolRequest, in updateKeyInput) (*mcp.CallToolResult, mcpKeyView, error) {
+		// Refused, never dropped: silently ignoring a threshold the caller
+		// supplied would report success while the old blocking policy stayed in
+		// force, which is the one outcome an agent cannot detect.
+		if in.HISThreshold != nil && !validHISThreshold(*in.HISThreshold) {
+			return nil, mcpKeyView{}, fmt.Errorf("his_threshold %v is invalid: %s", *in.HISThreshold, errInvalidHISThreshold)
+		}
 		if _, err := mcpFetchKey(db, in.ID); err != nil {
 			return nil, mcpKeyView{}, err
 		}
@@ -259,6 +271,14 @@ func mcpUpdateFields(in updateKeyInput) map[string]any {
 	}
 	if in.HISSampling != nil {
 		fields["his_sampling"] = *in.HISSampling
+	}
+	if in.HISEnforce != nil {
+		fields["his_enforce"] = *in.HISEnforce
+	}
+	// Validated by the caller, which refuses the whole update rather than
+	// letting an out-of-range value through or dropping it in silence.
+	if in.HISThreshold != nil {
+		fields["his_threshold"] = *in.HISThreshold
 	}
 	return fields
 }

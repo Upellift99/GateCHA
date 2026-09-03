@@ -117,9 +117,21 @@ func round2(v float64) float64 {
 	return math.Round(v*100) / 100
 }
 
-// IsBotSuspected reports whether the score meets the Monitor suspect threshold.
+// IsBotSuspected reports whether the score meets the default suspect threshold.
 func IsBotSuspected(score float64) bool {
-	return score >= BotSuspectThreshold
+	return IsBotSuspectedAt(score, BotSuspectThreshold)
+}
+
+// IsBotSuspectedAt reports whether the score meets a caller-chosen threshold.
+//
+// Comparison is on scores already snapped to two decimals by Score, and the
+// threshold arrives from configuration, so a value like 0.7 that has no exact
+// binary representation must not decide the comparison by its last bit: a
+// sample scoring exactly the threshold has to count as meeting it. The epsilon
+// is far below the 0.01 granularity of the score ladder, so it can never pull
+// in a neighbouring rung.
+func IsBotSuspectedAt(score, threshold float64) bool {
+	return score+1e-9 >= threshold
 }
 
 func clamp01(v float64) float64 {

@@ -21,7 +21,48 @@ const (
 	errKeyNotFound    = "key not found"
 	errFetchStats     = "failed to fetch stats"
 	errUpdateSettings = "failed to update settings"
+
+	errInvalidHISThreshold = "his_threshold must be greater than 0 and at most 1"
 )
+
+// orNil, orZero and orNonPositive spell the three "omitted means unchanged"
+// conventions this API uses, so a partial update reads as a list of fields
+// rather than as a wall of branches. They differ in how the caller signals
+// "leave it alone", and the difference is not cosmetic: a pointer is the only
+// one of the three that can carry a meaningful zero.
+func orNil[T any](supplied *T, current T) T {
+	if supplied == nil {
+		return current
+	}
+	return *supplied
+}
+
+// orZero treats the zero value as "omitted". Only safe for fields where the
+// zero value is not a setting anyone would want, such as an empty name.
+func orZero[T comparable](supplied, current T) T {
+	var zero T
+	if supplied == zero {
+		return current
+	}
+	return supplied
+}
+
+// orNonPositive additionally treats negatives as "omitted", for the numeric
+// fields where a negative is nonsense rather than a request.
+func orNonPositive[T int | int64](supplied, current T) T {
+	if supplied <= 0 {
+		return current
+	}
+	return supplied
+}
+
+// validHISThreshold bounds the per-key suspect threshold. 0 is excluded on
+// purpose: every score is >= 0, so a threshold of 0 means "treat every scored
+// request as automation", which on a key with enforcement on takes the site
+// down. Nobody types 0 meaning that.
+func validHISThreshold(v float64) bool {
+	return v > 0 && v <= 1
+}
 
 type AdminHandler struct {
 	DB           *gorm.DB
@@ -144,9 +185,21 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		RateLimitPerMin    int    `json:"rate_limit_per_min"`
 		AdaptiveDifficulty bool   `json:"adaptive_difficulty"`
 		HISSampling        bool   `json:"his_sampling"`
+		HISEnforce         bool   `json:"his_enforce"`
+		// A pointer so that omitting the field selects the model default while
+		// an explicit value is always honoured or refused. Spelled as a plain
+		// float it made `{"his_threshold": 0}` indistinguishable from silence,
+		// so the caller was answered 201 with a policy they had not asked for,
+		// where the update path rejects the same body.
+		HISThreshold *float64 `json:"his_threshold"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
+		return
+	}
+
+	if req.HISThreshold != nil && !validHISThreshold(*req.HISThreshold) {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidHISThreshold})
 		return
 	}
 
@@ -158,7 +211,8 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 
 	// CreateAPIKey keeps its narrow signature; apply the optional advanced levers
 	// as a follow-up update so create stays a single source of defaults.
-	if req.RateLimitPerMin > 0 || req.AdaptiveDifficulty || req.HISSampling {
+	hisThreshold := orNil(req.HISThreshold, key.SuspectThreshold())
+	if req.RateLimitPerMin > 0 || req.AdaptiveDifficulty || req.HISSampling || req.HISEnforce || req.HISThreshold != nil {
 		if err := models.UpdateAPIKey(h.DB, key.ID, models.UpdateAPIKeyParams{
 			Name:               key.Name,
 			Domain:             key.Domain,
@@ -168,6 +222,8 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 			RateLimitPerMin:    req.RateLimitPerMin,
 			AdaptiveDifficulty: req.AdaptiveDifficulty,
 			HISSampling:        req.HISSampling,
+			HISEnforce:         req.HISEnforce,
+			HISThreshold:       hisThreshold,
 			Enabled:            key.Enabled,
 		}); err != nil {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to create key"})
@@ -176,6 +232,8 @@ func (h *AdminHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		key.RateLimitPerMin = req.RateLimitPerMin
 		key.AdaptiveDifficulty = req.AdaptiveDifficulty
 		key.HISSampling = req.HISSampling
+		key.HISEnforce = req.HISEnforce
+		key.HISThreshold = hisThreshold
 	}
 
 	writeJSON(w, http.StatusCreated, key)
@@ -207,18 +265,28 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Name               string `json:"name"`
-		Domain             string `json:"domain"`
-		MaxNumber          int64  `json:"max_number"`
-		ExpireSeconds      int    `json:"expire_seconds"`
-		Algorithm          string `json:"algorithm"`
-		RateLimitPerMin    *int   `json:"rate_limit_per_min"`
-		AdaptiveDifficulty *bool  `json:"adaptive_difficulty"`
-		HISSampling        *bool  `json:"his_sampling"`
-		Enabled            *bool  `json:"enabled"`
+		Name               string   `json:"name"`
+		Domain             string   `json:"domain"`
+		MaxNumber          int64    `json:"max_number"`
+		ExpireSeconds      int      `json:"expire_seconds"`
+		Algorithm          string   `json:"algorithm"`
+		RateLimitPerMin    *int     `json:"rate_limit_per_min"`
+		AdaptiveDifficulty *bool    `json:"adaptive_difficulty"`
+		HISSampling        *bool    `json:"his_sampling"`
+		HISEnforce         *bool    `json:"his_enforce"`
+		HISThreshold       *float64 `json:"his_threshold"`
+		Enabled            *bool    `json:"enabled"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidRequest})
+		return
+	}
+
+	// Rejected rather than clamped, and before anything is loaded: a threshold
+	// quietly corrected to something else is a quietly different blocking
+	// policy, and the caller would never learn which one they got.
+	if req.HISThreshold != nil && !validHISThreshold(*req.HISThreshold) {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidHISThreshold})
 		return
 	}
 
@@ -228,55 +296,22 @@ func (h *AdminHandler) UpdateKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := existing.Name
-	if req.Name != "" {
-		name = req.Name
-	}
-	domain := existing.Domain
-	if req.Domain != "" {
-		domain = req.Domain
-	}
-	maxNumber := existing.MaxNumber
-	if req.MaxNumber > 0 {
-		maxNumber = req.MaxNumber
-	}
-	expireSeconds := existing.ExpireSeconds
-	if req.ExpireSeconds > 0 {
-		expireSeconds = req.ExpireSeconds
-	}
-	algorithm := existing.Algorithm
-	if req.Algorithm != "" {
-		algorithm = req.Algorithm
-	}
-	enabled := existing.Enabled
-	if req.Enabled != nil {
-		enabled = *req.Enabled
-	}
-	// 0 is a valid value (disables the per-key limit), so distinguish "omitted"
-	// from "set to 0" via the pointer.
-	rateLimitPerMin := existing.RateLimitPerMin
-	if req.RateLimitPerMin != nil {
-		rateLimitPerMin = *req.RateLimitPerMin
-	}
-	adaptiveDifficulty := existing.AdaptiveDifficulty
-	if req.AdaptiveDifficulty != nil {
-		adaptiveDifficulty = *req.AdaptiveDifficulty
-	}
-	hisSampling := existing.HISSampling
-	if req.HISSampling != nil {
-		hisSampling = *req.HISSampling
-	}
-
 	if err := models.UpdateAPIKey(h.DB, id, models.UpdateAPIKeyParams{
-		Name:               name,
-		Domain:             domain,
-		MaxNumber:          maxNumber,
-		ExpireSeconds:      expireSeconds,
-		Algorithm:          algorithm,
-		RateLimitPerMin:    rateLimitPerMin,
-		AdaptiveDifficulty: adaptiveDifficulty,
-		HISSampling:        hisSampling,
-		Enabled:            enabled,
+		Name:          orZero(req.Name, existing.Name),
+		Domain:        orZero(req.Domain, existing.Domain),
+		MaxNumber:     orNonPositive(req.MaxNumber, existing.MaxNumber),
+		ExpireSeconds: orNonPositive(req.ExpireSeconds, existing.ExpireSeconds),
+		Algorithm:     orZero(req.Algorithm, existing.Algorithm),
+		// These arrive as pointers because their zero value is meaningful:
+		// rate_limit_per_min 0 disables the per-key limit, and false is a real
+		// setting for the three switches, so "omitted" cannot be inferred from
+		// the value itself.
+		RateLimitPerMin:    orNil(req.RateLimitPerMin, existing.RateLimitPerMin),
+		AdaptiveDifficulty: orNil(req.AdaptiveDifficulty, existing.AdaptiveDifficulty),
+		HISSampling:        orNil(req.HISSampling, existing.HISSampling),
+		HISEnforce:         orNil(req.HISEnforce, existing.HISEnforce),
+		HISThreshold:       orNil(req.HISThreshold, existing.SuspectThreshold()),
+		Enabled:            orNil(req.Enabled, existing.Enabled),
 	}); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to update key"})
 		return
@@ -419,7 +454,17 @@ func (h *AdminHandler) HISCalibration(w http.ResponseWriter, r *http.Request) {
 		keyID = &parsed
 	}
 
-	cal, err := models.GetHISCalibration(h.DB, keyID, days, his.BotSuspectThreshold)
+	// The histogram's marker has to show the number this key actually applies,
+	// not the package default: on a key whose threshold was lowered, a marker
+	// drawn at 0.8 would describe a policy the key no longer follows.
+	threshold := his.BotSuspectThreshold
+	if keyID != nil {
+		if key, err := models.GetAPIKeyByID(h.DB, *keyID); err == nil {
+			threshold = key.SuspectThreshold()
+		}
+	}
+
+	cal, err := models.GetHISCalibration(h.DB, keyID, days, threshold)
 	if err != nil {
 		// Logged, not just returned: the response body is deliberately vague,
 		// and without this an operator hitting the 500 had nothing to report

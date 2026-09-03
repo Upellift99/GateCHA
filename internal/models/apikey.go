@@ -30,10 +30,55 @@ type APIKey struct {
 	// HISSampling, when set, persists each scored HIS observation for this key
 	// (raw aggregates + score) so enforcement thresholds can be calibrated on
 	// real traffic. Samples are pruned after the configured retention window.
-	HISSampling bool      `gorm:"not null;default:false" json:"his_sampling"`
-	Enabled     bool      `gorm:"not null;default:true" json:"enabled"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	HISSampling bool `gorm:"not null;default:false" json:"his_sampling"`
+	// HISEnforce, when set, rejects a verification whose HIS score reaches
+	// HISThreshold, instead of merely reporting it. Off by default: HIS ships
+	// in Monitor mode and blocking is a decision the operator makes after
+	// reading their own calibration histogram, never one inherited from us.
+	// It can only ever act on a request that actually carried `his_signals`;
+	// a client shipping no collector sends nothing, is scored not at all, and
+	// passes untouched whatever this says.
+	HISEnforce bool `gorm:"not null;default:false" json:"his_enforce"`
+	// HISThreshold is the score at or above which this key treats a sample as
+	// automation: it drives the reported `his_bot_suspected`, the Monitor
+	// counters, the calibration histogram's marker and, when HISEnforce is on,
+	// the rejection. One number, one meaning.
+	//
+	// The default is deliberately his.BotSuspectThreshold rather than anything
+	// lower. A sample whose collector ran and observed nothing at all scores
+	// exactly 0.70, and that shape is produced both by automation and by a
+	// keyboard-only or assistive-technology visitor. Operators who have read
+	// their own histogram can and do lower this; operators who have not should
+	// not inherit a number that rejects their accessible traffic.
+	HISThreshold float64   `gorm:"not null;default:0.8" json:"his_threshold"`
+	Enabled      bool      `gorm:"not null;default:true" json:"enabled"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+// DefaultHISThreshold mirrors his.BotSuspectThreshold. It is restated here
+// rather than imported so that models keeps no dependency on the scoring
+// package; his_test asserts the two stay equal.
+const DefaultHISThreshold = 0.8
+
+// AfterFind normalises the stored threshold on every read path, so no caller
+// ever sees an out-of-range value: not the scorer, not the admin API, and not
+// the edit form, which would otherwise display a 0 that its own validation then
+// refuses to save back. GORM runs this for Find, First and Scan alike.
+func (k *APIKey) AfterFind(*gorm.DB) error {
+	k.HISThreshold = k.SuspectThreshold()
+	return nil
+}
+
+// SuspectThreshold is the score at or above which this key counts a sample as
+// automation. Out-of-range values (a column added before this field existed,
+// or a bad write) fall back to the default rather than silently meaning
+// "reject everything", which is what a stored 0 would otherwise do.
+func (k *APIKey) SuspectThreshold() float64 {
+	if k.HISThreshold <= 0 || k.HISThreshold > 1 {
+		return DefaultHISThreshold
+	}
+	return k.HISThreshold
 }
 
 // UpdateAPIKeyParams holds the fields for updating an API key.
@@ -46,6 +91,8 @@ type UpdateAPIKeyParams struct {
 	RateLimitPerMin    int
 	AdaptiveDifficulty bool
 	HISSampling        bool
+	HISEnforce         bool
+	HISThreshold       float64
 	Enabled            bool
 }
 
@@ -94,6 +141,7 @@ func CreateAPIKey(db *gorm.DB, name, domain string, maxNumber int64, expireSecon
 		MaxNumber:     maxNumber,
 		ExpireSeconds: expireSeconds,
 		Algorithm:     algorithm,
+		HISThreshold:  DefaultHISThreshold,
 		Enabled:       true,
 	}
 	if err := db.Create(key).Error; err != nil {
@@ -165,7 +213,14 @@ func UpdateAPIKey(db *gorm.DB, id int64, params UpdateAPIKeyParams) error {
 		"rate_limit_per_min":  params.RateLimitPerMin,
 		"adaptive_difficulty": params.AdaptiveDifficulty,
 		"his_sampling":        params.HISSampling,
-		"enabled":             params.Enabled,
+		"his_enforce":         params.HISEnforce,
+		// Normalised, not written raw: this whole-row update takes a struct, so
+		// a caller who simply does not care about the threshold leaves the field
+		// at 0, which on an enforcing key would mean "reject everything". The
+		// handlers validate and refuse an out-of-range value long before here;
+		// this is the net under a caller who never named it at all.
+		"his_threshold": (&APIKey{HISThreshold: params.HISThreshold}).SuspectThreshold(),
+		"enabled":       params.Enabled,
 	}).Error
 }
 

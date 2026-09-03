@@ -30,6 +30,9 @@ const mockKey = {
   algorithm: 'SHA-256',
   rate_limit_per_min: 60,
   adaptive_difficulty: true,
+  his_sampling: false,
+  his_enforce: false,
+  his_threshold: 0.8,
   enabled: true,
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
@@ -121,16 +124,35 @@ describe('ApiKeyDetailView', () => {
     expect(text).toContain('</' + 'script>')
   })
 
-  // Integrators kept asking how to switch Monitor into blocking (see #149); the
-  // page has to say plainly that there is nothing to switch.
-  it('states that Monitor does not block', async () => {
+  // Integrators kept asking how to switch Monitor into blocking (see #149).
+  // Now that the switch exists, the page has to name it rather than say there
+  // is nothing to switch, which is how this test read before enforcement shipped.
+  it('names the switch when the key is in Monitor mode', async () => {
     const wrapper = mountView()
     await flushPromises()
 
-    expect(wrapper.text()).toContain('never blocked')
-    // The question in #149 was "how do I turn it on", so saying it never blocks
-    // is only half an answer: the page also has to say there is no switch.
-    expect(wrapper.text()).toContain('no setting to turn blocking on')
+    const text = wrapper.text()
+    expect(text).toContain('never blocked')
+    expect(text).toContain('Block suspected bots')
+    expect(text).toContain('Monitor only')
+  })
+
+  it('says what blocking does when the key enforces', async () => {
+    // beforeEach queues the key response with mockResolvedValueOnce, so the
+    // queue has to be rebuilt rather than shadowed by a default.
+    mockApi.get.mockReset()
+    mockApi.get
+      .mockResolvedValueOnce({ data: { ...mockKey, his_enforce: true, his_threshold: 0.5 } })
+      .mockResolvedValue({ data: { days: [] } })
+    const wrapper = mountView()
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('Blocking')
+    // The threshold has to be the key's own, not the 0.8 default: a key lowered
+    // to 0.5 that still advertised 0.8 would describe a policy it does not apply.
+    expect(text).toContain('0.50')
+    expect(text).toContain('bot_suspected')
   })
 
   it('toggles key enabled state', async () => {

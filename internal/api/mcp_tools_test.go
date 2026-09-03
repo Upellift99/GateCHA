@@ -586,3 +586,58 @@ func TestMCPConcurrentRenameDoesNotResurrectADisabledKey(t *testing.T) {
 		}
 	}
 }
+
+// Requested on #149 by an integrator with 190 keys: the enforcement settings
+// have to be reachable from the MCP tools, or turning blocking on means 190
+// trips through the dashboard by hand.
+func TestMCPUpdateKeyWritesEnforcementSettings(t *testing.T) {
+	session, db, _ := connectWithTools(t, false)
+
+	key, err := models.CreateAPIKey(db, "Fleet", "", 10000, 60, "SHA-256")
+	if err != nil {
+		t.Fatalf("CreateAPIKey failed: %v", err)
+	}
+
+	var updated mcpKeyView
+	mustCall(t, session, "update_key", map[string]any{
+		"id": key.ID, "his_enforce": true, "his_threshold": 0.5,
+	}, &updated)
+
+	if !updated.HISEnforce || updated.HISThreshold != 0.5 {
+		t.Errorf("answer = enforce %v threshold %v, want true / 0.5", updated.HISEnforce, updated.HISThreshold)
+	}
+	stored, err := models.GetAPIKeyByID(db, key.ID)
+	if err != nil {
+		t.Fatalf("GetAPIKeyByID failed: %v", err)
+	}
+	if !stored.HISEnforce || stored.HISThreshold != 0.5 {
+		t.Errorf("stored row = enforce %v threshold %v, want true / 0.5", stored.HISEnforce, stored.HISThreshold)
+	}
+}
+
+// An invalid threshold has to fail the call rather than be dropped from the
+// field map: a silent drop answers success while the old blocking policy stays
+// in force, and an agent driving 190 keys has no way to notice.
+func TestMCPUpdateKeyRejectsInvalidThreshold(t *testing.T) {
+	session, db, _ := connectWithTools(t, false)
+
+	key, _ := models.CreateAPIKey(db, "Fleet", "", 10000, 60, "SHA-256")
+	if err := models.UpdateAPIKeyFields(db, key.ID, map[string]any{"his_threshold": 0.6}); err != nil {
+		t.Fatalf("seed threshold: %v", err)
+	}
+
+	for _, bad := range []float64{0, -1, 1.5} {
+		res, err := session.CallTool(t.Context(), &mcp.CallToolParams{
+			Name:      "update_key",
+			Arguments: map[string]any{"id": key.ID, "his_threshold": bad},
+		})
+		if err == nil && !res.IsError {
+			t.Errorf("threshold %v: expected the call to fail", bad)
+		}
+	}
+
+	stored, _ := models.GetAPIKeyByID(db, key.ID)
+	if stored.HISThreshold != 0.6 {
+		t.Errorf("threshold = %v, the refused calls must leave it at 0.6", stored.HISThreshold)
+	}
+}

@@ -19,6 +19,8 @@ const form = ref({
   rate_limit_per_min: 0,
   adaptive_difficulty: false,
   his_sampling: false,
+  his_enforce: false,
+  his_threshold: 0.8,
 })
 
 const error = ref('')
@@ -37,6 +39,8 @@ onMounted(async () => {
       rate_limit_per_min: key.rate_limit_per_min,
       adaptive_difficulty: key.adaptive_difficulty,
       his_sampling: key.his_sampling,
+      his_enforce: key.his_enforce,
+      his_threshold: key.his_threshold,
     }
   }
 })
@@ -191,6 +195,50 @@ async function handleSubmit() {
           <span class="font-medium text-slate-700">HIS sampling</span>
           <span class="block text-xs text-slate-500">Stores each scored interaction sample (privacy-preserving aggregates only — no IP, coordinates or key contents) so HIS enforcement thresholds can be calibrated on real traffic. Samples are pruned after the retention window.</span>
         </label>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <input
+          id="key-his-enforce"
+          v-model="form.his_enforce"
+          type="checkbox"
+          class="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+        />
+        <label for="key-his-enforce" class="text-sm">
+          <span class="font-medium text-slate-700">Block suspected bots</span>
+          <span class="block text-xs text-slate-500">
+            Rejects a verification whose interaction score reaches the threshold below, instead of
+            only reporting it. Only ever acts on requests that actually carried
+            <code class="font-mono">his_signals</code>: a site whose collector never runs is
+            unaffected. Read this key's calibration histogram before switching it on.
+          </span>
+        </label>
+      </div>
+
+      <div>
+        <label for="key-his-threshold" class="block text-sm font-medium text-slate-700 mb-1">
+          Suspect threshold
+        </label>
+        <input
+          id="key-his-threshold"
+          v-model.number="form.his_threshold"
+          type="number"
+          min="0.05"
+          max="1"
+          step="0.05"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+        />
+        <p class="mt-1 text-xs text-slate-500">
+          Score from 0 to 1 at or above which this key calls a sample automation. Higher means more
+          bot-like, the reverse of reCAPTCHA. Drives the reported
+          <code class="font-mono">his_bot_suspected</code>, the Monitor counters and the blocking
+          above, so lowering it raises the bot-suspected figure on the dashboard by design.
+          <span class="block mt-1">
+            0.70 is the score of a sample whose collector observed nothing at all, which a
+            keyboard-only or screen-reader visitor also produces. Going at or below it without
+            reading your own histogram will reject those visitors.
+          </span>
+        </p>
       </div>
 
       <button

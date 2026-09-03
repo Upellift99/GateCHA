@@ -24,8 +24,9 @@ type VerifyHandler struct {
 type verifyRequest struct {
 	Payload string `json:"payload"`
 	// HISSignals is an optional privacy-preserving interaction sample. When
-	// present it is scored and recorded in Monitor mode; it never changes the
-	// verification result.
+	// present it is scored and recorded. It changes the verification result
+	// only on a key that has explicitly opted into HIS enforcement; otherwise
+	// the score is reported and nothing else.
 	HISSignals *his.Signals `json:"his_signals,omitempty"`
 }
 
@@ -38,9 +39,10 @@ type verifyResponse struct {
 	// so that "no signals were sent" stays distinguishable from a legitimate
 	// score of 0; a client that ships no collector is not thereby a human.
 	HISBotScore *float64 `json:"his_bot_score,omitempty"`
-	// HISBotSuspected is HISBotScore judged against the Monitor suspect
+	// HISBotSuspected is HISBotScore judged against this key's suspect
 	// threshold, for callers who would rather not choose a number themselves.
-	// Omitted alongside the score.
+	// Omitted alongside the score. On a key with enforcement on, a true here
+	// arrives with OK false and error "bot_suspected".
 	HISBotSuspected *bool `json:"his_bot_suspected,omitempty"`
 }
 
@@ -79,8 +81,9 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Monitor HIS before outcome branching so bot-like attempts that fail the
-	// PoW are still observed. Never affects the verification outcome.
+	// Score HIS before outcome branching so bot-like attempts that fail the PoW
+	// are still observed. Scoring itself never affects the outcome; enforcement
+	// is applied at the end of the happy path, if the key opted in.
 	hisOut := recordHISMonitor(h.DB, key, req.HISSignals)
 
 	// respond attaches the Monitor score to every reply from here on, failures
@@ -146,6 +149,22 @@ func (h *VerifyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := models.MarkConsumed(h.DB, payload.Challenge, key.ID, expiresAt); err != nil {
 		slog.Error("failed to mark consumed", "error", err, "api_key_id", key.ID)
 	}
+	// Enforcement, last: the proof of work has passed and the challenge is
+	// consumed, so a rejected attempt cannot be retried with the same solved
+	// payload and better-looking signals. Placed after MarkConsumed for that
+	// reason, and after every PoW failure branch so `invalid_solution` keeps
+	// precedence: a submission that failed the maths is not reported as a bot.
+	//
+	// hisOut is nil when no signals arrived, which is what keeps a site with no
+	// collector immune to this switch entirely.
+	if key.HISEnforce && hisOut != nil && hisOut.Suspected {
+		slog.Info("his enforcement rejected verification",
+			"api_key_id", key.ID, "score", hisOut.Score, "threshold", key.SuspectThreshold())
+		h.recordFail(key.ID, country)
+		respond(http.StatusOK, verifyResponse{OK: false, Error: "bot_suspected"})
+		return
+	}
+
 	if err := models.IncrementVerificationsOK(h.DB, key.ID); err != nil {
 		slog.Error("failed to increment verifications_ok", "error", err, "api_key_id", key.ID)
 	}
