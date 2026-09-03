@@ -65,6 +65,48 @@ describe('HISCalibrationPanel', () => {
     expect(wrapper.text()).not.toContain('not getting through')
   })
 
+  it('positions the threshold marker at the threshold, not at the middle', async () => {
+    mockApi.get.mockResolvedValue({ data: { ...calibration(40), threshold: 0.8 } })
+    const wrapper = mount(HISCalibrationPanel, { props: { keyId: 1 } })
+    await flushPromises()
+
+    const marker = wrapper.findAll('span').find((s) => s.text().includes('threshold 0.80'))
+    expect(marker).toBeDefined()
+    // The defect was a justify-between row that centred this whatever the
+    // threshold said, leaving it three buckets away from the red/teal split.
+    expect(marker!.attributes('style')).toContain('left: 80%')
+  })
+
+  it('moves the marker with the threshold', async () => {
+    mockApi.get.mockResolvedValue({ data: { ...calibration(40), threshold: 0.65 } })
+    const wrapper = mount(HISCalibrationPanel, { props: { keyId: 1 } })
+    await flushPromises()
+
+    const marker = wrapper.findAll('span').find((s) => s.text().includes('threshold 0.65'))
+    expect(marker!.attributes('style')).toContain('left: 65%')
+  })
+
+  it('surfaces the average window and pointer count', async () => {
+    mockApi.get.mockResolvedValue({
+      data: { ...calibration(40), avg_duration_ms: 23140, avg_pointer_events: 0.4 },
+    })
+    const wrapper = mount(HISCalibrationPanel, { props: { keyId: 1 } })
+    await flushPromises()
+
+    // Long windows read as seconds, and a sub-1 pointer average must not be
+    // rounded away to 0: that value is the whole point of showing it.
+    expect(wrapper.text()).toContain('23.1s')
+    expect(wrapper.text()).toContain('0.4')
+  })
+
+  it('keeps sub-second windows in milliseconds', async () => {
+    mockApi.get.mockResolvedValue({ data: { ...calibration(40), avg_duration_ms: 320 } })
+    const wrapper = mount(HISCalibrationPanel, { props: { keyId: 1 } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('320ms')
+  })
+
   it('reports a failed request as a failed request, not as an empty histogram', async () => {
     mockApi.get.mockRejectedValue(new Error('401'))
     const wrapper = mount(HISCalibrationPanel, { props: { keyId: 2 } })
