@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/Upellift99/GateCHA/compare/v0.7.7...v0.8.0) (2026-09-03)
+
+
+### Features
+
+* **his:** per-key HIS enforcement with a configurable suspect threshold ([#177](https://github.com/Upellift99/GateCHA/issues/177)) ([6a004fc](https://github.com/Upellift99/GateCHA/commit/6a004fcef3ff65bc3afc8f93c0a7a3b438400859))
+
 ## [0.7.7](https://github.com/Upellift99/GateCHA/compare/v0.7.6...v0.7.7) (2026-09-03)
 
 
