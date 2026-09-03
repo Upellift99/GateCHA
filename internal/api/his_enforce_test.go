@@ -299,3 +299,62 @@ func TestUpdateKey_PreservesThresholdOnUnrelatedEdit(t *testing.T) {
 		t.Errorf("threshold = %v, want 0.55 preserved across a rename", after.HISThreshold)
 	}
 }
+
+// The threshold is validated before the key is looked up, so a malformed body
+// is answered as a malformed body rather than costing a database read whose
+// result cannot change the outcome. Pinned because the ordering is deliberate.
+func TestUpdateKey_ThresholdValidatedBeforeLookup(t *testing.T) {
+	router, _ := setupTestRouter(t)
+
+	body, _ := json.Marshal(map[string]interface{}{"his_threshold": 0})
+	req := httptest.NewRequest("PUT", "/api/admin/keys/999999", bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+getAdminToken(t))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("status = %d, want 400 for an invalid threshold on a missing key", w.Code)
+	}
+}
+
+// The partial-update conventions the helpers encode: an omitted string or a
+// non-positive number leaves the field alone, while a pointer field can carry
+// a meaningful zero or false and must be written.
+func TestUpdateKey_PartialUpdateConventions(t *testing.T) {
+	router, db := setupTestRouter(t)
+	key, _ := models.CreateAPIKey(db, "Original", "example.com", 5000, 120, "SHA-256")
+	if err := models.UpdateAPIKeyFields(db, key.ID, map[string]any{
+		"rate_limit_per_min": 60, "his_sampling": true,
+	}); err != nil {
+		t.Fatalf("seed key: %v", err)
+	}
+
+	// An empty name, a zero max_number and a false-carrying pointer together.
+	body, _ := json.Marshal(map[string]interface{}{
+		"name": "", "max_number": 0, "his_sampling": false, "rate_limit_per_min": 0,
+	})
+	req := httptest.NewRequest("PUT", "/api/admin/keys/"+strconv.FormatInt(key.ID, 10), bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+getAdminToken(t))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200: %s", w.Code, w.Body.String())
+	}
+
+	after, _ := models.GetAPIKeyByID(db, key.ID)
+	if after.Name != "Original" {
+		t.Errorf("name = %q, an empty string must leave it alone", after.Name)
+	}
+	if after.MaxNumber != 5000 {
+		t.Errorf("max_number = %d, a zero must leave it alone", after.MaxNumber)
+	}
+	// The pointer fields carry their zero on purpose and must be written.
+	if after.HISSampling {
+		t.Error("his_sampling = true, an explicit false must be written")
+	}
+	if after.RateLimitPerMin != 0 {
+		t.Errorf("rate_limit_per_min = %d, an explicit 0 must be written", after.RateLimitPerMin)
+	}
+}
