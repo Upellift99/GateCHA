@@ -145,3 +145,61 @@ func TestMySQL_CleanupExpired(t *testing.T) {
 		t.Error("expected valid challenge to remain")
 	}
 }
+
+// TestMySQL_HISCalibration guards the score histogram against dialect-specific
+// SQL. The bucketing expression used to be `CAST(score * 10 AS INTEGER)`, which
+// SQLite accepts and MySQL rejects as a syntax error, so the calibration
+// endpoint returned 500 on every MySQL-backed instance while the SQLite-only
+// unit test stayed green.
+func TestMySQL_HISCalibration(t *testing.T) {
+	db := testutil.SetupTestMySQL(t)
+	key, _ := models.CreateAPIKey(db, "Calibration", "", 0, 0, "")
+
+	samples := []models.HISSample{
+		{APIKeyID: key.ID, Score: 0.0, BotSuspected: false, DurationMs: 5000, PointerEvents: 40},
+		{APIKeyID: key.ID, Score: 0.85, BotSuspected: true, DurationMs: 100},
+		{APIKeyID: key.ID, Score: 0.9, BotSuspected: true, DurationMs: 100},
+		{APIKeyID: key.ID, Score: 1.0, BotSuspected: true, DurationMs: 50},
+	}
+	for i := range samples {
+		if err := models.CreateHISSample(db, &samples[i]); err != nil {
+			t.Fatalf("CreateHISSample %d failed: %v", i, err)
+		}
+	}
+
+	cal, err := models.GetHISCalibration(db, &key.ID, 30, 0.8)
+	if err != nil {
+		t.Fatalf("GetHISCalibration failed: %v", err)
+	}
+	if cal.Samples != 4 || cal.Suspected != 3 {
+		t.Errorf("expected 4 samples / 3 suspected, got %d / %d", cal.Samples, cal.Suspected)
+	}
+	if len(cal.ScoreHistogram) != 10 {
+		t.Fatalf("expected 10 buckets, got %d", len(cal.ScoreHistogram))
+	}
+	if cal.ScoreHistogram[0].Count != 1 {
+		t.Errorf("expected bucket0 == 1, got %d", cal.ScoreHistogram[0].Count)
+	}
+	if cal.ScoreHistogram[8].Count != 1 {
+		t.Errorf("expected bucket8 == 1, got %d", cal.ScoreHistogram[8].Count)
+	}
+	// 0.9 plus the clamped 1.0.
+	if cal.ScoreHistogram[9].Count != 2 {
+		t.Errorf("expected bucket9 == 2, got %d", cal.ScoreHistogram[9].Count)
+	}
+	// 3 of 4 samples carry no pointer, scroll or touch event.
+	if cal.NoMotionPct < 74 || cal.NoMotionPct > 76 {
+		t.Errorf("expected no_motion_pct ~75, got %v", cal.NoMotionPct)
+	}
+
+	// A key with no samples must still produce a full result, not an error:
+	// that is the state every instance is in right after enabling sampling.
+	other, _ := models.CreateAPIKey(db, "No samples", "", 0, 0, "")
+	empty, err := models.GetHISCalibration(db, &other.ID, 30, 0.8)
+	if err != nil {
+		t.Fatalf("GetHISCalibration with no samples failed: %v", err)
+	}
+	if empty.Samples != 0 || len(empty.ScoreHistogram) != 10 {
+		t.Errorf("expected 0 samples and 10 buckets, got %d / %d", empty.Samples, len(empty.ScoreHistogram))
+	}
+}
