@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.6](https://github.com/Upellift99/GateCHA/compare/v0.7.5...v0.7.6) (2026-09-03)
+
+
+### Bug Fixes
+
+* **his:** bucket calibration scores with FLOOR so MySQL stops 500ing ([#173](https://github.com/Upellift99/GateCHA/issues/173)) ([02da2cd](https://github.com/Upellift99/GateCHA/commit/02da2cdb0c234980e2748f0b42f619e387252a8e))
+
 ## [0.7.5](https://github.com/Upellift99/GateCHA/compare/v0.7.4...v0.7.5) (2026-09-02)
 
 
