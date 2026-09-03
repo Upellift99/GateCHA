@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.7](https://github.com/Upellift99/GateCHA/compare/v0.7.6...v0.7.7) (2026-09-03)
+
+
+### Bug Fixes
+
+* **ui:** point the threshold marker at the threshold, and show the two averages ([#175](https://github.com/Upellift99/GateCHA/issues/175)) ([9accd58](https://github.com/Upellift99/GateCHA/commit/9accd589477088dfa6effd4428956c5149993e60))
+
 ## [0.7.6](https://github.com/Upellift99/GateCHA/compare/v0.7.5...v0.7.6) (2026-09-03)
 
 
