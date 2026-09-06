@@ -60,5 +60,8 @@ make dev          # Run Go backend in dev mode
 ## Future Roadmap
 
 - i18n / multilanguage support (vue-i18n)
-- Rate limiting per API key
-- Adaptive difficulty
+- Content signals on `/verify`: throwaway-email checks and repeat-body fingerprint (#170)
+
+Delivered, do not re-plan them: per-key rate limiting (`internal/api/ratelimit.go`),
+adaptive difficulty (`internal/api/adaptive.go`) and HIS scoring plus per-key
+enforcement (`internal/his/`, `APIKey.HISEnforce`/`HISThreshold`).
