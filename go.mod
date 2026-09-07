@@ -1,6 +1,6 @@
 module github.com/Upellift99/GateCHA
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/altcha-org/altcha-lib-go v1.0.0
@@ -8,8 +8,8 @@ require (
 	github.com/go-chi/chi/v5 v5.3.2
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/modelcontextprotocol/go-sdk v1.7.0
-	github.com/phuslu/iploc v1.0.20260815
-	golang.org/x/crypto v0.55.0
+	github.com/phuslu/iploc v1.0.20260901
+	golang.org/x/crypto v0.56.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.2
 )
