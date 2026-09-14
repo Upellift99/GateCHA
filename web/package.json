@@ -24,13 +24,13 @@
   "devDependencies": {
     "@types/node": "^26.5.1",
     "@vitejs/plugin-vue": "^6.0.8",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.0",
     "@vue/test-utils": "^2.5.0",
     "@vue/tsconfig": "^0.9.1",
     "happy-dom": "^20.14.3",
     "typescript": "~6.0.3",
     "vite": "^8.3.0",
-    "vitest": "^4.0.18",
+    "vitest": "^5.0.0",
     "vue-tsc": "^3.3.11"
   }
 }
