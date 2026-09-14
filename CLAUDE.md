@@ -48,14 +48,19 @@ make dev          # Run Go backend in dev mode
 ## Known Constraints
 
 - Release binaries and the Docker image must build on the same Go minor. Workflows use a
-  bare `go-version: "1.26"` so setup-go resolves the latest patch; never switch back to
+  bare `go-version: "1.27"` so setup-go resolves the latest patch; never switch back to
   `go-version-file: go.mod`, whose pinned `go 1.25.0` shipped binaries with 20 reachable
   stdlib vulnerabilities. The `govulncheck` CI job guards this. See #108.
 - The bare `go-version` above is necessary but **not sufficient**: setup-go looks in the
-  runner's tool cache before the version manifest, and any cached `1.26.x` satisfies the
-  spec. Every `setup-go` step therefore also sets `check-latest: true` — without it CI
-  stayed on go1.26.5 for a week after 1.26.6 fixed three reachable stdlib vulns. Add it to
-  any new `setup-go` step. The Dockerfile is unaffected: `golang:1.26-alpine` floats.
+  runner's tool cache before the version manifest, and any cached patch of that minor
+  satisfies the spec. Every `setup-go` step therefore also sets `check-latest: true`;
+  without it CI stayed on go1.26.5 for a week after 1.26.6 fixed three reachable stdlib
+  vulns. Add it to any new `setup-go` step.
+- The Dockerfile's `golang:1.27-alpine` floats on patches, but Dependabot bumps its
+  **minor** in the `docker-base-images` group, and nothing checks the workflows follow.
+  When that PR comes, raise every `go-version` in `.github/workflows/` in the same PR:
+  #134 moved the image to 1.27 on 2026-08-24 while release binaries stayed on 1.26 until
+  2026-09-14.
 
 ## Future Roadmap
 
