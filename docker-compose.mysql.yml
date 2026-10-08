@@ -18,10 +18,7 @@ services:
       start_period: 30s
 
   gatecha:
-    build:
-      context: .
-      args:
-        BUILD_TAGS: mysql
+    image: ${GATECHA_IMAGE:-ghcr.io/upellift99/gatecha:latest-mysql}
     container_name: gatecha
     restart: unless-stopped
     ports:

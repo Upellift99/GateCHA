@@ -42,6 +42,11 @@ jobs:
           # .git/config for later steps to read.
           persist-credentials: false
 
+      # Only the runtime stage's few RUN steps execute under emulation for
+      # arm64; the Go binary is cross-compiled natively (see Dockerfile).
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
@@ -73,6 +78,23 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha
 
+      # Same tags with a -mysql suffix. onlatest=true matters: without it :latest
+      # gets no suffix and the mysql image would overwrite the default :latest.
+      - name: Extract metadata (mysql)
+        id: meta-mysql
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          bake-target: docker-metadata-action-mysql
+          flavor: |
+            latest=auto
+            suffix=-mysql,onlatest=true
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
       # metadata-action's version output is the branch name on branch pushes, so
       # branch images would bake main.version=main and the footer would show
       # "main" instead of a version. Tags keep the clean semver; branches get a
@@ -90,13 +112,24 @@ jobs:
           fi
 
       - name: Build and push
-        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        uses: docker/bake-action@018cb6412ab401ebaa809aa5f85966b74628600f # v7.4.0
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
         with:
-          context: .
-          build-args: |
-            VERSION=${{ steps.version.outputs.value }}
+          # List files explicitly so the compose files in the repo root are not
+          # picked up as extra bake targets. The metadata bake files come last
+          # so their tags and labels override the placeholders.
+          files: |
+            ./docker-bake.hcl
+            cwd://${{ steps.meta.outputs.bake-file-tags }}
+            cwd://${{ steps.meta.outputs.bake-file-labels }}
+            cwd://${{ steps.meta-mysql.outputs.bake-file-tags }}
+            cwd://${{ steps.meta-mysql.outputs.bake-file-labels }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          targets: default
+          # Separate cache scopes, or the two targets overwrite each other's cache.
+          set: |
+            app.cache-from=type=gha,scope=app
+            app.cache-to=type=gha,scope=app,mode=max
+            mysql.cache-from=type=gha,scope=mysql
+            mysql.cache-to=type=gha,scope=mysql,mode=max
