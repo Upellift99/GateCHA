@@ -173,6 +173,9 @@ jobs:
   sonarqube:
     runs-on: ubuntu-latest
     needs: [test, lint, frontend]
+    # Fork PRs get no secrets, so the scan fails on an empty SONAR_HOST_URL
+    # ("URI with undefined scheme"). Skip it there instead of showing a red check.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
