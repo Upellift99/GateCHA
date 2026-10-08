@@ -56,6 +56,10 @@ docker run -d -p 8080:8080 \
 Pin `0.3` (or a full version) in production if you'd rather approve minor
 upgrades yourself, since `latest` crosses minor versions as they ship.
 
+Every tag has a `-mysql` counterpart (`latest-mysql`, `0.3-mysql`, `main-mysql`, …)
+built with [MySQL support](#mysql-support). All images are published for
+`linux/amd64` and `linux/arm64`.
+
 ### Prebuilt binary (no Docker)
 
 GateCHA ships as a single self-contained binary with the web dashboard embedded,
@@ -395,7 +399,8 @@ The default build is SQLite-only for a lightweight single-binary deployment. MyS
 make build-mysql
 ```
 
-**Docker image with MySQL support:**
+**Docker image with MySQL support:** use the prebuilt `ghcr.io/upellift99/gatecha:latest-mysql`
+(see [Image tags](#image-tags)), or build it yourself:
 ```bash
 docker build --build-arg BUILD_TAGS=mysql -t gatecha:mysql .
 ```
@@ -404,6 +409,8 @@ docker build --build-arg BUILD_TAGS=mysql -t gatecha:mysql .
 ```bash
 docker compose -f docker-compose.mysql.yml up -d
 ```
+The compose file pulls `latest-mysql`. Set `GATECHA_IMAGE` to run another image, e.g.
+`GATECHA_IMAGE=gatecha:mysql` for one you built locally.
 
 > **Note for contributors:** When updating Go dependencies while working on MySQL support, run `go mod tidy -tags mysql` instead of plain `go mod tidy` to preserve the MySQL driver in `go.mod`.
 
