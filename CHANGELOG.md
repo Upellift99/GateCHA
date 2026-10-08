@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/Upellift99/GateCHA/compare/v0.8.0...v0.9.0) (2026-10-08)
+
+
+### Features
+
+* **docker:** move to docker buildx bake with mysql and arm64 images ([#200](https://github.com/Upellift99/GateCHA/issues/200)) ([d92b0b6](https://github.com/Upellift99/GateCHA/commit/d92b0b61acee1fa520f70ee0744b2edc31101fcf))
+
 ## [0.8.0](https://github.com/Upellift99/GateCHA/compare/v0.7.7...v0.8.0) (2026-09-03)
 
 
