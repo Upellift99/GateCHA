@@ -1,0 +1,65 @@
+name: Release Vulncheck
+
+# Scans what is actually shipped, not what main would build today. The
+# govulncheck job in test.yml installs the newest Go patch, so it turns green
+# again the day a patch lands while the latest release keeps the old stdlib:
+# v0.9.0 was built on go1.27.1 the day go1.27.2 fixed ten reachable advisories,
+# and nothing flagged it. A red run here means: cut a release to rebuild.
+on:
+  schedule:
+    # Daily, 05:30 UTC
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  govulncheck-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find the Go version of the latest release binary
+        id: shipped
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)
+          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern '*_linux_amd64.tar.gz' --dir "$RUNNER_TEMP/release"
+          tar -xzf "$RUNNER_TEMP"/release/*_linux_amd64.tar.gz -C "$RUNNER_TEMP/release" gatecha
+          # `go version <file>` reads the toolchain recorded in the binary; it
+          # survives the -s -w strip, unlike the symbols govulncheck's binary
+          # mode needs.
+          go=$(go version "$RUNNER_TEMP/release/gatecha" | sed -E 's/.*: go//')
+          echo "Release $tag was built with go$go"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.shipped.outputs.tag }}
+
+      # Exact patch on purpose, the opposite of every other setup-go step: the
+      # point is to scan the stdlib the release was linked against.
+      - name: Set up the Go that built the release
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ steps.shipped.outputs.go }}
+
+      # Required: internal/dashboard uses //go:embed dist/*, so the directory
+      # must exist before any tool can load the packages.
+      - name: Build frontend (for embed)
+        run: |
+          cd web
+          npm ci
+          npm run build
+          cd ..
+          cp -r web/dist internal/dashboard/dist
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@v1.6.0
+
+      - name: Scan the release source against its own toolchain
+        env:
+          # Never let go.mod or a newer cached toolchain swap the stdlib.
+          GOTOOLCHAIN: local
+        run: govulncheck ./...
