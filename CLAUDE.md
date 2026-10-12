@@ -65,8 +65,10 @@ make dev          # Run Go backend in dev mode
 - A green `govulncheck` on main says nothing about the **latest release**: that job installs
   the newest patch, the release keeps the one it was built with. v0.9.0 shipped on go1.27.1
   the day go1.27.2 fixed ten reachable stdlib advisories. The daily `Release Vulncheck`
-  workflow scans the release tag with the toolchain read from its binary; when it goes red,
-  the fix is a new release (a rebuild is enough), not a code change.
+  workflow scans the release tag with the toolchain read from its binary. When it goes red
+  on a standard library finding fixed by a newer Go patch, the fix is a new release (a
+  rebuild is enough), not a code change; a finding in a module still needs that dependency
+  bumped first.
 
 ## Future Roadmap
 
