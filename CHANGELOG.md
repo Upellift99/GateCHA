@@ -2,6 +2,11 @@
 
 ## [0.9.1](https://github.com/Upellift99/GateCHA/compare/v0.9.0...v0.9.1) (2026-10-12)
 
+No code change: this release exists to rebuild the binaries and the Docker images on Go 1.27.2. 0.9.0 was built on Go 1.27.1 the very day 1.27.2 came out with fixes for ten standard library advisories.
+
+Only one of them reaches a running GateCHA: [GO-2026-6609](https://pkg.go.dev/vuln/GO-2026-6609), where a `Range` header listing many small ranges burns CPU in the file server behind the dashboard, without authentication. A reverse proxy does not filter it. The other nine concern HTTP/2, TLS termination, an outbound HTTP client or multipart forms, none of which GateCHA uses, so nothing else is exposed and no data is at risk. Update at your next maintenance window; if the dashboard is reachable from the internet, sooner is better.
+
+A daily workflow now scans the latest published release with the Go version it was actually built with, so the next stale release is reported instead of being found by hand.
 
 ### Bug Fixes
 
