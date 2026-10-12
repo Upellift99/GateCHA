@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/Upellift99/GateCHA/compare/v0.9.0...v0.9.1) (2026-10-12)
+
+
+### Bug Fixes
+
+* **security:** rebuild on Go 1.27.2 and scan the shipped release daily ([#204](https://github.com/Upellift99/GateCHA/issues/204)) ([d6fd1e4](https://github.com/Upellift99/GateCHA/commit/d6fd1e419f22012f523937dc9a3764285171040d))
+
 ## [0.9.0](https://github.com/Upellift99/GateCHA/compare/v0.8.0...v0.9.0) (2026-10-08)
 
 
