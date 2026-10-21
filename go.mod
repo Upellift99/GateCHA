@@ -5,10 +5,10 @@ go 1.26.0
 require (
 	github.com/altcha-org/altcha-lib-go v1.0.0
 	github.com/glebarez/sqlite v1.11.0
-	github.com/go-chi/chi/v5 v5.3.2
+	github.com/go-chi/chi/v5 v5.5.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/modelcontextprotocol/go-sdk v1.8.0
-	github.com/phuslu/iploc v1.0.20261001
+	github.com/phuslu/iploc v1.0.20261015
 	golang.org/x/crypto v0.58.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.2
