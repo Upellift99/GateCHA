@@ -70,9 +70,9 @@ describe('ToggleSwitch', () => {
   })
 
   it('colours the track from the bound value', () => {
-    expect(mountSwitch().get('#demoToggle ~ svg rect').classes()).toContain('fill-slate-200')
+    expect(mountSwitch().get('#demoToggle ~ svg rect').classes()).toContain('fill-rule-strong')
     expect(mountSwitch({ modelValue: true }).get('#demoToggle ~ svg rect').classes()).toContain(
-      'fill-brand-600',
+      'fill-action',
     )
   })
 

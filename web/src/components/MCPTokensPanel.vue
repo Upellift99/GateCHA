@@ -73,23 +73,23 @@ async function confirmRevoke() {
 
 function formatDate(value: string | null): string {
   if (!value) return 'Never'
-  return new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+  return new Date(value).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 </script>
 
 <template>
-  <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
-    <h2 class="text-lg font-medium text-slate-900">MCP Access</h2>
+  <div class="rounded-md border border-rule bg-panel p-6 space-y-4">
+    <h2 class="text-[17px] font-extrabold text-ink">MCP Access</h2>
 
-    <div v-if="error" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
+    <div v-if="error" role="alert" class="bg-fail-soft text-fail px-4 py-3 rounded text-sm">{{ error }}</div>
 
     <!-- One label around the whole row: the checkbox is sr-only, so the pill
          beside it is the only thing a user can click and it has to sit inside
          a label to activate anything. See #146. -->
     <label for="mcpToggle" class="flex items-center justify-between cursor-pointer">
       <span>
-        <span class="block text-sm font-medium text-slate-700">MCP endpoint</span>
-        <span class="block text-xs text-slate-500 mt-0.5">
+        <span class="block text-sm font-medium text-ink-2">MCP endpoint</span>
+        <span class="block text-xs text-muted mt-0.5">
           Serve the API key management tools over MCP at <code class="font-mono">/mcp</code>.
           This is a second way in to full admin access, so it stays off until you need it.
         </span>
@@ -103,47 +103,47 @@ function formatDate(value: string | null): string {
       />
     </label>
 
-    <div v-if="newSecret" class="rounded-md border border-amber-300 bg-amber-50 p-4 space-y-2">
-      <p class="text-sm font-medium text-amber-900">Copy this token now. It will not be shown again.</p>
+    <div v-if="newSecret" class="rounded-md border border-warn-edge bg-warn-soft p-4 space-y-2">
+      <p class="text-sm font-medium text-warn-text">Copy this token now. It will not be shown again.</p>
       <div class="flex items-center gap-2">
-        <code class="text-sm bg-white px-2 py-1 rounded font-mono break-all flex-1">{{ newSecret }}</code>
+        <code class="text-sm bg-panel px-2 py-1 rounded font-mono break-all flex-1">{{ newSecret }}</code>
         <CopyButton :value="newSecret" label="Copy MCP token" />
       </div>
-      <button type="button" class="text-sm text-amber-900 underline" @click="newSecret = ''">Done</button>
+      <button type="button" class="text-sm text-warn-text underline" @click="newSecret = ''">Done</button>
     </div>
 
-    <form class="flex flex-wrap items-end gap-3 border-t border-slate-200 pt-4" @submit.prevent="createToken">
+    <form class="flex flex-wrap items-end gap-3 border-t border-rule pt-4" @submit.prevent="createToken">
       <div class="flex-1 min-w-48">
-        <label for="mcpTokenName" class="block text-sm font-medium text-slate-700 mb-1">New token</label>
+        <label for="mcpTokenName" class="block text-sm font-medium text-ink-2 mb-1">New token</label>
         <input
           id="mcpTokenName"
           v-model="name"
           type="text"
           placeholder="Who is this token for?"
-          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
+          class="w-full px-3 py-2 border border-rule-strong rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-focus"
         />
       </div>
-      <label class="flex items-center gap-2 text-sm text-slate-700 pb-2">
-        <input v-model="readOnly" type="checkbox" class="h-5 w-5 rounded border-slate-300 text-brand-700 focus:ring-brand-600" />
+      <label class="flex items-center gap-2 text-sm text-ink-2 pb-2">
+        <input v-model="readOnly" type="checkbox" class="h-5 w-5 rounded border-rule-strong text-link focus:ring-focus" />
         Read only
       </label>
       <button
         type="submit"
         :disabled="creating || !name.trim()"
-        class="py-2 px-4 bg-brand-700 text-white text-sm font-medium rounded-md hover:bg-brand-800 disabled:opacity-50"
+        class="py-2 px-4 bg-action text-action-ink text-sm font-medium rounded-md hover:bg-action-hover disabled:opacity-50"
       >
         {{ creating ? 'Creating...' : 'Create token' }}
       </button>
     </form>
 
-    <p v-if="!store.tokens.length && !store.loading" class="text-sm text-slate-500">
+    <p v-if="!store.tokens.length && !store.loading" class="text-sm text-muted">
       No tokens yet. Create one per person rather than sharing a single token, so you can revoke
       access for one machine without disturbing the others.
     </p>
 
-    <table v-else-if="store.tokens.length" class="min-w-full divide-y divide-slate-200 text-sm">
+    <table v-else-if="store.tokens.length" class="min-w-full divide-y divide-rule text-sm">
       <thead>
-        <tr class="text-left text-xs font-medium text-slate-500 uppercase">
+        <tr class="text-left text-xs font-medium text-muted uppercase">
           <th class="py-2">Name</th>
           <th class="py-2">Token</th>
           <th class="py-2">Access</th>
@@ -151,23 +151,23 @@ function formatDate(value: string | null): string {
           <th class="py-2"></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-200">
+      <tbody class="divide-y divide-rule">
         <tr v-for="token in store.tokens" :key="token.id">
-          <td class="py-2 font-medium text-slate-900">{{ token.name }}</td>
-          <td class="py-2 font-mono text-xs text-slate-500">{{ token.display }}…</td>
+          <td class="py-2 font-medium text-ink">{{ token.name }}</td>
+          <td class="py-2 font-mono text-xs text-muted">{{ token.display }}…</td>
           <td class="py-2">
             <span
-              :class="token.read_only ? 'bg-slate-100 text-slate-700' : 'bg-amber-100 text-amber-800'"
+              :class="token.read_only ? 'bg-sunken text-ink-2' : 'bg-warn-soft text-warn-text'"
               class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
             >
               {{ token.read_only ? 'Read only' : 'Full access' }}
             </span>
           </td>
-          <td class="py-2 text-slate-500">{{ formatDate(token.last_used_at) }}</td>
+          <td class="py-2 text-muted">{{ formatDate(token.last_used_at) }}</td>
           <td class="py-2 text-right">
             <button
               type="button"
-              class="text-red-600 hover:text-red-800"
+              class="text-fail hover:text-fail"
               :aria-label="`Revoke ${token.name}`"
               @click="askRevoke(token.id, token.name)"
             >
@@ -187,7 +187,7 @@ function formatDate(value: string | null): string {
       @cancel="revokeOpen = false"
       @confirm="confirmRevoke"
     >
-      <strong class="font-medium text-slate-700">{{ revokeTarget?.name }}</strong> stops working
+      <strong class="font-medium text-ink-2">{{ revokeTarget?.name }}</strong> stops working
       the moment you confirm, and any client still using it will start failing. Revoking cannot be
       undone: issue a new token instead.
     </ConfirmDialog>

@@ -67,6 +67,6 @@ describe('CopyButton', () => {
 
   it('applies the overlay variant styling', () => {
     const wrapper = mount(CopyButton, { props: { value: 'v', variant: 'overlay' } })
-    expect(wrapper.get('button').classes()).toContain('bg-slate-700/80')
+    expect(wrapper.get('button').classes()).toContain('bg-code')
   })
 })

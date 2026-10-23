@@ -56,23 +56,23 @@ const avgWindow = computed(() => {
 const avgPointer = computed(() => {
   const n = cal.value?.avg_pointer_events ?? 0
   // Averages below 1 are the interesting case here, so do not round them to 0.
-  return n > 0 && n < 1 ? n.toFixed(1) : Math.round(n).toLocaleString()
+  return n > 0 && n < 1 ? n.toFixed(1) : Math.round(n).toLocaleString('en-US')
 })
 
 function barClass(loValue: number, threshold: number): string {
-  return loValue + 1e-9 >= threshold ? 'bg-red-400' : 'bg-brand-500'
+  return loValue + 1e-9 >= threshold ? 'bg-fail' : 'bg-link'
 }
 </script>
 
 <template>
-  <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+  <div class="rounded-md border border-rule bg-panel p-6">
     <div class="flex items-center justify-between mb-1 gap-2">
-      <h2 class="text-lg font-semibold text-slate-900">HIS calibration</h2>
-      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">score distribution</span>
+      <h2 class="text-[17px] font-extrabold text-ink">HIS calibration</h2>
+      <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-sunken text-ink-2">score distribution</span>
     </div>
-    <p v-if="loading" class="text-slate-500 text-center py-8 text-sm">Loading…</p>
+    <p v-if="loading" class="text-muted text-center py-8 text-sm">Loading…</p>
 
-    <p v-else-if="failed" class="text-slate-500 text-sm py-6">
+    <p v-else-if="failed" class="text-muted text-sm py-6">
       Could not load the calibration data. This says nothing about how many samples exist.
       Reload the page; if it keeps failing, your session may have expired, or the request
       failed server side, in which case the instance log records the reason.
@@ -81,23 +81,23 @@ function barClass(loValue: number, threshold: number): string {
     <template v-else-if="cal && cal.samples > 0">
       <!-- Describes the histogram, so it belongs with the histogram: printed
            above the empty states it explained bars that were not there. -->
-      <p class="text-sm text-slate-500 mb-4">
+      <p class="text-sm text-muted mb-4">
         Where stored samples fall on the automation-probability scale. Bars at or past the
         suspect threshold are counted as bot-suspected. Use this to pick an enforcement threshold.
       </p>
 
       <div class="grid grid-cols-3 lg:grid-cols-5 gap-4 mb-5">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Samples</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ cal.samples.toLocaleString() }}</p>
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Samples</p>
+          <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ cal.samples.toLocaleString('en-US') }}</p>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Bot-suspected</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ suspectedPct }}<span class="text-base text-slate-500">%</span></p>
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Bot-suspected</p>
+          <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ suspectedPct }}<span class="text-base text-muted">%</span></p>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">No motion</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ Math.round(cal.no_motion_pct) }}<span class="text-base text-slate-500">%</span></p>
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">No motion</p>
+          <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ Math.round(cal.no_motion_pct) }}<span class="text-base text-muted">%</span></p>
         </div>
         <!-- Both of these were already computed, returned by the endpoint and
              typed in the store, and then dropped on the floor by this panel.
@@ -106,12 +106,12 @@ function barClass(loValue: number, threshold: number): string {
              nothing is automation, one that lasted a few hundred milliseconds
              is a collector that started too late to observe anything. -->
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Avg window</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ avgWindow }}</p>
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Avg window</p>
+          <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ avgWindow }}</p>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Avg pointer</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ avgPointer }}</p>
+          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Avg pointer</p>
+          <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ avgPointer }}</p>
         </div>
       </div>
 
@@ -123,7 +123,7 @@ function barClass(loValue: number, threshold: number): string {
           class="flex-1 flex flex-col justify-end h-full"
           :title="`[${b.lo.toFixed(1)}, ${b.hi.toFixed(1)}): ${b.count}`"
         >
-          <span class="text-[10px] text-center text-slate-500 tabular-nums">{{ b.count || '' }}</span>
+          <span class="text-[10px] text-center text-muted tabular-nums">{{ b.count || '' }}</span>
           <div
             class="rounded-t"
             :class="barClass(b.lo, cal.threshold)"
@@ -138,7 +138,7 @@ function barClass(loValue: number, threshold: number): string {
            plain percentage of the axis; the bars carry a 4px gap, which puts
            the 0.8 mark inside the gap between bucket 7 and bucket 8 rather
            than on a bar, so no correction for it is needed. -->
-      <div class="relative mt-1 h-8 text-[10px] text-slate-500 tabular-nums">
+      <div class="relative mt-1 h-8 text-[10px] text-muted tabular-nums">
         <span class="absolute left-0">0.0</span>
         <span class="absolute right-0">1.0</span>
         <!-- The arrow is centred on the threshold and the caption is stacked
@@ -146,7 +146,7 @@ function barClass(loValue: number, threshold: number): string {
              sit wherever its own width puts it. A glyph that points has to
              point at the right column. -->
         <span
-          class="absolute -translate-x-1/2 flex flex-col items-center leading-tight text-red-600"
+          class="absolute -translate-x-1/2 flex flex-col items-center leading-tight text-fail"
           :style="{ left: cal.threshold * 100 + '%' }"
         >
           <span aria-hidden="true">▲</span>
@@ -155,36 +155,36 @@ function barClass(loValue: number, threshold: number): string {
       </div>
     </template>
 
-    <div v-else class="text-sm text-slate-500 py-6 space-y-3">
+    <div v-else class="text-sm text-muted py-6 space-y-3">
       <p>
-        <span class="font-medium text-slate-700">HIS sampling is on for this key</span>, and no
+        <span class="font-medium text-ink-2">HIS sampling is on for this key</span>, and no
         sample has been stored in the last {{ DAYS }} days.
       </p>
 
       <template v-if="observations && observations > 0">
         <p>
-          Signals are reaching <code class="text-xs bg-slate-100 rounded px-1 py-0.5">/verify</code>:
-          {{ observations.toLocaleString() }} scored in the same window. Samples are only stored from
+          Signals are reaching <code class="text-xs bg-sunken rounded px-1 py-0.5">/verify</code>:
+          {{ observations.toLocaleString('en-US') }} scored in the same window. Samples are only stored from
           the moment sampling is switched on, so the histogram fills from now on.
         </p>
       </template>
 
       <template v-else>
         <p>
-          No <code class="text-xs bg-slate-100 rounded px-1 py-0.5">his_signals</code> reached
-          <code class="text-xs bg-slate-100 rounded px-1 py-0.5">/verify</code> at all in that window,
+          No <code class="text-xs bg-sunken rounded px-1 py-0.5">his_signals</code> reached
+          <code class="text-xs bg-sunken rounded px-1 py-0.5">/verify</code> at all in that window,
           so the collector is not getting through. The usual causes:
         </p>
         <ul class="list-disc pl-5 space-y-1">
-          <li>the ALTCHA widget sits outside the <code class="text-xs bg-slate-100 rounded px-1 py-0.5">&lt;form&gt;</code>, so the collector never recognises the form;</li>
-          <li>the form is posted with <code class="text-xs bg-slate-100 rounded px-1 py-0.5">fetch</code> and fires no native submit event. Read <code class="text-xs bg-slate-100 rounded px-1 py-0.5">globalThis.gatechaHIS.signals()</code> yourself instead;</li>
-          <li>your backend does not forward the hidden <code class="text-xs bg-slate-100 rounded px-1 py-0.5">gatecha_his_signals</code> field into the <code class="text-xs bg-slate-100 rounded px-1 py-0.5">/verify</code> body. It does not travel on its own.</li>
+          <li>the ALTCHA widget sits outside the <code class="text-xs bg-sunken rounded px-1 py-0.5">&lt;form&gt;</code>, so the collector never recognises the form;</li>
+          <li>the form is posted with <code class="text-xs bg-sunken rounded px-1 py-0.5">fetch</code> and fires no native submit event. Read <code class="text-xs bg-sunken rounded px-1 py-0.5">globalThis.gatechaHIS.signals()</code> yourself instead;</li>
+          <li>your backend does not forward the hidden <code class="text-xs bg-sunken rounded px-1 py-0.5">gatecha_his_signals</code> field into the <code class="text-xs bg-sunken rounded px-1 py-0.5">/verify</code> body. It does not travel on its own.</li>
         </ul>
         <p>
           The browser console also reports it when the collector finds no form to attach to. Full
           integration steps are in
           <a
-            class="text-brand-700 hover:text-brand-800 underline"
+            class="text-link hover:text-link-hover underline"
             href="https://github.com/Upellift99/GateCHA#4-optional-collect-interaction-signals-his"
             target="_blank"
             rel="noopener"

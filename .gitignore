@@ -41,3 +41,8 @@ web/coverage/
 # Playwright (web/e2e)
 web/test-results/
 web/playwright-report/
+
+# Impeccable working files (surface briefs and design.json stay tracked)
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/hook.cache.json

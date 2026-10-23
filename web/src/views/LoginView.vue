@@ -75,36 +75,38 @@ async function handleLogin() {
 </script>
 
 <template>
-  <div class="overflow-hidden flex items-start justify-center pt-[10dvh] bg-slate-50" style="height: 70dvh">
+  <div class="flex justify-center pt-[10dvh] pb-16">
     <div class="w-full max-w-sm">
-      <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
-        <h1 class="text-2xl font-bold text-center text-slate-900 mb-2">GateCHA</h1>
-        <p class="text-sm text-center text-slate-500 mb-4">Sign in to your dashboard</p>
+      <div class="mb-5">
+        <h1 class="text-2xl font-extrabold tracking-tight text-ink">Sign in</h1>
+        <p class="text-sm text-muted">to your GateCHA dashboard</p>
+      </div>
+      <div class="rounded-md border border-rule bg-panel p-6">
 
         <form @submit.prevent="handleLogin" class="space-y-3">
-          <div v-if="error" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
+          <div v-if="error" role="alert" class="bg-fail-soft text-fail px-4 py-3 rounded text-sm">
             {{ error }}
           </div>
 
           <div>
-            <label for="username" class="block text-sm font-medium text-slate-700 mb-1">Username</label>
+            <label for="username" class="block text-sm font-medium text-ink-2 mb-1">Username</label>
             <input
               id="username"
               v-model="username"
               type="text"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
+              class="w-full px-3 py-2 border border-rule-strong rounded-md focus:outline-none focus:ring-2 focus:ring-focus focus:border-focus"
             />
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <label for="password" class="block text-sm font-medium text-ink-2 mb-1">Password</label>
             <input
               id="password"
               v-model="password"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
+              class="w-full px-3 py-2 border border-rule-strong rounded-md focus:outline-none focus:ring-2 focus:ring-focus focus:border-focus"
             />
           </div>
 
@@ -119,7 +121,7 @@ async function handleLogin() {
           <button
             type="submit"
             :disabled="loading || !canSubmit"
-            class="w-full py-2 px-4 bg-brand-700 text-white font-medium rounded-md hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-50"
+            class="w-full py-2 px-4 bg-action text-action-ink font-medium rounded-md hover:bg-action-hover focus:outline-none focus:ring-2 focus:ring-focus disabled:opacity-50"
           >
             {{ loading ? 'Signing in...' : 'Sign in' }}
           </button>

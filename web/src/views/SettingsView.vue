@@ -62,7 +62,7 @@ async function toggleCaptcha(checked: boolean) {
 
 <template>
   <div class="space-y-6">
-    <h1 class="text-2xl font-bold text-slate-900">Settings</h1>
+    <h1 class="text-2xl font-extrabold tracking-tight text-ink">Settings</h1>
 
     <!-- Two columns from lg up: the account cards are narrow by nature, the MCP
          panel carries a table and wants the room. Below lg they stack. -->
@@ -70,59 +70,59 @@ async function toggleCaptcha(checked: boolean) {
       <div class="space-y-6 lg:col-span-2">
         <form
           @submit.prevent="handleSubmit"
-          class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4"
+          class="rounded-md border border-rule bg-panel p-6 space-y-4"
         >
-          <h2 class="text-lg font-medium text-slate-900">Change Password</h2>
+          <h2 class="text-[17px] font-extrabold text-ink">Change Password</h2>
 
-          <div v-if="error" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
-          <div v-if="success" class="bg-green-50 text-green-700 px-4 py-3 rounded text-sm">{{ success }}</div>
+          <div v-if="error" role="alert" class="bg-fail-soft text-fail px-4 py-3 rounded text-sm">{{ error }}</div>
+          <div v-if="success" class="bg-ok-soft text-ok px-4 py-3 rounded text-sm">{{ success }}</div>
 
           <div>
-            <label for="currentPassword" class="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
+            <label for="currentPassword" class="block text-sm font-medium text-ink-2 mb-1">Current Password</label>
             <input
               id="currentPassword"
               v-model="currentPassword"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
+              class="w-full px-3 py-2 border border-rule-strong rounded-md focus:outline-none focus:ring-2 focus:ring-focus"
             />
           </div>
 
           <div>
-            <label for="newPassword" class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+            <label for="newPassword" class="block text-sm font-medium text-ink-2 mb-1">New Password</label>
             <input
               id="newPassword"
               v-model="newPassword"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
+              class="w-full px-3 py-2 border border-rule-strong rounded-md focus:outline-none focus:ring-2 focus:ring-focus"
             />
           </div>
 
           <div>
-            <label for="confirmPassword" class="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
+            <label for="confirmPassword" class="block text-sm font-medium text-ink-2 mb-1">Confirm New Password</label>
             <input
               id="confirmPassword"
               v-model="confirmPassword"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
+              class="w-full px-3 py-2 border border-rule-strong rounded-md focus:outline-none focus:ring-2 focus:ring-focus"
             />
           </div>
 
           <button
             type="submit"
             :disabled="loading"
-            class="py-2 px-4 bg-brand-700 text-white font-medium rounded-md hover:bg-brand-800 disabled:opacity-50"
+            class="py-2 px-4 bg-action text-action-ink font-medium rounded-md hover:bg-action-hover disabled:opacity-50"
           >
             {{ loading ? 'Saving...' : 'Change Password' }}
           </button>
         </form>
 
-        <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
-          <h2 class="text-lg font-medium text-slate-900">Security</h2>
+        <div class="rounded-md border border-rule bg-panel p-6 space-y-4">
+          <h2 class="text-[17px] font-extrabold text-ink">Security</h2>
 
-          <div v-if="settingsError" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
+          <div v-if="settingsError" role="alert" class="bg-fail-soft text-fail px-4 py-3 rounded text-sm">
             {{ settingsError }}
           </div>
 
@@ -131,8 +131,8 @@ async function toggleCaptcha(checked: boolean) {
                a label to activate anything. See #146. -->
           <label for="loginCaptchaToggle" class="flex items-center justify-between cursor-pointer">
             <span>
-              <span class="block text-sm font-medium text-slate-700">Login CAPTCHA</span>
-              <span class="block text-xs text-slate-500 mt-0.5">
+              <span class="block text-sm font-medium text-ink-2">Login CAPTCHA</span>
+              <span class="block text-xs text-muted mt-0.5">
                 Require an ALTCHA proof-of-work challenge before signing in.
               </span>
             </span>

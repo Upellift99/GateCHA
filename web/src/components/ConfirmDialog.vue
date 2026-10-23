@@ -59,15 +59,15 @@ function onBackdropClick(event: MouseEvent) {
   <dialog
     ref="dialog"
     :aria-labelledby="titleId"
-    class="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl bg-white text-slate-900 shadow-xl
-           backdrop:bg-slate-900/50 backdrop:backdrop-blur-sm"
+    class="m-auto w-[calc(100%-2rem)] max-w-md rounded-md bg-panel text-ink shadow-xl
+           backdrop:bg-backdrop backdrop:backdrop-blur-sm"
     @cancel="onCancel"
     @click="onBackdropClick"
   >
     <div v-if="open" class="p-6">
       <div class="flex gap-4">
         <span
-          :class="tone === 'danger' ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand-700'"
+          :class="tone === 'danger' ? 'bg-fail-soft text-fail' : 'bg-sunken text-link'"
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
           aria-hidden="true"
         >
@@ -82,8 +82,8 @@ function onBackdropClick(event: MouseEvent) {
           </svg>
         </span>
         <div class="min-w-0 flex-1">
-          <h3 :id="titleId" class="text-lg font-medium text-slate-900">{{ title }}</h3>
-          <div class="mt-1 text-sm text-slate-500">
+          <h3 :id="titleId" class="text-[17px] font-extrabold text-ink">{{ title }}</h3>
+          <div class="mt-1 text-sm text-muted">
             <slot />
           </div>
         </div>
@@ -93,7 +93,7 @@ function onBackdropClick(event: MouseEvent) {
         <button
           ref="cancelButton"
           type="button"
-          class="rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          class="rounded-md bg-sunken px-4 py-2 text-sm font-medium text-ink-2 hover:bg-sunken focus:outline-none focus:ring-2 focus:ring-focus"
           @click="emit('cancel')"
         >
           {{ cancelLabel }}
@@ -103,10 +103,10 @@ function onBackdropClick(event: MouseEvent) {
           :disabled="busy"
           :class="
             tone === 'danger'
-              ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-              : 'bg-brand-700 hover:bg-brand-800 focus:ring-brand-600'
+              ? 'bg-danger hover:bg-danger-hover focus:ring-fail'
+              : 'bg-action hover:bg-action-hover focus:ring-focus'
           "
-          class="rounded-md px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 disabled:opacity-50"
+          class="rounded-md px-4 py-2 text-sm font-medium text-action-ink focus:outline-none focus:ring-2 disabled:opacity-50"
           @click="emit('confirm')"
         >
           {{ confirmLabel }}

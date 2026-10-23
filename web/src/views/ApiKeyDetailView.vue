@@ -7,12 +7,19 @@ import StatsChart from '../components/StatsChart.vue'
 import CountryTraffic from '../components/CountryTraffic.vue'
 import HISCalibrationPanel from '../components/HISCalibrationPanel.vue'
 import CopyButton from '../components/CopyButton.vue'
+import LineBullet from '../components/LineBullet.vue'
+import StatusChip from '../components/StatusChip.vue'
+import { lineStatus, todayUTC } from '../lib/lines'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
 const keysStore = useApiKeysStore()
 const statsStore = useStatsStore()
+
+// Same daily status as the dashboard board and the keys list.
+const todayRow = computed(() => statsStore.keyStats.find((d) => d.date === todayUTC()))
+const status = computed(() => (key.value ? lineStatus(key.value.enabled, todayRow.value) : 'quiet'))
 
 const key = ref<APIKey | null>(null)
 const showSecret = ref(false)
@@ -110,120 +117,130 @@ const hisTotals = computed(() => ({
          title to one word per line and pushed Delete off a 390px screen. -->
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
       <div class="min-w-0">
-        <router-link to="/keys" class="inline-flex min-h-6 items-center text-sm text-slate-500 hover:text-slate-700">&larr; Back to keys</router-link>
-        <h1 class="text-2xl font-bold text-slate-900 mt-1 break-words">{{ key.name || key.key_id }}</h1>
+        <router-link to="/keys" class="inline-flex min-h-6 items-center text-sm text-muted hover:text-ink">&larr; Back to keys</router-link>
+        <div class="mt-1 flex items-start gap-3">
+          <LineBullet :id="key.id" size="lg" class="mt-0.5" />
+          <div class="min-w-0">
+            <h1 class="text-2xl font-extrabold tracking-tight text-ink break-words">{{ key.name || key.key_id }}</h1>
+            <p class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+              <span>Line {{ key.id }}</span>
+              <span>{{ key.enabled ? 'Key enabled' : 'Key disabled' }}</span>
+              <StatusChip :status="status" :failed-today="todayRow?.verifications_fail ?? 0" />
+            </p>
+          </div>
+        </div>
       </div>
       <div class="flex flex-wrap gap-2 sm:shrink-0">
-        <button @click="toggleEnabled" :class="key.enabled ? 'bg-amber-700 hover:bg-amber-800' : 'bg-green-700 hover:bg-green-800'" class="px-4 py-2 text-white text-sm font-medium rounded-md">
+        <button @click="toggleEnabled" class="px-4 py-2 border border-rule-strong bg-panel text-ink text-sm font-semibold rounded-md hover:bg-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-focus">
           {{ key.enabled ? 'Disable' : 'Enable' }}
         </button>
-        <router-link :to="`/keys/${key.id}/edit`" class="px-4 py-2 bg-slate-600 text-white text-sm font-medium rounded-md hover:bg-slate-700">
+        <router-link :to="`/keys/${key.id}/edit`" class="px-4 py-2 border border-rule-strong bg-panel text-ink text-sm font-semibold rounded-md hover:bg-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-focus">
           Edit
         </router-link>
-        <button @click="showDeleteConfirm = true" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700">
+        <button @click="showDeleteConfirm = true" class="px-4 py-2 bg-danger text-action-ink text-sm font-semibold rounded-md hover:bg-danger-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus">
           Delete
         </button>
       </div>
     </div>
 
     <!-- Key Info -->
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 mb-6">
-      <h2 class="text-lg font-medium text-slate-900 mb-4">Key Details</h2>
+    <div class="rounded-md border border-rule bg-panel p-6 mb-6">
+      <h2 class="text-[17px] font-extrabold text-ink mb-4">Key Details</h2>
       <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <dt class="text-sm font-medium text-slate-500">Key ID</dt>
+          <dt class="text-sm font-medium text-muted">Key ID</dt>
           <dd class="mt-1 flex items-center gap-2">
-            <code class="text-sm bg-slate-100 px-2 py-1 rounded font-mono">{{ key.key_id }}</code>
+            <code class="text-sm bg-sunken px-2 py-1 rounded font-mono">{{ key.key_id }}</code>
             <CopyButton :value="key.key_id" label="Copy key ID" />
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">HMAC Secret</dt>
+          <dt class="text-sm font-medium text-muted">HMAC Secret</dt>
           <dd class="mt-1 flex items-center gap-2">
-            <code v-if="showSecret" class="text-sm bg-slate-100 px-2 py-1 rounded font-mono break-all">{{ key.hmac_secret }}</code>
-            <code v-else class="text-sm bg-slate-100 px-2 py-1 rounded font-mono">••••••••••••••••</code>
-            <button @click="showSecret = !showSecret" class="inline-flex min-h-8 items-center px-2 text-xs text-brand-700 hover:text-brand-800">
+            <code v-if="showSecret" class="text-sm bg-sunken px-2 py-1 rounded font-mono break-all">{{ key.hmac_secret }}</code>
+            <code v-else class="text-sm bg-sunken px-2 py-1 rounded font-mono">••••••••••••••••</code>
+            <button @click="showSecret = !showSecret" class="inline-flex min-h-8 items-center px-2 text-xs text-link hover:text-link-hover">
               {{ showSecret ? 'Hide' : 'Show' }}
             </button>
-            <button @click="handleRotateSecret" class="inline-flex min-h-8 items-center px-2 text-xs text-orange-700 hover:text-orange-800">Rotate</button>
+            <button @click="handleRotateSecret" class="inline-flex min-h-8 items-center px-2 text-xs font-semibold text-fail hover:text-ink">Rotate</button>
           </dd>
         </div>
         <div class="md:col-span-2">
-          <dt class="text-sm font-medium text-slate-500">Instance URL</dt>
+          <dt class="text-sm font-medium text-muted">Instance URL</dt>
           <dd class="mt-1 flex items-center gap-2">
-            <code class="text-sm bg-slate-100 px-2 py-1 rounded font-mono break-all">{{ instanceOrigin }}</code>
+            <code class="text-sm bg-sunken px-2 py-1 rounded font-mono break-all">{{ instanceOrigin }}</code>
             <CopyButton :value="instanceOrigin" label="Copy instance URL" />
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Domains</dt>
-          <dd class="mt-1 text-sm text-slate-900">
+          <dt class="text-sm font-medium text-muted">Domains</dt>
+          <dd class="mt-1 text-sm text-ink">
             <span v-if="domainList.length === 0">Any (*)</span>
             <span
               v-for="d in domainList"
               :key="d"
-              class="inline-block mr-1 mb-1 px-2 py-0.5 rounded bg-slate-100 font-mono text-xs text-slate-700"
+              class="inline-block mr-1 mb-1 px-2 py-0.5 rounded bg-sunken font-mono text-xs text-ink-2"
               >{{ d }}</span
             >
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Difficulty (maxNumber)</dt>
-          <dd class="mt-1 text-sm text-slate-900">{{ key.max_number.toLocaleString() }}</dd>
+          <dt class="text-sm font-medium text-muted">Difficulty (maxNumber)</dt>
+          <dd class="mt-1 font-mono text-sm text-ink tabular-nums">{{ key.max_number.toLocaleString('en-US') }}</dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Challenge TTL</dt>
-          <dd class="mt-1 text-sm text-slate-900">{{ key.expire_seconds }}s</dd>
+          <dt class="text-sm font-medium text-muted">Challenge TTL</dt>
+          <dd class="mt-1 font-mono text-sm text-ink tabular-nums">{{ key.expire_seconds }}s</dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Algorithm</dt>
-          <dd class="mt-1 text-sm text-slate-900">{{ key.algorithm }}</dd>
+          <dt class="text-sm font-medium text-muted">Algorithm</dt>
+          <dd class="mt-1 text-sm text-ink">{{ key.algorithm }}</dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Rate limit</dt>
-          <dd class="mt-1 text-sm text-slate-900">
-            {{ key.rate_limit_per_min > 0 ? `${key.rate_limit_per_min.toLocaleString()} req/min` : 'Unlimited' }}
+          <dt class="text-sm font-medium text-muted">Rate limit</dt>
+          <dd class="mt-1 font-mono text-sm text-ink tabular-nums">
+            {{ key.rate_limit_per_min > 0 ? `${key.rate_limit_per_min.toLocaleString('en-US')} req/min` : 'Unlimited' }}
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Adaptive difficulty</dt>
+          <dt class="text-sm font-medium text-muted">Adaptive difficulty</dt>
           <dd class="mt-1">
             <span
-              :class="key.adaptive_difficulty ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'"
+              :class="key.adaptive_difficulty ? 'bg-ok-soft text-ok' : 'bg-sunken text-ink-2'"
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
             >{{ key.adaptive_difficulty ? 'On' : 'Off' }}</span>
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">HIS sampling</dt>
+          <dt class="text-sm font-medium text-muted">HIS sampling</dt>
           <dd class="mt-1">
             <span
-              :class="key.his_sampling ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'"
+              :class="key.his_sampling ? 'bg-ok-soft text-ok' : 'bg-sunken text-ink-2'"
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
             >{{ key.his_sampling ? 'On' : 'Off' }}</span>
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Block suspected bots</dt>
+          <dt class="text-sm font-medium text-muted">Block suspected bots</dt>
           <dd class="mt-1">
             <span
-              :class="key.his_enforce ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-600'"
+              :class="key.his_enforce ? 'bg-fail-soft text-fail' : 'bg-sunken text-ink-2'"
               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
             >{{ key.his_enforce ? 'Blocking' : 'Monitor only' }}</span>
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-medium text-slate-500">Suspect threshold</dt>
-          <dd class="mt-1 text-sm text-slate-900 tabular-nums">{{ suspectThreshold.toFixed(2) }}</dd>
+          <dt class="text-sm font-medium text-muted">Suspect threshold</dt>
+          <dd class="mt-1 font-mono text-sm text-ink tabular-nums">{{ suspectThreshold.toFixed(2) }}</dd>
         </div>
       </dl>
     </div>
 
     <!-- Integration Snippet -->
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 mb-6">
-      <h2 class="text-lg font-medium text-slate-900 mb-4">Integration</h2>
+    <div class="rounded-md border border-rule bg-panel p-6 mb-6">
+      <h2 class="text-[17px] font-extrabold text-ink mb-4">Integration</h2>
       <div class="relative">
-        <pre class="bg-slate-900 text-green-400 text-sm p-4 rounded-lg overflow-x-auto"><code>{{ widgetSnippet }}</code></pre>
+        <pre class="bg-code text-code-ink text-sm p-4 pr-12 rounded-md overflow-x-auto"><code>{{ widgetSnippet }}</code></pre>
         <CopyButton
           :value="widgetSnippet"
           label="Copy snippet"
@@ -232,14 +249,14 @@ const hisTotals = computed(() => ({
         />
       </div>
 
-      <h3 class="text-sm font-medium text-slate-700 mt-6 mb-1">Interaction signals (optional)</h3>
-      <p class="text-xs text-slate-500 mb-2">
+      <h3 class="text-sm font-medium text-ink-2 mt-6 mb-1">Interaction signals (optional)</h3>
+      <p class="text-xs text-muted mb-2">
         Add this alongside the widget to score how visitors interact, on top of the proof of work.
         It fills a hidden <code class="font-mono">gatecha_his_signals</code> field that your backend
         forwards to <code class="font-mono">/verify</code>. Aggregates only, and it never blocks.
       </p>
       <div class="relative">
-        <pre class="bg-slate-900 text-green-400 text-sm p-4 rounded-lg overflow-x-auto"><code>{{ hisSnippet }}</code></pre>
+        <pre class="bg-code text-code-ink text-sm p-4 pr-12 rounded-md overflow-x-auto"><code>{{ hisSnippet }}</code></pre>
         <CopyButton
           :value="hisSnippet"
           label="Copy HIS snippet"
@@ -250,27 +267,27 @@ const hisTotals = computed(() => ({
     </div>
 
     <!-- Stats -->
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
-      <h2 class="text-lg font-medium text-slate-900 mb-4">Statistics (30 days)</h2>
+    <div class="mb-6 rounded-md border border-rule bg-panel p-6">
+      <h2 class="text-[17px] font-extrabold text-ink mb-4">Statistics (30 days)</h2>
       <div class="mb-1 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-        <span class="text-slate-500">HIS <span class="text-xs px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">Monitor</span>:</span>
-        <span class="text-slate-900">{{ hisTotals.observations.toLocaleString() }} observed</span>
-        <span class="text-slate-900">{{ hisTotals.suspected.toLocaleString() }} bot-suspected</span>
+        <span class="text-muted">HIS <span class="rounded-[3px] border border-rule px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted">Monitor</span>:</span>
+        <span class="text-ink"><span class="font-mono tabular-nums">{{ hisTotals.observations.toLocaleString('en-US') }}</span> observed</span>
+        <span class="text-ink"><span class="font-mono tabular-nums">{{ hisTotals.suspected.toLocaleString('en-US') }}</span> bot-suspected</span>
       </div>
-      <p v-if="key.his_enforce" class="text-xs text-slate-500 mb-4">
+      <p v-if="key.his_enforce" class="text-xs text-muted mb-4">
         Blocking is on for this key: a verification scoring
         {{ suspectThreshold.toFixed(2) }} or above is rejected with
         <code class="font-mono">bot_suspected</code> and counted as a failed verification.
       </p>
-      <p v-else class="text-xs text-slate-500 mb-4">
+      <p v-else class="text-xs text-muted mb-4">
         Monitor mode: suspected requests are counted and reported, never blocked. Turn on
         "Block suspected bots" in this key's settings to act on the score.
       </p>
-      <StatsChart v-if="statsStore.keyStats.length" :data="statsStore.keyStats" />
-      <p v-else class="text-slate-500 text-center py-12">No data yet</p>
+      <StatsChart v-if="statsStore.keyStats.length" :data="statsStore.keyStats" :line-id="key.id" />
+      <p v-else class="text-muted text-center py-12">No data yet</p>
     </div>
 
-    <CountryTraffic :countries="statsStore.keyCountries" />
+    <CountryTraffic :countries="statsStore.keyCountries" roomy class="mb-6" />
 
     <HISCalibrationPanel
       v-if="key.his_sampling"
@@ -288,9 +305,9 @@ const hisTotals = computed(() => ({
       @cancel="showDeleteConfirm = false"
       @confirm="handleDelete"
     >
-      This will permanently delete <strong class="font-medium text-slate-700">{{ key.name || key.key_id }}</strong>
+      This will permanently delete <strong class="font-medium text-ink-2">{{ key.name || key.key_id }}</strong>
       and all its statistics. This action cannot be undone.
     </ConfirmDialog>
   </div>
-  <div v-else class="text-center py-12 text-slate-500">Loading...</div>
+  <div v-else class="text-center py-12 text-muted">Loading...</div>
 </template>
