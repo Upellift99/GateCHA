@@ -58,25 +58,35 @@ Three repositories, one product:
 
 - ALTCHA-compatible challenge/verify API; works with the official widget.
 - API keys (`gk_` prefix) with per-key difficulty, TTL, domain restrictions
-  (multiple domains, `*.example.com` wildcards), per-key rate limiting and
-  adaptive difficulty.
+  (multiple domains, `*.example.com` wildcards), per-key rate limiting
+  (`internal/api/ratelimit.go`) and adaptive difficulty
+  (`internal/api/adaptive.go`). The last two are documented on gatecha.org/docs
+  but not yet in the README.
 - Replay protection on consumed challenges.
 - Statistics per key and per day (issued, verified, failed).
 - Human Interaction Signature (HIS): optional aggregate interaction signals
-  scored 0–1; Monitor mode by default, per-key enforcement opt-in. Only
-  aggregates leave the browser, never typed content, pointer positions or IPs.
+  scored 0–1; Monitor mode by default, per-key enforcement opt-in. The
+  `his_signals` payload carries aggregates only: never typed content, field
+  values, pointer coordinates, timestamps or IP addresses. Like any request,
+  `/verify` still sees the source IP, used in memory for rate limiting,
+  adaptive difficulty and country stats; no IP is written to the database.
+  **Open gap:** `chiMiddleware.Logger` (`internal/api/router.go`) prints every
+  request with its client IP to stdout, whatever `GATECHA_LOG_LEVEL` says, so
+  the docs' "No IP is ever stored or logged" is not literally true today.
 - MCP endpoint (off by default) to manage API keys from an AI client.
 - SQLite by default; MySQL in the `-mysql` build variant. Images for
   linux/amd64 and linux/arm64; binaries for linux/darwin/windows.
-- WordPress plugin: 14 protected form types (core, WooCommerce, CF7, WPForms,
-  Gravity Forms, Elementor Pro, Forminator, Formidable, HTML Forms) plus a
-  `[gatecha]` shortcode; fail-open / fail-closed modes; bundled widget (no
-  CDN); all verification goes through the GateCHA server.
-- **Source of truth for figures and features is the GateCHA `README.md`.**
-  The website and the plugin readme align with it, never the reverse. Known
-  drift as of 2026-10-23: the site still claims a ~3 MB binary, ~15 MB image
-  and Go 1.25+ (README: ~14.2 MB, ~23.8 MB, Go 1.26+), and does not mention
-  MySQL, MCP, HIS, rate limiting or adaptive difficulty.
+- WordPress plugin (source of truth: GateCHA-WordPress `readme.txt`): 14
+  protected form types (core, WooCommerce, CF7, WPForms, Gravity Forms,
+  Elementor Pro, Forminator, Formidable, HTML Forms) plus a `[gatecha]`
+  shortcode; fail-open / fail-closed modes; bundled widget (no CDN); all
+  verification goes through the GateCHA server.
+- **Sources of truth:** figures (sizes, requirements) come from the GateCHA
+  `README.md`; features come from the README, or from the code where the
+  README lags. The website and the plugin readme should align with them,
+  never the reverse. Drift found on 2026-10-23 (site claiming a ~3 MB binary,
+  ~15 MB image and Go 1.25+, and omitting MySQL, MCP, HIS, rate limiting and
+  adaptive difficulty) is corrected in GateCHA-website#8.
 - Roadmap, not shipped: dashboard i18n (vue-i18n); content signals on
   `/verify` (#170). Do not present them as available.
 
