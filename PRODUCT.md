@@ -69,10 +69,9 @@ Three repositories, one product:
   `his_signals` payload carries aggregates only: never typed content, field
   values, pointer coordinates, timestamps or IP addresses. Like any request,
   `/verify` still sees the source IP, used in memory for rate limiting,
-  adaptive difficulty and country stats; no IP is written to the database.
-  **Open gap:** `chiMiddleware.Logger` (`internal/api/router.go`) prints every
-  request with its client IP to stdout, whatever `GATECHA_LOG_LEVEL` says, so
-  the docs' "No IP is ever stored or logged" is not literally true today.
+  adaptive difficulty and country stats; no IP is written to the database,
+  and request logs carry none unless an operator sets
+  `GATECHA_LOG_CLIENT_IP=true` to debug.
 - MCP endpoint (off by default) to manage API keys from an AI client.
 - SQLite by default; MySQL in the `-mysql` build variant. Images for
   linux/amd64 and linux/arm64; binaries for linux/darwin/windows.

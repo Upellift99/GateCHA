@@ -23,11 +23,14 @@ type Config struct {
 	HISSampleRetention time.Duration
 	CORSAllowAll       bool
 	TrustProxy         bool
-	EnableHSTS         bool
-	MaxBodyBytes       int64
-	RateLimit          bool
-	RateLimitLogin     int
-	RateLimitAPI       int
+	// LogClientIP adds the client IP to request logs. Off by default: no
+	// feature needs it there, and the docs promise no IP is logged.
+	LogClientIP    bool
+	EnableHSTS     bool
+	MaxBodyBytes   int64
+	RateLimit      bool
+	RateLimitLogin int
+	RateLimitAPI   int
 }
 
 func Load() (*Config, error) {
@@ -61,6 +64,9 @@ func loadOptions(cfg *Config) error {
 		return err
 	}
 	if cfg.EnableHSTS, err = envBool("GATECHA_ENABLE_HSTS", false); err != nil {
+		return err
+	}
+	if cfg.LogClientIP, err = envBool("GATECHA_LOG_CLIENT_IP", false); err != nil {
 		return err
 	}
 	if cfg.RateLimit, err = envBool("GATECHA_RATE_LIMIT_ENABLED", true); err != nil {

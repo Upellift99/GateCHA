@@ -15,6 +15,7 @@ func TestLoad_Defaults(t *testing.T) {
 	os.Unsetenv("GATECHA_LOG_LEVEL")
 	os.Unsetenv("GATECHA_CLEANUP_INTERVAL")
 	os.Unsetenv("GATECHA_CORS_ALLOW_ALL")
+	os.Unsetenv("GATECHA_LOG_CLIENT_IP")
 
 	cfg, err := Load()
 	if err != nil {
@@ -35,6 +36,9 @@ func TestLoad_Defaults(t *testing.T) {
 	}
 	if cfg.CORSAllowAll {
 		t.Error("expected CORSAllowAll to be false by default")
+	}
+	if cfg.LogClientIP {
+		t.Error("expected LogClientIP to be false by default")
 	}
 	if cfg.CleanupInterval != 10*time.Minute {
 		t.Errorf("expected 10m, got %v", cfg.CleanupInterval)
@@ -138,5 +142,21 @@ func TestEnvOrDefault(t *testing.T) {
 	t.Setenv(key, "custom")
 	if v := envOrDefault(key, "fallback"); v != "custom" {
 		t.Errorf("expected custom, got %s", v)
+	}
+}
+
+func TestLoad_LogClientIP(t *testing.T) {
+	t.Setenv("GATECHA_LOG_CLIENT_IP", "true")
+	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load failed: %v", err)
+	}
+	if !cfg.LogClientIP {
+		t.Error("expected LogClientIP to be true")
+	}
+
+	t.Setenv("GATECHA_LOG_CLIENT_IP", "yes please")
+	if _, err := Load(); err == nil {
+		t.Error("expected error for non-boolean GATECHA_LOG_CLIENT_IP")
 	}
 }

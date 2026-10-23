@@ -79,6 +79,7 @@ func main() {
 		RateLimitEnabled: cfg.RateLimit,
 		RateLimitLogin:   cfg.RateLimitLogin,
 		RateLimitAPI:     cfg.RateLimitAPI,
+		LogClientIP:      cfg.LogClientIP,
 		Version:          version,
 	})
 

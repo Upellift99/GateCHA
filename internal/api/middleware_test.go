@@ -1,8 +1,10 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -369,5 +371,53 @@ func TestWriteJSON(t *testing.T) {
 	json.NewDecoder(w.Body).Decode(&body)
 	if body["hello"] != "world" {
 		t.Errorf("expected hello=world, got %v", body)
+	}
+}
+
+func requestLogLine(t *testing.T, logClientIP bool) string {
+	t.Helper()
+	var buf bytes.Buffer
+	logger := slog.New(slog.NewTextHandler(&buf, nil))
+	h := RequestLogMiddleware(logger, logClientIP)(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusTeapot)
+		_, _ = w.Write([]byte("ok"))
+	}))
+	req := httptest.NewRequest("GET", "/api/v1/challenge?apiKey=gk_secretish", nil)
+	req.RemoteAddr = "203.0.113.7:51234"
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	return buf.String()
+}
+
+func TestRequestLog_OmitsClientIPAndQuery(t *testing.T) {
+	line := requestLogLine(t, false)
+	for _, want := range []string{"method=GET", "path=/api/v1/challenge", "status=418", "bytes=2", "duration="} {
+		if !strings.Contains(line, want) {
+			t.Errorf("log line %q is missing %q", line, want)
+		}
+	}
+	// The visitor's IP and the ?apiKey= query must not reach the log.
+	for _, leak := range []string{"203.0.113.7", "client_ip", "apiKey", "gk_secretish"} {
+		if strings.Contains(line, leak) {
+			t.Errorf("log line %q leaks %q", line, leak)
+		}
+	}
+}
+
+func TestRequestLog_IncludesClientIPWhenEnabled(t *testing.T) {
+	line := requestLogLine(t, true)
+	if !strings.Contains(line, "client_ip=203.0.113.7") {
+		t.Errorf("expected client_ip in %q", line)
+	}
+	if strings.Contains(line, "gk_secretish") {
+		t.Errorf("the query string must stay out of the log even with client IPs: %q", line)
+	}
+}
+
+func TestRequestLog_DefaultsStatusTo200(t *testing.T) {
+	var buf bytes.Buffer
+	h := RequestLogMiddleware(slog.New(slog.NewTextHandler(&buf, nil)), false)(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	h.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/healthz", nil))
+	if !strings.Contains(buf.String(), "status=200") {
+		t.Errorf("a handler that writes nothing is a 200, got %q", buf.String())
 	}
 }

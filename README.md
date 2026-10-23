@@ -425,6 +425,7 @@ The compose file pulls `latest-mysql`. Set `GATECHA_IMAGE` to run another image,
 | `GATECHA_ADMIN_USERNAME` | `admin` | Admin username |
 | `GATECHA_ADMIN_PASSWORD` | *(auto-generated)* | Admin password |
 | `GATECHA_LOG_LEVEL` | `info` | Log level |
+| `GATECHA_LOG_CLIENT_IP` | `false` | Add the client IP to request logs. Off by default: rate limiting, adaptive difficulty and country stats read the IP in memory, and nothing logs it unless you turn this on for debugging |
 | `GATECHA_CLEANUP_INTERVAL` | `10` | Cleanup interval (minutes) |
 | `GATECHA_HIS_SAMPLE_RETENTION_DAYS` | `30` | Retention (days) for opted-in raw HIS calibration samples |
 | `GATECHA_CORS_ALLOW_ALL` | `false` | Allow CORS from any origin |

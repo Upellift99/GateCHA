@@ -1,6 +1,7 @@
 package api
 
 import (
+	"log/slog"
 	"net/http"
 
 	"github.com/Upellift99/GateCHA/internal/dashboard"
@@ -20,6 +21,7 @@ type RouterConfig struct {
 	RateLimitEnabled bool
 	RateLimitLogin   int    // requests per minute on /api/admin/login
 	RateLimitAPI     int    // requests per minute on /api/v1/*
+	LogClientIP      bool   // include the client IP in request logs (debugging only)
 	Version          string // build version surfaced to authenticated admins
 }
 
@@ -33,7 +35,7 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	if cfg.TrustProxy {
 		r.Use(chiMiddleware.RealIP)
 	}
-	r.Use(chiMiddleware.Logger)
+	r.Use(RequestLogMiddleware(slog.Default(), cfg.LogClientIP))
 	r.Use(chiMiddleware.Recoverer)
 	r.Use(SecurityHeadersMiddleware(cfg.EnableHSTS))
 	r.Use(MaxBodyBytesMiddleware(cfg.MaxBodyBytes))
