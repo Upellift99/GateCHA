@@ -15,7 +15,6 @@ func TestLoad_Defaults(t *testing.T) {
 	os.Unsetenv("GATECHA_LOG_LEVEL")
 	os.Unsetenv("GATECHA_CLEANUP_INTERVAL")
 	os.Unsetenv("GATECHA_CORS_ALLOW_ALL")
-	os.Unsetenv("GATECHA_LOG_CLIENT_IP")
 
 	cfg, err := Load()
 	if err != nil {
@@ -36,9 +35,6 @@ func TestLoad_Defaults(t *testing.T) {
 	}
 	if cfg.CORSAllowAll {
 		t.Error("expected CORSAllowAll to be false by default")
-	}
-	if cfg.LogClientIP {
-		t.Error("expected LogClientIP to be false by default")
 	}
 	if cfg.CleanupInterval != 10*time.Minute {
 		t.Errorf("expected 10m, got %v", cfg.CleanupInterval)
@@ -146,8 +142,18 @@ func TestEnvOrDefault(t *testing.T) {
 }
 
 func TestLoad_LogClientIP(t *testing.T) {
-	t.Setenv("GATECHA_LOG_CLIENT_IP", "true")
+	// Kept out of TestLoad_Defaults, which sits at Sonar's cognitive complexity limit.
+	os.Unsetenv("GATECHA_LOG_CLIENT_IP")
 	cfg, err := Load()
+	if err != nil {
+		t.Fatalf("Load failed: %v", err)
+	}
+	if cfg.LogClientIP {
+		t.Error("expected LogClientIP to be false by default")
+	}
+
+	t.Setenv("GATECHA_LOG_CLIENT_IP", "true")
+	cfg, err = Load()
 	if err != nil {
 		t.Fatalf("Load failed: %v", err)
 	}
