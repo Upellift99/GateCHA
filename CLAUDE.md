@@ -69,6 +69,10 @@ make dev          # Run Go backend in dev mode
   on a standard library finding fixed by a newer Go patch, the fix is a new release (a
   rebuild is enough), not a code change; a finding in a module still needs that dependency
   bumped first.
+- That release does not open by itself when only `chore(deps)` commits landed since the last
+  tag: release-please releases on `fix:`/`feat:` only. Land a `fix(security): rebuild on Go
+  1.x.y (GO-…)` commit to get the release PR. v0.9.1 stayed on go1.27.2 for three days after
+  go1.27.3 fixed GO-2026-6809 with thirteen chores and no release PR in sight.
 
 ## Future Roadmap
 
