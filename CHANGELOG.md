@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://github.com/Upellift99/GateCHA/compare/v0.9.1...v0.9.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* **security:** rebuild on Go 1.27.3 (GO-2026-6809) ([#222](https://github.com/Upellift99/GateCHA/issues/222)) ([5f93a9c](https://github.com/Upellift99/GateCHA/commit/5f93a9cfe9bf0e2ee26eb042d02cd94a6f8d4ff5))
+
 ## [0.9.1](https://github.com/Upellift99/GateCHA/compare/v0.9.0...v0.9.1) (2026-10-12)
 
 No code change: this release exists to rebuild the binaries and the Docker images on Go 1.27.2. 0.9.0 was built on Go 1.27.1 the very day 1.27.2 came out with fixes for ten standard library advisories.
