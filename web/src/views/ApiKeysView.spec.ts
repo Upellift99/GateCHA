@@ -516,4 +516,61 @@ describe('ApiKeysView', () => {
     expect(wrapper.find('input#key-search').exists()).toBe(false)
     expect(wrapper.text()).toContain('No API keys yet')
   })
+
+  describe('row density', () => {
+    function mountWith(keys: object[], summary: Record<string, object>) {
+      mockApi.get.mockImplementation((url: string) => {
+        if (url === '/keys') return Promise.resolve({ data: { keys } })
+        if (url === '/stats/keys-summary') return Promise.resolve({ data: { keys: summary } })
+        return Promise.resolve({ data: {} })
+      })
+      return mountView()
+    }
+    const key = (id: number, name: string, domain: string) => ({ ...mockKeys[0], id, key_id: `gk_${id}`, name, domain })
+
+    it('shows the first domain and a count, and names keys open to any domain', async () => {
+      const wrapper = mountWith([key(1, 'Multi', 'a.com\nb.com, c.com'), key(2, 'Open', '')], {})
+      await flushPromises()
+      const [multi, open] = wrapper.findAll('tbody tr').map((r) => r.findAll('td')[1])
+      expect(multi.text()).toContain('a.com')
+      expect(multi.text()).toContain('+2')
+      expect(multi.text()).not.toContain('b.com')
+      expect(multi.attributes('title')).toBe('a.com\nb.com\nc.com')
+      expect(open.text()).toBe('Any domain')
+    })
+
+    it('colours the failed count only when there are failures', async () => {
+      const wrapper = mountWith([key(1, 'Clean', 'a.com'), key(2, 'Noisy', 'b.com')], {
+        '1': { api_key_id: 1, challenges_issued: 9, verifications_ok: 9, verifications_fail: 0 },
+        '2': { api_key_id: 2, challenges_issued: 9, verifications_ok: 4, verifications_fail: 5 },
+      })
+      await flushPromises()
+      const failed = wrapper.findAll('tbody tr').map((r) => r.findAll('td')[5])
+      expect(failed[0].classes()).toContain('text-slate-500')
+      expect(failed[0].classes()).not.toContain('text-red-700')
+      expect(failed[1].classes()).toContain('text-red-700')
+    })
+
+    it('says when a key was last used in a short relative form', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-10-23T12:00:00Z'))
+      try {
+        const dates = ['2026-10-23', '2026-10-22', '2026-10-20', '2025-12-01']
+        const keys = dates.map((_, i) => key(i + 1, `K${i + 1}`, 'a.com'))
+        const summary = Object.fromEntries(dates.map((d, i) => [String(i + 1), {
+          api_key_id: i + 1, challenges_issued: 1, verifications_ok: 1, verifications_fail: 0, last_used_at: d,
+        }]))
+        const wrapper = mountWith(keys, summary)
+        await flushPromises()
+        const cells = wrapper.findAll('tbody tr').map((r) => r.findAll('td')[6])
+        expect(cells[0].text()).toBe('Today')
+        expect(cells[1].text()).toBe('Yesterday')
+        expect(cells[2].text()).toBe('3 days ago')
+        expect(cells[3].text()).toContain('2025')
+        expect(cells[0].attributes('title')).toContain('2026')
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+  })
 })

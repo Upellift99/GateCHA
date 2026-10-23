@@ -26,10 +26,44 @@ function getLastUsed(keyId: number): string {
   return summary ? summary.last_used_at : ''
 }
 
+const DAY_MS = 86_400_000
+
+// last_used_at is a UTC calendar day, so compare whole UTC days. A short,
+// relative label keeps the column on one line; the full date sits in the title.
 function formatLastUsed(keyId: number): string {
   const date = getLastUsed(keyId)
   if (!date) return 'Never'
-  return new Date(date + 'T00:00:00Z').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+  const day = Date.parse(date + 'T00:00:00Z')
+  const now = new Date()
+  const days = Math.round((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - day) / DAY_MS)
+  if (days <= 0) return 'Today'
+  if (days === 1) return 'Yesterday'
+  if (days < 7) return `${days} days ago`
+  const sameYear = new Date(day).getUTCFullYear() === now.getUTCFullYear()
+  return new Date(day).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    ...(sameYear ? {} : { year: 'numeric' }),
+    timeZone: 'UTC',
+  })
+}
+
+function formatLastUsedFull(keyId: number): string | undefined {
+  const date = getLastUsed(keyId)
+  if (!date) return undefined
+  return new Date(date + 'T00:00:00Z').toLocaleDateString(undefined, { dateStyle: 'full', timeZone: 'UTC' })
+}
+
+// A key's domain setting is a free list (newlines, commas or spaces). Show the
+// first entry and a count instead of letting four hostnames stretch the row.
+function domainList(domain: string): string[] {
+  return domain.split(/[\s,]+/).filter(Boolean)
+}
+
+// Counts read as plain data; only failures that actually happened get colour.
+function statClass(value: number, kind: 'neutral' | 'failure'): string {
+  if (value === 0) return 'text-slate-500'
+  return kind === 'failure' ? 'font-medium text-red-700' : 'text-slate-900'
 }
 
 function ariaSort(column: SortColumn): 'ascending' | 'descending' | 'none' {
@@ -239,7 +273,7 @@ onMounted(() => {
                   </button>
                 </th>
                 <th
-                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none whitespace-nowrap"
                   :aria-sort="ariaSort('lastUsed')"
                   @click="toggleSort('lastUsed')"
                 >
@@ -253,15 +287,24 @@ onMounted(() => {
             </thead>
             <tbody class="divide-y divide-slate-200">
               <tr v-for="key in pagedKeys" :key="key.id" class="hover:bg-slate-50">
-                <td class="px-4 sm:px-6 py-4">
+                <td class="px-4 sm:px-6 py-3">
                   <router-link :to="`/keys/${key.id}`" class="inline-flex min-h-6 items-center text-sm font-medium text-slate-900 hover:text-brand-700">{{ key.name || '-' }}</router-link>
                   <div class="flex items-center gap-1.5">
                     <span class="text-xs text-slate-500 font-mono">{{ key.key_id }}</span>
                     <CopyButton :value="key.key_id" :label="`Copy ${key.key_id}`" />
                   </div>
                 </td>
-                <td class="hidden sm:table-cell px-4 sm:px-6 py-4 text-sm text-slate-500 break-words">{{ key.domain || '*' }}</td>
-                <td class="px-4 sm:px-6 py-4">
+                <td class="hidden sm:table-cell px-4 sm:px-6 py-3 text-sm text-slate-600" :title="domainList(key.domain).join('\n') || undefined">
+                  <template v-if="domainList(key.domain).length">
+                    <span class="break-all">{{ domainList(key.domain)[0] }}</span>
+                    <span
+                      v-if="domainList(key.domain).length > 1"
+                      class="ml-1.5 inline-flex rounded bg-slate-100 px-1.5 text-xs font-medium text-slate-600 tabular-nums"
+                    >+{{ domainList(key.domain).length - 1 }}</span>
+                  </template>
+                  <span v-else class="text-slate-500">Any domain</span>
+                </td>
+                <td class="px-4 sm:px-6 py-3">
                   <span
                     :class="key.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -269,23 +312,32 @@ onMounted(() => {
                     {{ key.enabled ? 'Active' : 'Disabled' }}
                   </span>
                 </td>
-                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right font-medium text-brand-700">
+                <td
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-sm text-right tabular-nums"
+                  :class="statClass(getKeyStat(key.id, 'challenges_issued'), 'neutral')"
+                >
                   {{ getKeyStat(key.id, 'challenges_issued').toLocaleString() }}
                 </td>
-                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right font-medium text-green-700">
+                <td
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-sm text-right tabular-nums"
+                  :class="statClass(getKeyStat(key.id, 'verifications_ok'), 'neutral')"
+                >
                   {{ getKeyStat(key.id, 'verifications_ok').toLocaleString() }}
                 </td>
-                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right font-medium text-red-600">
+                <td
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-sm text-right tabular-nums"
+                  :class="statClass(getKeyStat(key.id, 'verifications_fail'), 'failure')"
+                >
                   {{ getKeyStat(key.id, 'verifications_fail').toLocaleString() }}
                 </td>
-                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right text-slate-500">
+                <td
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-sm text-right text-slate-600 whitespace-nowrap"
+                  :title="formatLastUsedFull(key.id)"
+                >
                   {{ formatLastUsed(key.id) }}
                 </td>
-                <td class="hidden sm:table-cell px-4 sm:px-6 py-4 text-right whitespace-nowrap space-x-1">
-                  <router-link :to="`/keys/${key.id}`" class="inline-flex min-h-8 items-center px-2 text-brand-700 hover:text-brand-800 text-sm">
-                    View
-                  </router-link>
-                  <router-link :to="`/keys/${key.id}/edit`" class="inline-flex min-h-8 items-center px-2 text-slate-600 hover:text-slate-800 text-sm">
+                <td class="hidden sm:table-cell px-4 sm:px-6 py-3 text-right whitespace-nowrap">
+                  <router-link :to="`/keys/${key.id}/edit`" :aria-label="`Edit ${key.name || key.key_id}`" class="inline-flex min-h-8 items-center px-2 text-slate-600 hover:text-slate-800 text-sm">
                     Edit
                   </router-link>
                 </td>
