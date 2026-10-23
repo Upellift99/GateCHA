@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import CopyButton from './CopyButton.vue'
 
 describe('CopyButton', () => {
@@ -26,6 +26,25 @@ describe('CopyButton', () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith('gk_secret')
     expect(wrapper.text()).toContain('Copied!')
     expect(wrapper.get('button').attributes('aria-label')).toBe('Copied!')
+  })
+
+  it('takes back "Copied!" when the browser refuses the copy', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
+      configurable: true,
+    })
+    const wrapper = mount(CopyButton, { props: { value: 'gk_x', label: 'Copy API key', variant: 'button' } })
+    await wrapper.get('button').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.get('button').attributes('aria-label')).toBe('Copy failed')
+    expect(wrapper.text()).toContain('Copy failed')
+    expect(wrapper.text()).not.toContain('Copied!')
+  })
+
+  it('shows its action as visible text in the button variant', () => {
+    const wrapper = mount(CopyButton, { props: { value: 'gk_x', label: 'Copy API key', variant: 'button' } })
+    expect(wrapper.get('button').text()).toBe('Copy')
   })
 
   it('clears the tooltip after the timeout', async () => {

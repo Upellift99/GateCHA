@@ -74,8 +74,28 @@ describe('ApiKeyFormView', () => {
       algorithm: 'SHA-256',
     }))
     // Shows created key info
-    expect(wrapper.text()).toContain('Key Created Successfully')
+    expect(wrapper.text()).toContain('API key created')
     expect(wrapper.text()).toContain('gk_new123')
+  })
+
+  it('leads with the API key and a copy button, and tucks the HMAC secret away', async () => {
+    mockApi.post.mockResolvedValue({
+      data: { id: 7, key_id: 'gk_new123', hmac_secret: 'secret123' },
+    })
+    mockApi.get.mockResolvedValue({ data: { keys: [] } })
+
+    const wrapper = mountView()
+    await wrapper.find('#key-name').setValue('New Key')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    const copy = wrapper.get('button[aria-label="Copy API key"]')
+    expect(copy.text()).toContain('Copy')
+    // The secret is only inside the collapsed "Advanced" disclosure
+    const details = wrapper.get('details')
+    expect(details.attributes('open')).toBeUndefined()
+    expect(details.text()).toContain('secret123')
+    expect(wrapper.text().indexOf('gk_new123')).toBeLessThan(wrapper.text().indexOf('secret123'))
   })
 
   it('updates key on submit in edit mode', async () => {

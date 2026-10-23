@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useApiKeysStore } from '../stores/apikeys'
+import CopyButton from '../components/CopyButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,7 +26,8 @@ const form = ref({
 
 const error = ref('')
 const loading = ref(false)
-const createdKey = ref<{ key_id: string; hmac_secret: string } | null>(null)
+const createdKey = ref<{ id: number; key_id: string; hmac_secret: string } | null>(null)
+const createdHeading = ref<HTMLElement | null>(null)
 
 onMounted(async () => {
   if (isEdit.value) {
@@ -54,7 +56,11 @@ async function handleSubmit() {
       router.push(`/keys/${keyId.value}`)
     } else {
       const key = await store.createKey(form.value)
-      createdKey.value = { key_id: key.key_id, hmac_secret: key.hmac_secret || '' }
+      createdKey.value = { id: key.id, key_id: key.key_id, hmac_secret: key.hmac_secret || '' }
+      // The form is replaced by the result; move focus there so keyboard and
+      // screen-reader users land on it instead of on a node that disappeared.
+      await nextTick()
+      createdHeading.value?.focus()
     }
   } catch {
     error.value = 'Failed to save key'
@@ -66,32 +72,52 @@ async function handleSubmit() {
 
 <template>
   <div class="max-w-xl">
-    <router-link to="/keys" class="text-sm text-slate-500 hover:text-slate-700">&larr; Back to keys</router-link>
+    <router-link to="/keys" class="inline-flex min-h-6 items-center text-sm text-slate-500 hover:text-slate-700">&larr; Back to keys</router-link>
     <h1 class="text-2xl font-bold text-slate-900 mt-1 mb-6">
       {{ isEdit ? 'Edit API Key' : 'Create API Key' }}
     </h1>
 
-    <!-- Created key info -->
-    <div v-if="createdKey" class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-      <h2 class="text-lg font-medium text-green-900 mb-2">Key Created Successfully!</h2>
-      <dl class="space-y-2 text-sm">
-        <div>
-          <dt class="font-medium text-green-800">Key ID</dt>
-          <dd class="font-mono bg-white px-2 py-1 rounded mt-1">{{ createdKey.key_id }}</dd>
-        </div>
-        <div>
-          <dt class="font-medium text-green-800">HMAC Secret</dt>
-          <dd class="font-mono bg-white px-2 py-1 rounded mt-1 break-all">{{ createdKey.hmac_secret }}</dd>
-        </div>
-      </dl>
-      <router-link to="/keys" class="inline-block mt-4 text-sm text-teal-600 hover:text-teal-800 font-medium">
-        Go to API Keys &rarr;
-      </router-link>
+    <!-- Created key: the API key is the one value to copy. The HMAC secret
+         used to sit beside it as an equal, which read as "copy both"; GateCHA
+         signs and checks challenges itself, so it is tucked away. -->
+    <div v-if="createdKey" class="rounded-xl border border-green-200 bg-green-50 p-6 mb-6">
+      <h2 ref="createdHeading" tabindex="-1" class="text-lg font-semibold text-green-900 focus:outline-none">API key created</h2>
+      <p class="mt-1 max-w-prose text-sm text-green-900">
+        Copy this key into your widget's challenge URL and your backend's
+        <code class="font-mono">/api/v1/verify</code> call. It is the only value your site needs.
+      </p>
+
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <code class="min-w-0 break-all rounded-md border border-green-200 bg-white px-3 py-2 font-mono text-base text-slate-900">{{
+          createdKey.key_id
+        }}</code>
+        <CopyButton :value="createdKey.key_id" label="Copy API key" variant="button" />
+      </div>
+
+      <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
+        <router-link :to="`/keys/${createdKey.id}`" class="inline-flex min-h-6 items-center text-brand-700 hover:text-brand-800">
+          See the integration snippets &rarr;
+        </router-link>
+        <router-link to="/keys" class="inline-flex min-h-6 items-center text-slate-600 hover:text-slate-800">
+          Back to API keys
+        </router-link>
+      </div>
+
+      <details class="mt-5 border-t border-green-200 pt-4 text-sm">
+        <summary class="min-h-6 cursor-pointer py-0.5 font-medium text-green-900">
+          Advanced: HMAC secret
+        </summary>
+        <p class="mt-2 max-w-prose text-green-900">
+          You don't need this for the widget or <code class="font-mono">/api/v1/verify</code>: GateCHA uses it
+          to sign challenges on its side. It stays on the key's page if you ever need it.
+        </p>
+        <code class="mt-2 block break-all rounded-md bg-white px-3 py-2 font-mono text-slate-900">{{ createdKey.hmac_secret }}</code>
+      </details>
     </div>
 
     <!-- Form -->
     <form v-else @submit.prevent="handleSubmit" class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
-      <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
+      <div v-if="error" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
 
       <div>
         <label for="key-name" class="block text-sm font-medium text-slate-700 mb-1">Name</label>
@@ -100,7 +126,7 @@ async function handleSubmit() {
           v-model="form.name"
           type="text"
           placeholder="My Website"
-          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
         />
       </div>
 
@@ -111,9 +137,9 @@ async function handleSubmit() {
           v-model="form.domain"
           rows="3"
           placeholder="example.com&#10;app.example.com&#10;*.staging.example.com"
-          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm font-mono text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm font-mono text-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
         ></textarea>
-        <p class="mt-1 text-xs text-slate-500">
+        <p class="mt-1 max-w-prose text-xs text-slate-500">
           Optional. One domain per line restricts the key to those origins. Use
           <code class="font-mono">*.example.com</code> to allow every subdomain (and the bare domain).
           Leave empty to allow any.
@@ -129,9 +155,9 @@ async function handleSubmit() {
             type="number"
             min="1000"
             max="10000000"
-            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
           />
-          <p class="mt-1 text-xs text-slate-500">Higher = harder. 100,000 ~ 0.5s</p>
+          <p class="mt-1 max-w-prose text-xs text-slate-500">Higher = harder. 100,000 ~ 0.5s</p>
         </div>
         <div>
           <label for="key-expire-seconds" class="block text-sm font-medium text-slate-700 mb-1">Challenge TTL (seconds)</label>
@@ -141,7 +167,7 @@ async function handleSubmit() {
             type="number"
             min="60"
             max="3600"
-            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+            class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
           />
         </div>
       </div>
@@ -151,7 +177,7 @@ async function handleSubmit() {
         <select
           id="key-algorithm"
           v-model="form.algorithm"
-          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
         >
           <option value="SHA-256">SHA-256 (recommended)</option>
           <option value="SHA-512">SHA-512</option>
@@ -166,9 +192,9 @@ async function handleSubmit() {
           type="number"
           min="0"
           max="100000"
-          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
         />
-        <p class="mt-1 text-xs text-slate-500">Caps challenge + verify calls for this key, across all clients. 0 = unlimited.</p>
+        <p class="mt-1 max-w-prose text-xs text-slate-500">Caps challenge + verify calls for this key, across all clients. 0 = unlimited.</p>
       </div>
 
       <div class="flex items-start gap-3">
@@ -176,11 +202,11 @@ async function handleSubmit() {
           id="key-adaptive"
           v-model="form.adaptive_difficulty"
           type="checkbox"
-          class="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+          class="mt-0.5 h-5 w-5 shrink-0 rounded border-slate-300 text-brand-700 focus:ring-brand-600"
         />
         <label for="key-adaptive" class="text-sm">
           <span class="font-medium text-slate-700">Adaptive difficulty</span>
-          <span class="block text-xs text-slate-500">Raises proof-of-work difficulty above the base for clients (by IP) requesting challenges at an abusive rate. The difficulty above is the floor.</span>
+          <span class="block max-w-prose text-xs text-slate-500">Raises proof-of-work difficulty above the base for clients (by IP) requesting challenges at an abusive rate. The difficulty above is the floor.</span>
         </label>
       </div>
 
@@ -189,11 +215,11 @@ async function handleSubmit() {
           id="key-his-sampling"
           v-model="form.his_sampling"
           type="checkbox"
-          class="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+          class="mt-0.5 h-5 w-5 shrink-0 rounded border-slate-300 text-brand-700 focus:ring-brand-600"
         />
         <label for="key-his-sampling" class="text-sm">
           <span class="font-medium text-slate-700">HIS sampling</span>
-          <span class="block text-xs text-slate-500">Stores each scored interaction sample (privacy-preserving aggregates only — no IP, coordinates or key contents) so HIS enforcement thresholds can be calibrated on real traffic. Samples are pruned after the retention window.</span>
+          <span class="block max-w-prose text-xs text-slate-500">Stores each scored interaction sample (privacy-preserving aggregates only — no IP, coordinates or key contents) so HIS enforcement thresholds can be calibrated on real traffic. Samples are pruned after the retention window.</span>
         </label>
       </div>
 
@@ -202,11 +228,11 @@ async function handleSubmit() {
           id="key-his-enforce"
           v-model="form.his_enforce"
           type="checkbox"
-          class="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+          class="mt-0.5 h-5 w-5 shrink-0 rounded border-slate-300 text-brand-700 focus:ring-brand-600"
         />
         <label for="key-his-enforce" class="text-sm">
           <span class="font-medium text-slate-700">Block suspected bots</span>
-          <span class="block text-xs text-slate-500">
+          <span class="block max-w-prose text-xs text-slate-500">
             Rejects a verification whose interaction score reaches the threshold below, instead of
             only reporting it. Only ever acts on requests that actually carried
             <code class="font-mono">his_signals</code>: a site whose collector never runs is
@@ -226,9 +252,9 @@ async function handleSubmit() {
           min="0.05"
           max="1"
           step="0.05"
-          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
         />
-        <p class="mt-1 text-xs text-slate-500">
+        <p class="mt-1 max-w-prose text-xs text-slate-500">
           Score from 0 to 1 at or above which this key calls a sample automation. Higher means more
           bot-like, the reverse of reCAPTCHA. Drives the reported
           <code class="font-mono">his_bot_suspected</code>, the Monitor counters and the blocking
@@ -244,7 +270,7 @@ async function handleSubmit() {
       <button
         type="submit"
         :disabled="loading"
-        class="w-full py-2 px-4 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 disabled:opacity-50"
+        class="w-full py-2 px-4 bg-brand-700 text-white font-medium rounded-md hover:bg-brand-800 disabled:opacity-50"
       >
         {{ loading ? 'Saving...' : (isEdit ? 'Update Key' : 'Create Key') }}
       </button>
