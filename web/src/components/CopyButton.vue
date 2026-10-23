@@ -70,7 +70,7 @@ onBeforeUnmount(() => clearTimeout(timer))
     <output
       v-if="copied || failed"
       :class="variant === 'button' ? 'sr-only' : ''"
-      class="pointer-events-none absolute -top-7 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-code px-1.5 py-0.5 text-xs font-medium text-action-ink shadow"
+      class="pointer-events-none absolute -top-7 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-code px-1.5 py-0.5 text-xs font-medium text-action-ink"
       >{{ failed ? 'Copy failed, select the text and copy it' : 'Copied!' }}</output
     >
   </button>

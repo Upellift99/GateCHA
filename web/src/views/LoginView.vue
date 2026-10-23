@@ -121,7 +121,7 @@ async function handleLogin() {
           <button
             type="submit"
             :disabled="loading || !canSubmit"
-            class="w-full py-2 px-4 bg-action text-action-ink font-medium rounded-md hover:bg-action-hover focus:outline-none focus:ring-2 focus:ring-focus disabled:opacity-50"
+            class="w-full py-2 px-4 bg-action text-action-ink text-sm font-semibold rounded-md hover:bg-action-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-50"
           >
             {{ loading ? 'Signing in...' : 'Sign in' }}
           </button>

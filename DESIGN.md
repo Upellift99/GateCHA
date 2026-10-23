@@ -135,7 +135,7 @@ components:
   button-header-cta:
     backgroundColor: "{colors.signage-navy}"
     textColor: "{colors.band-ink}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.md}"
     padding: "0 16px"
     height: "40px"
   button-secondary:
@@ -268,7 +268,7 @@ A cool navy-and-porcelain signage palette, with eight metro inks for line identi
 - **Title** (800, 17px): panel and dialog headings. A 13px medium muted aside may follow on the same line ("Today (UTC)", "Line 5 selected").
 - **Body** (400, 14px): copy, table cells, form labels (500, ink-secondary).
 - **Caption** (400, 12px): domains under a key name, hints under KPI figures, panel subtitles.
-- **Label** (700, 11px, 0.09em, uppercase): column headers on the board and labels above KPI figures. Scope tags beside a panel title use the same style at 0.08em inside a 3px hairline box.
+- **Label** (700, 11px, 0.09em, uppercase): column headers of every table (board, keys list, MCP tokens) and labels above KPI and calibration figures. Scope tags beside a panel title use the same style at 0.08em inside a 3px hairline box.
 - **Figure** (Overpass Mono 600, 32px, 40px, tabular): KPI numbers.
 - **Data** (Overpass Mono, 14px, tabular): counts in tables, key ids, the version; 11px for chart axes and country codes.
 
@@ -285,27 +285,27 @@ Panel headers take 12px vertical and 20px horizontal padding and are separated f
 
 ## Elevation & Depth
 
-The system is flat. Depth comes from tone (ground, panel, sunken) and 1px hairlines, never from drop shadows on cards or panels. The only structural non-flat devices are the line bullet's 1px inset ring and the native top-layer backdrop of the confirm dialog (`--color-backdrop`, with a light blur).
+The system is flat. Depth comes from tone (ground, panel, sunken) and 1px hairlines, never from drop shadows on cards or panels. The only structural non-flat devices are the line bullet's 1px inset ring and the native top-layer backdrop of the confirm dialog (`--color-backdrop`, with a light blur). The dialog itself is drawn with a `hairline-strong` border, not a shadow; tooltips are flat too.
 
 ### Named Rules
 **The Hairline Rule.** Structure is drawn with 1px rules: panel borders in `hairline`, row separators in `hairline-soft`, KPI strips as a grid with a 1px gap over the `hairline` fill. No shadow cards.
 
 ## Shapes
 
-Small, firm corners. Panels, inputs, buttons in forms and dialogs, and code blocks use 6px; band controls, the header "Create key" action and small tags use 4px; status chips and country code tags use 3px, like enamel signs. The only round forms are line bullets, the mark, the status dot (7px), the switch track and bar tracks. Closed lines are drawn as dashed strokes (3-3 on sparks, 4-4 on the chart) in `hairline-strong`.
+Small, firm corners. Panels, inputs, every button and code blocks use 6px; band controls and small tags use 4px; status chips and country code tags use 3px, like enamel signs. The only round forms are line bullets, the mark, the status dot (7px), the switch track and bar tracks. Closed lines are drawn as dashed strokes (3-3 on sparks, 4-4 on the chart) in `hairline-strong`.
 
 ## Components
 
 ### Buttons
-- **Shape:** 6px corners in forms and dialogs; 4px for the page-header action.
-- **Primary:** signage navy fill, white text, 8px 16px. The page-header "Create key" is bold, at least 40px tall, with a 14px plus glyph drawn as an SVG.
-- **Hover / Focus:** hover deepens the fill; focus shows a 2px route-blue ring (offset 2px on the header action). Disabled drops to 50% opacity.
+- **Shape:** 6px corners and 14px semibold text on every button.
+- **Primary:** signage navy fill, white text, 8px 16px. The page-header "Create key" is at least 40px tall, with a 14px plus glyph drawn as an SVG.
+- **Hover / Focus:** hover deepens the fill; focus-visible shows a 2px route-blue ring (offset 2px on the header action). Disabled drops to 50% opacity.
 - **Secondary:** panel fill, `hairline-strong` border, ink text, hover to sunken.
 - **Danger:** failure red fill, white text, deeper red on hover. Destructive actions always pass through the confirm dialog.
 
 ### Chips
 - **Status chip:** 12px bold, 3px corners, 2px 8px. Normal service is green text with a 7px dot and no fill; Disturbed is a solid amber fill with dark ink, a dot, and the failure count in a white mono inset ("Disturbed — 31 failed today"); No traffic today is muted text; Closed is a grey fill. The words are always present.
-- **Compact:** in the keys table the disturbed chip keeps the count but drops "failed today".
+- **Compact:** in the keys table the disturbed chip keeps the count but drops "failed today". Disturbed rows sit on `warn-soft` in the keys table as on the board.
 
 ### Cards / Containers
 - **Corner Style:** 6px.

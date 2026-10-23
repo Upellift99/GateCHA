@@ -926,7 +926,7 @@
       "refersTo": "button-primary",
       "description": "Navy action for form submits and dialog confirms.",
       "html": "<button class=\"ds-btn-primary\">Create key</button>",
-      "css": ".ds-btn-primary{padding:8px 16px;border:none;border-radius:6px;background:var(--color-action,#10285A);color:var(--color-action-ink,#fff);font:500 14px/20px Overpass,system-ui,sans-serif;transition:background .15s;cursor:pointer}.ds-btn-primary:hover{background:var(--color-action-hover,#0B1E45)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}.ds-btn-primary:disabled{opacity:.5}"
+      "css": ".ds-btn-primary{padding:8px 16px;border:none;border-radius:6px;background:var(--color-action,#10285A);color:var(--color-action-ink,#fff);font:600 14px/20px Overpass,system-ui,sans-serif;transition:background .15s;cursor:pointer}.ds-btn-primary:hover{background:var(--color-action-hover,#0B1E45)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}.ds-btn-primary:disabled{opacity:.5}"
     },
     {
       "name": "Secondary Button",

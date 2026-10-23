@@ -88,15 +88,15 @@ function barClass(loValue: number, threshold: number): string {
 
       <div class="grid grid-cols-3 lg:grid-cols-5 gap-4 mb-5">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Samples</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Samples</p>
           <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ cal.samples.toLocaleString('en-US') }}</p>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Bot-suspected</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Bot-suspected</p>
           <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ suspectedPct }}<span class="text-base text-muted">%</span></p>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">No motion</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">No motion</p>
           <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ Math.round(cal.no_motion_pct) }}<span class="text-base text-muted">%</span></p>
         </div>
         <!-- Both of these were already computed, returned by the endpoint and
@@ -106,11 +106,11 @@ function barClass(loValue: number, threshold: number): string {
              nothing is automation, one that lasted a few hundred milliseconds
              is a collector that started too late to observe anything. -->
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Avg window</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Avg window</p>
           <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ avgWindow }}</p>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wide text-muted">Avg pointer</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Avg pointer</p>
           <p class="mt-1 font-mono text-2xl font-semibold text-ink tabular-nums">{{ avgPointer }}</p>
         </div>
       </div>

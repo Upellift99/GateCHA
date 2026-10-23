@@ -59,7 +59,7 @@ function onBackdropClick(event: MouseEvent) {
   <dialog
     ref="dialog"
     :aria-labelledby="titleId"
-    class="m-auto w-[calc(100%-2rem)] max-w-md rounded-md bg-panel text-ink shadow-xl
+    class="m-auto w-[calc(100%-2rem)] max-w-md rounded-md border border-rule-strong bg-panel text-ink
            backdrop:bg-backdrop backdrop:backdrop-blur-sm"
     @cancel="onCancel"
     @click="onBackdropClick"
@@ -93,7 +93,7 @@ function onBackdropClick(event: MouseEvent) {
         <button
           ref="cancelButton"
           type="button"
-          class="rounded-md bg-sunken px-4 py-2 text-sm font-medium text-ink-2 hover:bg-sunken focus:outline-none focus:ring-2 focus:ring-focus"
+          class="rounded-md border border-rule-strong bg-panel px-4 py-2 text-sm font-semibold text-ink hover:bg-sunken focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
           @click="emit('cancel')"
         >
           {{ cancelLabel }}
@@ -103,10 +103,10 @@ function onBackdropClick(event: MouseEvent) {
           :disabled="busy"
           :class="
             tone === 'danger'
-              ? 'bg-danger hover:bg-danger-hover focus:ring-fail'
-              : 'bg-action hover:bg-action-hover focus:ring-focus'
+              ? 'bg-danger hover:bg-danger-hover focus-visible:ring-fail'
+              : 'bg-action hover:bg-action-hover focus-visible:ring-focus'
           "
-          class="rounded-md px-4 py-2 text-sm font-medium text-action-ink focus:outline-none focus:ring-2 disabled:opacity-50"
+          class="rounded-md px-4 py-2 text-sm font-semibold text-action-ink focus:outline-none focus-visible:ring-2 disabled:opacity-50"
           @click="emit('confirm')"
         >
           {{ confirmLabel }}

@@ -113,7 +113,7 @@ async function toggleCaptcha(checked: boolean) {
           <button
             type="submit"
             :disabled="loading"
-            class="py-2 px-4 bg-action text-action-ink font-medium rounded-md hover:bg-action-hover disabled:opacity-50"
+            class="py-2 px-4 bg-action text-action-ink text-sm font-semibold rounded-md hover:bg-action-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-50"
           >
             {{ loading ? 'Saving...' : 'Change Password' }}
           </button>

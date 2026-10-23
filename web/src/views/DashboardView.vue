@@ -70,7 +70,7 @@ onMounted(() => {
       </div>
       <router-link
         to="/keys/new"
-        class="inline-flex min-h-10 items-center gap-2 self-start rounded px-4 text-sm font-bold bg-action text-action-ink hover:bg-action-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 sm:self-auto"
+        class="inline-flex min-h-10 items-center gap-2 self-start rounded-md px-4 text-sm font-semibold bg-action text-action-ink hover:bg-action-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 sm:self-auto"
       >
         <svg class="h-3.5 w-3.5" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" /></svg>
         Create key

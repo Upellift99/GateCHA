@@ -130,7 +130,7 @@ function formatDate(value: string | null): string {
       <button
         type="submit"
         :disabled="creating || !name.trim()"
-        class="py-2 px-4 bg-action text-action-ink text-sm font-medium rounded-md hover:bg-action-hover disabled:opacity-50"
+        class="py-2 px-4 bg-action text-action-ink text-sm font-semibold rounded-md hover:bg-action-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:opacity-50"
       >
         {{ creating ? 'Creating...' : 'Create token' }}
       </button>
@@ -143,7 +143,7 @@ function formatDate(value: string | null): string {
 
     <table v-else-if="store.tokens.length" class="min-w-full divide-y divide-rule text-sm">
       <thead>
-        <tr class="text-left text-xs font-medium text-muted uppercase">
+        <tr class="text-left text-[11px] font-bold uppercase tracking-[0.09em] text-muted">
           <th class="py-2">Name</th>
           <th class="py-2">Token</th>
           <th class="py-2">Access</th>

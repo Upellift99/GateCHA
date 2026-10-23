@@ -13,7 +13,7 @@ import {
   Filler,
 } from 'chart.js'
 import type { DailyStat } from '../stores/stats'
-import { lineVars } from '../lib/lines'
+import { lastDays, lineVars } from '../lib/lines'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
@@ -59,14 +59,6 @@ const colours = computed(() => {
 // a line straight across quiet days, and a single day collapses the chart, so
 // the window is filled with zero days. Dates are UTC, like the stored stats.
 const DAYS = 30
-
-function lastDays(n: number): string[] {
-  const today = new Date()
-  return Array.from({ length: n }, (_, i) => {
-    const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - (n - 1 - i)))
-    return d.toISOString().slice(0, 10)
-  })
-}
 
 const chartData = computed(() => {
   const byDate = new Map(props.data.map((d) => [d.date, d]))
