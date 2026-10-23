@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.3](https://github.com/Upellift99/GateCHA/compare/v0.9.2...v0.9.3) (2026-10-23)
+
+
+### Bug Fixes
+
+* **dashboard:** WCAG AA, phone layouts and a clearer new-key screen ([#221](https://github.com/Upellift99/GateCHA/issues/221)) ([a17559b](https://github.com/Upellift99/GateCHA/commit/a17559bde3095254dd466d5b79a25910e74308c6))
+
 ## [0.9.2](https://github.com/Upellift99/GateCHA/compare/v0.9.1...v0.9.2) (2026-10-23)
 
 
