@@ -371,6 +371,31 @@ func (h *AdminHandler) KeysStatsSummary(w http.ResponseWriter, r *http.Request) 
 	writeJSON(w, http.StatusOK, map[string]interface{}{"keys": result})
 }
 
+// maxKeysDailyDays bounds GET /stats/keys-daily: it returns one row per key and
+// day, so an unbounded window would grow with every key ever created.
+const maxKeysDailyDays = 90
+
+// GET /api/admin/stats/keys-daily?days=7
+func (h *AdminHandler) KeysDailyStats(w http.ResponseWriter, r *http.Request) {
+	days := 7
+	if d := r.URL.Query().Get("days"); d != "" {
+		if parsed, err := strconv.Atoi(d); err == nil && parsed > 0 {
+			days = min(parsed, maxKeysDailyDays)
+		}
+	}
+
+	stats, err := models.GetAllKeysDailyStats(h.DB, days)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to fetch daily stats"})
+		return
+	}
+	if stats == nil {
+		stats = []models.DailyStat{}
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{"days": days, "stats": stats})
+}
+
 // GET /api/admin/stats/overview
 func (h *AdminHandler) StatsOverview(w http.ResponseWriter, r *http.Request) {
 	days := 30
