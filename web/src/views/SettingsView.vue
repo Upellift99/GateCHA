@@ -74,7 +74,7 @@ async function toggleCaptcha(checked: boolean) {
         >
           <h2 class="text-lg font-medium text-slate-900">Change Password</h2>
 
-          <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
+          <div v-if="error" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
           <div v-if="success" class="bg-green-50 text-green-700 px-4 py-3 rounded text-sm">{{ success }}</div>
 
           <div>
@@ -84,7 +84,7 @@ async function toggleCaptcha(checked: boolean) {
               v-model="currentPassword"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
             />
           </div>
 
@@ -95,7 +95,7 @@ async function toggleCaptcha(checked: boolean) {
               v-model="newPassword"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
             />
           </div>
 
@@ -106,14 +106,14 @@ async function toggleCaptcha(checked: boolean) {
               v-model="confirmPassword"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
             />
           </div>
 
           <button
             type="submit"
             :disabled="loading"
-            class="py-2 px-4 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 disabled:opacity-50"
+            class="py-2 px-4 bg-brand-700 text-white font-medium rounded-md hover:bg-brand-800 disabled:opacity-50"
           >
             {{ loading ? 'Saving...' : 'Change Password' }}
           </button>
@@ -122,7 +122,7 @@ async function toggleCaptcha(checked: boolean) {
         <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
           <h2 class="text-lg font-medium text-slate-900">Security</h2>
 
-          <div v-if="settingsError" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
+          <div v-if="settingsError" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
             {{ settingsError }}
           </div>
 

@@ -23,7 +23,7 @@ function logout() {
       <div class="flex justify-between h-16">
         <div class="flex items-center gap-8">
           <router-link to="/" class="flex items-center gap-2" aria-label="GateCHA home">
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 shadow-sm">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-700 shadow-sm">
               <svg viewBox="0 0 32 32" fill="none" class="h-5 w-5" aria-hidden="true">
                 <path
                   d="M16 4L6 9v7c0 7 4.5 11.5 10 14 5.5-2.5 10-7 10-14V9L16 4z"
@@ -43,7 +43,7 @@ function logout() {
               </svg>
             </span>
             <span class="text-xl font-bold tracking-tight">
-              <span class="text-slate-900">Gate</span><span class="text-brand-600">CHA</span>
+              <span class="text-slate-900">Gate</span><span class="text-brand-700">CHA</span>
             </span>
           </router-link>
           <div class="hidden sm:flex gap-1">

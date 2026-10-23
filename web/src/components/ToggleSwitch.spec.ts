@@ -72,7 +72,7 @@ describe('ToggleSwitch', () => {
   it('colours the track from the bound value', () => {
     expect(mountSwitch().get('#demoToggle ~ svg rect').classes()).toContain('fill-slate-200')
     expect(mountSwitch({ modelValue: true }).get('#demoToggle ~ svg rect').classes()).toContain(
-      'fill-teal-600',
+      'fill-brand-600',
     )
   })
 

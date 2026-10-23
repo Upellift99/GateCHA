@@ -26,6 +26,16 @@
   --color-brand-900: #134e4a;
 }
 
+/* Contrast floor (WCAG AA 4.5:1 on white): text and solid buttons use
+   brand-700 and up, secondary text slate-500 and up. brand-500/600 are for
+   focus rings, fills and other non-text marks (3:1). */
+
+/* Tailwind's default placeholder is the text color at 50% (~3.4:1). */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-slate-500);
+}
+
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

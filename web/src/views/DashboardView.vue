@@ -74,7 +74,7 @@ onMounted(() => {
           <h2 class="text-lg font-semibold text-slate-900">Human Interaction Signature</h2>
           <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200">all keys</span>
         </div>
-        <p class="text-sm text-slate-500 mb-4">
+        <p class="max-w-prose text-sm text-slate-500 mb-4">
           Observes interaction behavior to estimate automation probability. Counted here for every
           scored request across every key, whether or not that key acts on the score. Blocking is
           off by default and switched on per key, on the key's own settings page, once its
@@ -83,7 +83,7 @@ onMounted(() => {
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatsSummaryCard label="HIS Observations" :value="statsStore.overview.total_his_observations" color="blue" />
           <StatsSummaryCard label="Bot Suspected" :value="statsStore.overview.total_his_bot_suspected" color="amber" />
-          <StatsSummaryCard label="Bot Suspected" :value="hisSuspectedPct" suffix="%" color="red" hint="share of observed samples" />
+          <StatsSummaryCard label="Suspected Share" :value="hisSuspectedPct" suffix="%" color="red" hint="of observed samples" />
         </div>
       </div>
 
@@ -92,12 +92,12 @@ onMounted(() => {
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
           <h2 class="text-lg font-semibold text-slate-900 mb-4">Last 30 Days</h2>
           <StatsChart v-if="statsStore.overview.daily?.length" :data="statsStore.overview.daily" />
-          <p v-else class="text-slate-400 text-center py-12">No data yet</p>
+          <p v-else class="text-slate-500 text-center py-12">No data yet</p>
         </div>
         <CountryTraffic :countries="statsStore.overview.countries ?? []" />
       </div>
     </div>
 
-    <div v-else class="text-center py-12 text-slate-400">Loading…</div>
+    <div v-else class="text-center py-12 text-slate-500">Loading…</div>
   </div>
 </template>

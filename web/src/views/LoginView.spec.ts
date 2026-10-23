@@ -95,6 +95,19 @@ describe('LoginView', () => {
     expect(wrapper.text()).toContain('Invalid credentials')
   })
 
+  it('announces the login error to assistive technology', async () => {
+    mockApi.post.mockRejectedValue(new Error('unauthorized'))
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.find('#username').setValue('admin')
+    await wrapper.find('#password').setValue('wrong')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.get('[role="alert"]').text()).toContain('Invalid credentials')
+  })
+
   it('shows captcha widget when required', async () => {
     mockAxios.default.get.mockResolvedValue({
       data: { captcha_required: true, challenge_url: '/api/v1/challenge?apiKey=gk_test' },

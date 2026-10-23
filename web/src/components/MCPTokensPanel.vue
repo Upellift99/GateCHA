@@ -81,7 +81,7 @@ function formatDate(value: string | null): string {
   <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6 space-y-4">
     <h2 class="text-lg font-medium text-slate-900">MCP Access</h2>
 
-    <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
+    <div v-if="error" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">{{ error }}</div>
 
     <!-- One label around the whole row: the checkbox is sr-only, so the pill
          beside it is the only thing a user can click and it has to sit inside
@@ -120,17 +120,17 @@ function formatDate(value: string | null): string {
           v-model="name"
           type="text"
           placeholder="Who is this token for?"
-          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+          class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
         />
       </div>
       <label class="flex items-center gap-2 text-sm text-slate-700 pb-2">
-        <input v-model="readOnly" type="checkbox" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500" />
+        <input v-model="readOnly" type="checkbox" class="h-5 w-5 rounded border-slate-300 text-brand-700 focus:ring-brand-600" />
         Read only
       </label>
       <button
         type="submit"
         :disabled="creating || !name.trim()"
-        class="py-2 px-4 bg-teal-600 text-white text-sm font-medium rounded-md hover:bg-teal-700 disabled:opacity-50"
+        class="py-2 px-4 bg-brand-700 text-white text-sm font-medium rounded-md hover:bg-brand-800 disabled:opacity-50"
       >
         {{ creating ? 'Creating...' : 'Create token' }}
       </button>
@@ -154,7 +154,7 @@ function formatDate(value: string | null): string {
       <tbody class="divide-y divide-slate-200">
         <tr v-for="token in store.tokens" :key="token.id">
           <td class="py-2 font-medium text-slate-900">{{ token.name }}</td>
-          <td class="py-2 font-mono text-xs text-slate-400">{{ token.display }}…</td>
+          <td class="py-2 font-mono text-xs text-slate-500">{{ token.display }}…</td>
           <td class="py-2">
             <span
               :class="token.read_only ? 'bg-slate-100 text-slate-700' : 'bg-amber-100 text-amber-800'"

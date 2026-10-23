@@ -27,22 +27,22 @@ watch(
 <template>
   <footer class="border-t border-slate-200 bg-white">
     <div
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-400"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-500"
     >
       <p>
         <a
           href="https://gatecha.org"
           target="_blank"
           rel="noopener noreferrer"
-          class="font-semibold text-slate-500 hover:text-brand-600 transition-colors"
-          >Gate<span class="text-brand-600">CHA</span></a
+          class="inline-flex min-h-6 items-center font-semibold text-slate-500 hover:text-brand-700 transition-colors"
+          >Gate<span class="text-brand-700">CHA</span></a
         >
         <a
           v-if="showVersion && isAuthenticated && version"
           :href="RELEASES_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="ml-2 tabular-nums hover:text-brand-600 transition-colors"
+          class="ml-2 inline-flex min-h-6 items-center tabular-nums hover:text-brand-700 transition-colors"
           :title="`View releases on GitHub (current: ${version})`"
           >{{ version }}</a
         >
@@ -59,7 +59,7 @@ watch(
           href="https://gatecha.org/docs"
           target="_blank"
           rel="noopener noreferrer"
-          class="hover:text-brand-600 transition-colors"
+          class="inline-flex min-h-6 items-center hover:text-brand-700 transition-colors"
         >
           Docs
         </a>
@@ -67,7 +67,7 @@ watch(
           href="https://gatecha.org"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-1 hover:text-brand-600 transition-colors"
+          class="inline-flex min-h-6 items-center gap-1 hover:text-brand-700 transition-colors"
         >
           gatecha.org
           <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

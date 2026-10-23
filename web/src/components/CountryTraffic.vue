@@ -50,7 +50,7 @@ function failPct(c: CountryStat): number {
   <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
     <div class="mb-4">
       <h2 class="text-lg font-semibold text-slate-900">{{ title }}</h2>
-      <p class="text-xs text-slate-400 mt-0.5">privacy-first · country only, no IP stored</p>
+      <p class="text-xs text-slate-500 mt-0.5">privacy-first · country only, no IP stored</p>
     </div>
 
     <ul v-if="rows.length" class="space-y-3">
@@ -78,13 +78,13 @@ function failPct(c: CountryStat): number {
         </div>
         <span
           class="text-xs tabular-nums w-12 text-right"
-          :class="failPct(c) >= 50 ? 'text-red-600' : 'text-slate-400'"
+          :class="failPct(c) >= 50 ? 'text-red-600' : 'text-slate-500'"
           :title="'failure rate'"
           >{{ failPct(c) }}%</span
         >
       </li>
     </ul>
 
-    <p v-else class="text-slate-400 text-center py-8 text-sm">No verifications recorded yet</p>
+    <p v-else class="text-slate-500 text-center py-8 text-sm">No verifications recorded yet</p>
   </div>
 </template>

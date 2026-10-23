@@ -82,7 +82,7 @@ async function handleLogin() {
         <p class="text-sm text-center text-slate-500 mb-4">Sign in to your dashboard</p>
 
         <form @submit.prevent="handleLogin" class="space-y-3">
-          <div v-if="error" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
+          <div v-if="error" role="alert" class="bg-red-50 text-red-700 px-4 py-3 rounded text-sm">
             {{ error }}
           </div>
 
@@ -93,7 +93,7 @@ async function handleLogin() {
               v-model="username"
               type="text"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
             />
           </div>
 
@@ -104,7 +104,7 @@ async function handleLogin() {
               v-model="password"
               type="password"
               required
-              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              class="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
             />
           </div>
 
@@ -119,7 +119,7 @@ async function handleLogin() {
           <button
             type="submit"
             :disabled="loading || !canSubmit"
-            class="w-full py-2 px-4 bg-teal-600 text-white font-medium rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
+            class="w-full py-2 px-4 bg-brand-700 text-white font-medium rounded-md hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-50"
           >
             {{ loading ? 'Signing in...' : 'Sign in' }}
           </button>

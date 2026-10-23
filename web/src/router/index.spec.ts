@@ -60,3 +60,20 @@ describe('router guard', () => {
     expect(router.currentRoute.value.name).toBe('login')
   })
 })
+
+describe('page titles', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('names the current page in the document title', async () => {
+    const { default: router } = await import('./index')
+    await router.push('/login')
+    await router.isReady()
+    expect(document.title).toBe('Sign in · GateCHA')
+
+    localStorage.setItem('gatecha_token', 'test-token')
+    await router.push('/settings')
+    expect(document.title).toBe('Settings · GateCHA')
+  })
+})

@@ -32,6 +32,11 @@ function formatLastUsed(keyId: number): string {
   return new Date(date + 'T00:00:00Z').toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
+function ariaSort(column: SortColumn): 'ascending' | 'descending' | 'none' {
+  if (sortColumn.value !== column) return 'none'
+  return sortDirection.value === 'asc' ? 'ascending' : 'descending'
+}
+
 function toggleSort(column: SortColumn) {
   if (sortColumn.value === column) {
     sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
@@ -117,7 +122,7 @@ onMounted(() => {
       <h1 class="text-2xl font-bold text-slate-900">API Keys</h1>
       <router-link
         to="/keys/new"
-        class="px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-md hover:bg-teal-700"
+        class="px-4 py-2 bg-brand-700 text-white text-sm font-medium rounded-md hover:bg-brand-800"
       >
         Create Key
       </router-link>
@@ -127,7 +132,7 @@ onMounted(() => {
 
     <div v-else-if="!store.keys.length" class="rounded-xl border border-slate-200 bg-white shadow-sm p-12 text-center">
       <p class="text-slate-500 mb-4">No API keys yet</p>
-      <router-link to="/keys/new" class="text-teal-600 hover:text-teal-800 font-medium">
+      <router-link to="/keys/new" class="text-brand-700 hover:text-brand-800 font-medium">
         Create your first key
       </router-link>
     </div>
@@ -141,13 +146,13 @@ onMounted(() => {
             v-model="search"
             type="search"
             placeholder="Search by name, domain or key ID"
-            class="w-full rounded-md border border-slate-300 bg-white py-2 pl-3 pr-9 text-sm text-slate-900 placeholder-slate-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            class="w-full rounded-md border border-slate-300 bg-white py-2 pl-3 pr-9 text-sm text-slate-900 placeholder-slate-500 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
           />
           <button
             v-if="search"
             type="button"
             aria-label="Clear search"
-            class="absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 hover:text-slate-600"
+            class="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-slate-600"
             @click="search = ''"
           >
             &#x2715;
@@ -160,108 +165,134 @@ onMounted(() => {
         class="rounded-xl border border-slate-200 bg-white shadow-sm p-12 text-center"
       >
         <p class="text-slate-500">No keys match "{{ search.trim() }}"</p>
-        <button type="button" class="mt-4 text-teal-600 hover:text-teal-800 font-medium" @click="search = ''">
+        <button type="button" class="mt-4 text-brand-700 hover:text-brand-800 font-medium" @click="search = ''">
           Clear search
         </button>
       </div>
 
       <div v-else class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-slate-200">
-          <thead class="bg-slate-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
-                @click="toggleSort('name')"
-              >
-                Name
-                <span v-if="sortColumn === 'name'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
-                @click="toggleSort('domain')"
-              >
-                Domain
-                <span v-if="sortColumn === 'domain'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
-                @click="toggleSort('enabled')"
-              >
-                Status
-                <span v-if="sortColumn === 'enabled'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
-                @click="toggleSort('challenges')"
-              >
-                Challenges
-                <span v-if="sortColumn === 'challenges'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
-                @click="toggleSort('verified')"
-              >
-                Verified
-                <span v-if="sortColumn === 'verified'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
-                @click="toggleSort('failed')"
-              >
-                Failed
-                <span v-if="sortColumn === 'failed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase cursor-pointer hover:text-slate-700 select-none"
-                @click="toggleSort('lastUsed')"
-              >
-                Last Used
-                <span v-if="sortColumn === 'lastUsed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200">
-            <tr v-for="key in pagedKeys" :key="key.id" class="hover:bg-slate-50">
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-slate-900">{{ key.name || '-' }}</div>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs text-slate-400 font-mono">{{ key.key_id }}</span>
-                  <CopyButton :value="key.key_id" :label="`Copy ${key.key_id}`" />
-                </div>
-              </td>
-              <td class="px-6 py-4 text-sm text-slate-500">{{ key.domain || '*' }}</td>
-              <td class="px-6 py-4">
-                <span
-                  :class="key.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+        <!-- overflow-hidden on the card used to clip the right-hand columns,
+             Actions included, on phones. Secondary columns now drop out below
+             sm/md, and whatever is left can scroll. -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th
+                  class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  :aria-sort="ariaSort('name')"
+                  @click="toggleSort('name')"
                 >
-                  {{ key.enabled ? 'Active' : 'Disabled' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 text-sm text-right font-medium text-teal-600">
-                {{ getKeyStat(key.id, 'challenges_issued').toLocaleString() }}
-              </td>
-              <td class="px-6 py-4 text-sm text-right font-medium text-green-600">
-                {{ getKeyStat(key.id, 'verifications_ok').toLocaleString() }}
-              </td>
-              <td class="px-6 py-4 text-sm text-right font-medium text-red-600">
-                {{ getKeyStat(key.id, 'verifications_fail').toLocaleString() }}
-              </td>
-              <td class="px-6 py-4 text-sm text-right text-slate-500">
-                {{ formatLastUsed(key.id) }}
-              </td>
-              <td class="px-6 py-4 text-right space-x-3">
-                <router-link :to="`/keys/${key.id}`" class="text-teal-600 hover:text-teal-800 text-sm">
-                  View
-                </router-link>
-                <router-link :to="`/keys/${key.id}/edit`" class="text-slate-600 hover:text-slate-800 text-sm">
-                  Edit
-                </router-link>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <button type="button" class="inline-flex min-h-6 items-center uppercase cursor-pointer hover:text-slate-700">
+                    Name
+                    <span v-if="sortColumn === 'name'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+                  </button>
+                </th>
+                <th
+                  class="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  :aria-sort="ariaSort('domain')"
+                  @click="toggleSort('domain')"
+                >
+                  <button type="button" class="inline-flex min-h-6 items-center uppercase cursor-pointer hover:text-slate-700">
+                    Domain
+                    <span v-if="sortColumn === 'domain'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+                  </button>
+                </th>
+                <th
+                  class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  :aria-sort="ariaSort('enabled')"
+                  @click="toggleSort('enabled')"
+                >
+                  <button type="button" class="inline-flex min-h-6 items-center uppercase cursor-pointer hover:text-slate-700">
+                    Status
+                    <span v-if="sortColumn === 'enabled'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+                  </button>
+                </th>
+                <th
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  :aria-sort="ariaSort('challenges')"
+                  @click="toggleSort('challenges')"
+                >
+                  <button type="button" class="inline-flex min-h-6 items-center uppercase cursor-pointer hover:text-slate-700">
+                    Challenges
+                    <span v-if="sortColumn === 'challenges'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+                  </button>
+                </th>
+                <th
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  :aria-sort="ariaSort('verified')"
+                  @click="toggleSort('verified')"
+                >
+                  <button type="button" class="inline-flex min-h-6 items-center uppercase cursor-pointer hover:text-slate-700">
+                    Verified
+                    <span v-if="sortColumn === 'verified'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+                  </button>
+                </th>
+                <th
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  :aria-sort="ariaSort('failed')"
+                  @click="toggleSort('failed')"
+                >
+                  <button type="button" class="inline-flex min-h-6 items-center uppercase cursor-pointer hover:text-slate-700">
+                    Failed
+                    <span v-if="sortColumn === 'failed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+                  </button>
+                </th>
+                <th
+                  class="hidden md:table-cell px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase hover:text-slate-700 select-none"
+                  :aria-sort="ariaSort('lastUsed')"
+                  @click="toggleSort('lastUsed')"
+                >
+                  <button type="button" class="inline-flex min-h-6 items-center uppercase cursor-pointer hover:text-slate-700">
+                    Last Used
+                    <span v-if="sortColumn === 'lastUsed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
+                  </button>
+                </th>
+                <th class="hidden sm:table-cell px-4 sm:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+              <tr v-for="key in pagedKeys" :key="key.id" class="hover:bg-slate-50">
+                <td class="px-4 sm:px-6 py-4">
+                  <router-link :to="`/keys/${key.id}`" class="inline-flex min-h-6 items-center text-sm font-medium text-slate-900 hover:text-brand-700">{{ key.name || '-' }}</router-link>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs text-slate-500 font-mono">{{ key.key_id }}</span>
+                    <CopyButton :value="key.key_id" :label="`Copy ${key.key_id}`" />
+                  </div>
+                </td>
+                <td class="hidden sm:table-cell px-4 sm:px-6 py-4 text-sm text-slate-500 break-words">{{ key.domain || '*' }}</td>
+                <td class="px-4 sm:px-6 py-4">
+                  <span
+                    :class="key.enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  >
+                    {{ key.enabled ? 'Active' : 'Disabled' }}
+                  </span>
+                </td>
+                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right font-medium text-brand-700">
+                  {{ getKeyStat(key.id, 'challenges_issued').toLocaleString() }}
+                </td>
+                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right font-medium text-green-700">
+                  {{ getKeyStat(key.id, 'verifications_ok').toLocaleString() }}
+                </td>
+                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right font-medium text-red-600">
+                  {{ getKeyStat(key.id, 'verifications_fail').toLocaleString() }}
+                </td>
+                <td class="hidden md:table-cell px-4 sm:px-6 py-4 text-sm text-right text-slate-500">
+                  {{ formatLastUsed(key.id) }}
+                </td>
+                <td class="hidden sm:table-cell px-4 sm:px-6 py-4 text-right whitespace-nowrap space-x-1">
+                  <router-link :to="`/keys/${key.id}`" class="inline-flex min-h-8 items-center px-2 text-brand-700 hover:text-brand-800 text-sm">
+                    View
+                  </router-link>
+                  <router-link :to="`/keys/${key.id}/edit`" class="inline-flex min-h-8 items-center px-2 text-slate-600 hover:text-slate-800 text-sm">
+                    Edit
+                  </router-link>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-6 py-3">
           <p class="text-sm text-slate-500" aria-live="polite">
@@ -275,7 +306,7 @@ onMounted(() => {
               <select
                 id="key-page-size"
                 v-model.number="pageSize"
-                class="rounded-md border border-slate-300 bg-white py-1 pl-2 pr-7 text-sm text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                class="rounded-md border border-slate-300 bg-white py-1 pl-2 pr-7 text-sm text-slate-700 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
               >
                 <option v-for="size in PAGE_SIZE_OPTIONS" :key="size" :value="size">{{ size }}</option>
               </select>

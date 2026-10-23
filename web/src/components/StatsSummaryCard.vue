@@ -11,12 +11,12 @@ withDefaults(
 )
 
 const accent: Record<string, string> = {
-  brand: 'bg-brand-50 text-brand-600',
+  brand: 'bg-brand-50 text-brand-700',
   blue: 'bg-blue-50 text-blue-600',
-  green: 'bg-green-50 text-green-600',
+  green: 'bg-green-50 text-green-700',
   red: 'bg-red-50 text-red-600',
   purple: 'bg-purple-50 text-purple-600',
-  amber: 'bg-amber-50 text-amber-600',
+  amber: 'bg-amber-50 text-amber-700',
 }
 </script>
 
@@ -36,8 +36,8 @@ const accent: Record<string, string> = {
       </span>
     </div>
     <p class="mt-3 text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
-      {{ value.toLocaleString() }}<span v-if="suffix" class="text-xl text-slate-400">{{ suffix }}</span>
+      {{ value.toLocaleString() }}<span v-if="suffix" class="text-xl text-slate-500">{{ suffix }}</span>
     </p>
-    <p v-if="hint" class="mt-1 text-xs text-slate-400">{{ hint }}</p>
+    <p v-if="hint" class="mt-1 text-xs text-slate-500">{{ hint }}</p>
   </div>
 </template>

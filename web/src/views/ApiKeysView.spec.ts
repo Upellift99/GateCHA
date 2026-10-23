@@ -65,6 +65,19 @@ describe('ApiKeysView', () => {
     expect(wrapper.text()).toContain('No API keys yet')
   })
 
+  it('exposes sorting to keyboard and assistive technology', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+    const [nameHeader, domainHeader] = wrapper.findAll('th')
+    expect(nameHeader.find('button').exists()).toBe(true)
+    expect(nameHeader.attributes('aria-sort')).toBe('ascending')
+    expect(domainHeader.attributes('aria-sort')).toBe('none')
+
+    await nameHeader.find('button').trigger('click')
+    await nextTick()
+    expect(wrapper.findAll('th')[0].attributes('aria-sort')).toBe('descending')
+  })
+
   it('renders table when keys exist', async () => {
     const wrapper = mountView()
     await flushPromises()

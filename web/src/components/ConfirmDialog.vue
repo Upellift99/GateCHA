@@ -67,7 +67,7 @@ function onBackdropClick(event: MouseEvent) {
     <div v-if="open" class="p-6">
       <div class="flex gap-4">
         <span
-          :class="tone === 'danger' ? 'bg-red-100 text-red-600' : 'bg-teal-100 text-teal-700'"
+          :class="tone === 'danger' ? 'bg-red-100 text-red-600' : 'bg-brand-100 text-brand-700'"
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
           aria-hidden="true"
         >
@@ -104,7 +104,7 @@ function onBackdropClick(event: MouseEvent) {
           :class="
             tone === 'danger'
               ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-              : 'bg-teal-600 hover:bg-teal-700 focus:ring-teal-500'
+              : 'bg-brand-700 hover:bg-brand-800 focus:ring-brand-600'
           "
           class="rounded-md px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 disabled:opacity-50"
           @click="emit('confirm')"

@@ -70,7 +70,7 @@ function barClass(loValue: number, threshold: number): string {
       <h2 class="text-lg font-semibold text-slate-900">HIS calibration</h2>
       <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">score distribution</span>
     </div>
-    <p v-if="loading" class="text-slate-400 text-center py-8 text-sm">Loading…</p>
+    <p v-if="loading" class="text-slate-500 text-center py-8 text-sm">Loading…</p>
 
     <p v-else-if="failed" class="text-slate-500 text-sm py-6">
       Could not load the calibration data. This says nothing about how many samples exist.
@@ -93,11 +93,11 @@ function barClass(loValue: number, threshold: number): string {
         </div>
         <div>
           <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Bot-suspected</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ suspectedPct }}<span class="text-base text-slate-400">%</span></p>
+          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ suspectedPct }}<span class="text-base text-slate-500">%</span></p>
         </div>
         <div>
           <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">No motion</p>
-          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ Math.round(cal.no_motion_pct) }}<span class="text-base text-slate-400">%</span></p>
+          <p class="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{{ Math.round(cal.no_motion_pct) }}<span class="text-base text-slate-500">%</span></p>
         </div>
         <!-- Both of these were already computed, returned by the endpoint and
              typed in the store, and then dropped on the floor by this panel.
@@ -123,7 +123,7 @@ function barClass(loValue: number, threshold: number): string {
           class="flex-1 flex flex-col justify-end h-full"
           :title="`[${b.lo.toFixed(1)}, ${b.hi.toFixed(1)}): ${b.count}`"
         >
-          <span class="text-[10px] text-center text-slate-400 tabular-nums">{{ b.count || '' }}</span>
+          <span class="text-[10px] text-center text-slate-500 tabular-nums">{{ b.count || '' }}</span>
           <div
             class="rounded-t"
             :class="barClass(b.lo, cal.threshold)"
@@ -138,7 +138,7 @@ function barClass(loValue: number, threshold: number): string {
            plain percentage of the axis; the bars carry a 4px gap, which puts
            the 0.8 mark inside the gap between bucket 7 and bucket 8 rather
            than on a bar, so no correction for it is needed. -->
-      <div class="relative mt-1 h-8 text-[10px] text-slate-400 tabular-nums">
+      <div class="relative mt-1 h-8 text-[10px] text-slate-500 tabular-nums">
         <span class="absolute left-0">0.0</span>
         <span class="absolute right-0">1.0</span>
         <!-- The arrow is centred on the threshold and the caption is stacked
@@ -146,7 +146,7 @@ function barClass(loValue: number, threshold: number): string {
              sit wherever its own width puts it. A glyph that points has to
              point at the right column. -->
         <span
-          class="absolute -translate-x-1/2 flex flex-col items-center leading-tight text-red-500"
+          class="absolute -translate-x-1/2 flex flex-col items-center leading-tight text-red-600"
           :style="{ left: cal.threshold * 100 + '%' }"
         >
           <span aria-hidden="true">▲</span>
@@ -184,7 +184,7 @@ function barClass(loValue: number, threshold: number): string {
           The browser console also reports it when the collector finds no form to attach to. Full
           integration steps are in
           <a
-            class="text-brand-600 hover:text-brand-700 underline"
+            class="text-brand-700 hover:text-brand-800 underline"
             href="https://github.com/Upellift99/GateCHA#4-optional-collect-interaction-signals-his"
             target="_blank"
             rel="noopener"

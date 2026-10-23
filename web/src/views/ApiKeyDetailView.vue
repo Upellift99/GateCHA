@@ -106,13 +106,15 @@ const hisTotals = computed(() => ({
 
 <template>
   <div v-if="key">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <router-link to="/keys" class="text-sm text-slate-500 hover:text-slate-700">&larr; Back to keys</router-link>
-        <h1 class="text-2xl font-bold text-slate-900 mt-1">{{ key.name || key.key_id }}</h1>
+    <!-- Stacks below sm: a long key name next to three buttons squeezed the
+         title to one word per line and pushed Delete off a 390px screen. -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div class="min-w-0">
+        <router-link to="/keys" class="inline-flex min-h-6 items-center text-sm text-slate-500 hover:text-slate-700">&larr; Back to keys</router-link>
+        <h1 class="text-2xl font-bold text-slate-900 mt-1 break-words">{{ key.name || key.key_id }}</h1>
       </div>
-      <div class="flex gap-2">
-        <button @click="toggleEnabled" :class="key.enabled ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'" class="px-4 py-2 text-white text-sm font-medium rounded-md">
+      <div class="flex flex-wrap gap-2 sm:shrink-0">
+        <button @click="toggleEnabled" :class="key.enabled ? 'bg-amber-700 hover:bg-amber-800' : 'bg-green-700 hover:bg-green-800'" class="px-4 py-2 text-white text-sm font-medium rounded-md">
           {{ key.enabled ? 'Disable' : 'Enable' }}
         </button>
         <router-link :to="`/keys/${key.id}/edit`" class="px-4 py-2 bg-slate-600 text-white text-sm font-medium rounded-md hover:bg-slate-700">
@@ -140,10 +142,10 @@ const hisTotals = computed(() => ({
           <dd class="mt-1 flex items-center gap-2">
             <code v-if="showSecret" class="text-sm bg-slate-100 px-2 py-1 rounded font-mono break-all">{{ key.hmac_secret }}</code>
             <code v-else class="text-sm bg-slate-100 px-2 py-1 rounded font-mono">••••••••••••••••</code>
-            <button @click="showSecret = !showSecret" class="text-xs text-teal-600 hover:text-teal-800">
+            <button @click="showSecret = !showSecret" class="inline-flex min-h-8 items-center px-2 text-xs text-brand-700 hover:text-brand-800">
               {{ showSecret ? 'Hide' : 'Show' }}
             </button>
-            <button @click="handleRotateSecret" class="text-xs text-orange-600 hover:text-orange-800">Rotate</button>
+            <button @click="handleRotateSecret" class="inline-flex min-h-8 items-center px-2 text-xs text-orange-700 hover:text-orange-800">Rotate</button>
           </dd>
         </div>
         <div class="md:col-span-2">
