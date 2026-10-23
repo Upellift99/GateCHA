@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.5](https://github.com/Upellift99/GateCHA/compare/v0.9.4...v0.9.5) (2026-10-23)
+
+
+### Bug Fixes
+
+* **dashboard:** unbreak the login captcha (altcha 3.4.0 -&gt; 3.4.1) ([#229](https://github.com/Upellift99/GateCHA/issues/229)) ([7df5a98](https://github.com/Upellift99/GateCHA/commit/7df5a988a161aab12dbdcac7388fc87507a68c99))
+
 ## [0.9.4](https://github.com/Upellift99/GateCHA/compare/v0.9.3...v0.9.4) (2026-10-23)
 
 
