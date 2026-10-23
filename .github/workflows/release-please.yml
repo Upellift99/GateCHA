@@ -8,6 +8,14 @@ permissions:
   contents: write
   pull-requests: write
 
+# Two merges a few seconds apart start two runs; the second did not see the
+# release PR the first had just opened, tried to create it again and failed
+# ("A pull request already exists"). Queue runs instead, never cancel one:
+# a cancelled run can leave a merged release untagged.
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
