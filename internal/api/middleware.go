@@ -173,7 +173,7 @@ func RequestLogMiddleware(logger *slog.Logger, logClientIP bool) func(http.Handl
 			}
 			attrs := []any{
 				"method", r.Method,
-				"path", r.URL.Path,
+				"path", logSafe(r.URL.Path),
 				"status", status,
 				"bytes", ww.BytesWritten(),
 				"duration", time.Since(start),
@@ -184,6 +184,13 @@ func RequestLogMiddleware(logger *slog.Logger, logClientIP bool) func(http.Handl
 			logger.Info("request", attrs...)
 		})
 	}
+}
+
+// logSafe strips CR and LF from a client-supplied value before it is logged.
+// slog's text handler already quotes such values, but a JSON or custom handler
+// may not, and a raw newline would let a request forge a log line.
+func logSafe(v string) string {
+	return strings.NewReplacer("\r", "", "\n", "").Replace(v)
 }
 
 // MaxBodyBytesMiddleware caps the size of request bodies to guard against

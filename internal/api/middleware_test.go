@@ -421,3 +421,17 @@ func TestRequestLog_DefaultsStatusTo200(t *testing.T) {
 		t.Errorf("a handler that writes nothing is a 200, got %q", buf.String())
 	}
 }
+
+func TestRequestLog_StripsNewlinesFromPath(t *testing.T) {
+	var buf bytes.Buffer
+	h := RequestLogMiddleware(slog.New(slog.NewTextHandler(&buf, nil)), false)(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	req := httptest.NewRequest("GET", "/x", nil)
+	req.URL.Path = "/x\nlevel=ERROR msg=forged"
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	if lines := strings.Count(strings.TrimRight(buf.String(), "\n"), "\n"); lines != 0 {
+		t.Fatalf("expected one log line, got %d extra in %q", lines, buf.String())
+	}
+	if strings.Contains(buf.String(), "\\n") || !strings.Contains(buf.String(), "/xlevel=ERROR msg=forged") {
+		t.Errorf("expected the newline stripped from the path, got %q", buf.String())
+	}
+}
