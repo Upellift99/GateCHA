@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.4](https://github.com/Upellift99/GateCHA/compare/v0.9.3...v0.9.4) (2026-10-23)
+
+
+### Bug Fixes
+
+* **privacy:** stop logging visitor IPs in the request log ([#226](https://github.com/Upellift99/GateCHA/issues/226)) ([b5f41f0](https://github.com/Upellift99/GateCHA/commit/b5f41f0fed4445c0807065a1a710b10dcbe7801d))
+
 ## [0.9.3](https://github.com/Upellift99/GateCHA/compare/v0.9.2...v0.9.3) (2026-10-23)
 
 
