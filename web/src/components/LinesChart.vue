@@ -63,7 +63,8 @@ const summary = computed(() =>
         Challenges, {{ DAYS }} days
         <span v-if="active !== null" class="ml-2 text-[13px] font-medium text-muted">Line {{ active }} selected</span>
       </h2>
-      <div class="flex flex-wrap items-center gap-1" role="group" aria-label="Highlight a line">
+      <fieldset class="m-0 flex min-w-0 flex-wrap items-center gap-1 border-0 p-0">
+        <legend class="sr-only">Highlight a line</legend>
         <button
           v-for="s in series"
           :key="s.key.id"
@@ -78,7 +79,7 @@ const summary = computed(() =>
           <LineBullet :id="s.key.id" size="sm" />
           <span v-if="active === s.key.id" class="hidden max-w-40 truncate sm:inline">{{ s.key.name || s.key.key_id }}</span>
         </button>
-      </div>
+      </fieldset>
     </div>
 
     <div class="px-5 pt-4 pb-3">

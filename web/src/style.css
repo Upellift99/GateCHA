@@ -163,17 +163,14 @@ input[type='radio'] {
   accent-color: var(--color-action);
 }
 
-/* Browser surfaces follow the theme too. */
-html {
-  scrollbar-color: var(--color-rule-strong) var(--color-ground);
-}
-
 input,
 textarea {
   caret-color: var(--color-action);
 }
 
 html {
+  /* Browser surfaces follow the theme too. */
+  scrollbar-color: var(--color-rule-strong) var(--color-ground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--font-sans);

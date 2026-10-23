@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -24,12 +24,13 @@ const props = defineProps<{
 }>()
 
 // Chart.js paints on canvas and cannot read CSS variables, so resolve the
-// theme tokens at render time and redraw when the system theme flips.
-const themeTick = ref(0)
+// theme tokens here and read them again when the system theme flips.
 let media: MediaQueryList | undefined
-const onThemeChange = () => themeTick.value++
+const onThemeChange = () => {
+  colours.value = readColours()
+}
 onMounted(() => {
-  media = window.matchMedia?.('(prefers-color-scheme: dark)')
+  media = globalThis.matchMedia?.('(prefers-color-scheme: dark)')
   media?.addEventListener('change', onThemeChange)
 })
 onBeforeUnmount(() => media?.removeEventListener('change', onThemeChange))
@@ -44,8 +45,7 @@ function resolve(cssValue: string, fallback: string): string {
   return m ? token(m[1]!, fallback) : cssValue
 }
 
-const colours = computed(() => {
-  void themeTick.value
+function readColours() {
   return {
     challenges: props.lineId ? resolve(lineVars(props.lineId).stroke, '#1F4FC1') : token('--color-link', '#1F4FC1'),
     ok: token('--color-ok', '#00754E'),
@@ -53,7 +53,10 @@ const colours = computed(() => {
     muted: token('--color-muted', '#5B6478'),
     rule: token('--color-rule-soft', '#EBEEF2'),
   }
-})
+}
+
+const colours = ref(readColours())
+watch(() => props.lineId, onThemeChange)
 
 // The API only returns days that had traffic. Plotting those rows as-is draws
 // a line straight across quiet days, and a single day collapses the chart, so
