@@ -34,6 +34,8 @@ make frontend     # Build Vue SPA + copy to internal/dashboard/dist
 make backend      # Build Go binary
 make build        # Both
 make dev          # Run Go backend in dev mode
+npm --prefix web run test:e2e   # Browser smoke test of the login captcha against a running
+                                # instance (GATECHA_URL, GATECHA_ADMIN_PASSWORD); CI job `e2e`
 ```
 
 ## Key Conventions

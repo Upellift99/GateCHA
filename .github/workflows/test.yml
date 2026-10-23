@@ -70,6 +70,66 @@ jobs:
           name: frontend-coverage
           path: web/coverage/lcov.info
 
+  # Real-browser smoke test of the dashboard login captcha against a running
+  # binary. Unit tests mock the ALTCHA widget, so a widget release that rejected
+  # every challenge (altcha 3.4.0) passed CI and locked admins out.
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27"
+          check-latest: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+
+      - name: Build frontend and binary
+        run: |
+          cd web
+          npm ci
+          npm run build
+          cd ..
+          cp -r web/dist internal/dashboard/dist
+          go build -o gatecha ./cmd/gatecha
+
+      - name: Start GateCHA
+        env:
+          GATECHA_ADMIN_PASSWORD: e2e-admin-password
+          GATECHA_DB_DSN: ${{ runner.temp }}/gatecha.db
+          GATECHA_LISTEN_ADDR: 127.0.0.1:8080
+        run: |
+          ./gatecha > "$RUNNER_TEMP/gatecha.log" 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/healthz && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/gatecha.log"; exit 1
+
+      - name: Install Chromium
+        run: cd web && npx playwright install --with-deps chromium
+
+      - name: Run browser tests
+        env:
+          GATECHA_URL: http://127.0.0.1:8080
+          GATECHA_ADMIN_PASSWORD: e2e-admin-password
+        run: cd web && npm run test:e2e
+
+      - name: Server log
+        if: failure()
+        run: cat "$RUNNER_TEMP/gatecha.log"
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: |
+            web/playwright-report
+            web/test-results
+
   lint:
     runs-on: ubuntu-latest
     steps:
