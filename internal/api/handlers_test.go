@@ -1056,6 +1056,56 @@ func TestKeyStats_WithDaysParam(t *testing.T) {
 	}
 }
 
+func TestKeysDailyStats(t *testing.T) {
+	router, db := setupTestRouter(t)
+	token := getAdminToken(t)
+
+	key, _ := models.CreateAPIKey(db, "Test", "", 0, 0, "")
+	models.IncrementChallengesIssued(db, key.ID)
+
+	for _, tc := range []struct {
+		query    string
+		wantDays float64
+	}{
+		{"", 7},
+		{"?days=30", 30},
+		{"?days=5000", 90},
+		{"?days=-1", 7},
+	} {
+		req := httptest.NewRequest("GET", "/api/admin/stats/keys-daily"+tc.query, nil)
+		req.Header.Set("Authorization", "Bearer "+token)
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("%q: expected 200, got %d", tc.query, w.Code)
+		}
+		var resp struct {
+			Days  float64            `json:"days"`
+			Stats []models.DailyStat `json:"stats"`
+		}
+		if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+			t.Fatalf("%q: decode: %v", tc.query, err)
+		}
+		if resp.Days != tc.wantDays {
+			t.Errorf("%q: expected days=%v, got %v", tc.query, tc.wantDays, resp.Days)
+		}
+		if len(resp.Stats) != 1 || resp.Stats[0].APIKeyID != key.ID || resp.Stats[0].ChallengesIssued != 1 {
+			t.Errorf("%q: unexpected stats %+v", tc.query, resp.Stats)
+		}
+	}
+}
+
+func TestKeysDailyStats_RequiresAuth(t *testing.T) {
+	router, _ := setupTestRouter(t)
+	req := httptest.NewRequest("GET", "/api/admin/stats/keys-daily", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusUnauthorized {
+		t.Errorf("expected 401, got %d", w.Code)
+	}
+}
+
 func TestLogin_WithCaptchaEnabled_ValidCaptcha(t *testing.T) {
 	router, db := setupTestRouter(t)
 

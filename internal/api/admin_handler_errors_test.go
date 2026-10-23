@@ -86,6 +86,14 @@ func TestKeysStatsSummary_DBError(t *testing.T) {
 	}
 }
 
+func TestKeysDailyStats_DBError(t *testing.T) {
+	router, db := setupTestRouter(t)
+	db.Migrator().DropTable(&models.DailyStat{})
+	if w := do(t, router, "GET", "/api/admin/stats/keys-daily", nil); w.Code != http.StatusInternalServerError {
+		t.Errorf("expected 500, got %d", w.Code)
+	}
+}
+
 func TestStatsOverview_DBError(t *testing.T) {
 	router, db := setupTestRouter(t)
 	db.Migrator().DropTable(&models.DailyStat{})

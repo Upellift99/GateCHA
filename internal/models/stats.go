@@ -161,6 +161,18 @@ func GetAllKeysStatsSummary(db *gorm.DB) (map[int64]KeyStatsSummary, error) {
 	return result, nil
 }
 
+// GetAllKeysDailyStats returns every key's daily rows for the last days days
+// in one query, ordered by key then date, so the dashboard can draw a series
+// per key without one request per key.
+func GetAllKeysDailyStats(db *gorm.DB, days int) ([]DailyStat, error) {
+	since := time.Now().UTC().AddDate(0, 0, -days).Format(dateFormatYMD)
+	var stats []DailyStat
+	err := db.Where("date >= ?", since).
+		Order("api_key_id ASC, date ASC").
+		Find(&stats).Error
+	return stats, err
+}
+
 func GetKeyStats(db *gorm.DB, apiKeyID int64, days int) ([]DailyStat, error) {
 	since := time.Now().UTC().AddDate(0, 0, -days).Format(dateFormatYMD)
 	var stats []DailyStat

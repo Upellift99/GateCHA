@@ -159,3 +159,29 @@ func TestGetKeyStats_Empty(t *testing.T) {
 		t.Errorf("expected empty stats, got %d", len(stats))
 	}
 }
+
+func TestGetAllKeysDailyStats(t *testing.T) {
+	db := testutil.SetupTestDB(t)
+	key1, _ := models.CreateAPIKey(db, "Key1", "", 0, 0, "")
+	key2, _ := models.CreateAPIKey(db, "Key2", "", 0, 0, "")
+
+	models.IncrementChallengesIssued(db, key2.ID)
+	models.IncrementChallengesIssued(db, key1.ID)
+	models.IncrementVerificationsFail(db, key1.ID)
+	// A row outside the window must not come back.
+	db.Create(&models.DailyStat{APIKeyID: key1.ID, Date: "2000-01-01", ChallengesIssued: 9})
+
+	stats, err := models.GetAllKeysDailyStats(db, 7)
+	if err != nil {
+		t.Fatalf("GetAllKeysDailyStats failed: %v", err)
+	}
+	if len(stats) != 2 {
+		t.Fatalf("expected 2 rows (one per key, today), got %d", len(stats))
+	}
+	if stats[0].APIKeyID != key1.ID || stats[1].APIKeyID != key2.ID {
+		t.Errorf("expected rows ordered by key, got %d then %d", stats[0].APIKeyID, stats[1].APIKeyID)
+	}
+	if stats[0].ChallengesIssued != 1 || stats[0].VerificationsFail != 1 {
+		t.Errorf("unexpected key1 counters: %+v", stats[0])
+	}
+}
