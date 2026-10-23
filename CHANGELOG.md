@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.0](https://github.com/Upellift99/GateCHA/compare/v0.9.5...v0.10.0) (2026-10-23)
+
+
+### Features
+
+* **dashboard:** a denser, calmer API key list ([#232](https://github.com/Upellift99/GateCHA/issues/232)) ([6de51d9](https://github.com/Upellift99/GateCHA/commit/6de51d9c0093322e032ec8d1f5530549764bed0b))
+* **dashboard:** redesign as a traffic status board ("Info trafic") ([#235](https://github.com/Upellift99/GateCHA/issues/235)) ([268f89d](https://github.com/Upellift99/GateCHA/commit/268f89d9ffd5bef66b29f1885477304fa8a0766e))
+
+
+### Bug Fixes
+
+* **dashboard:** clear the SonarQube findings on the redesign ([#238](https://github.com/Upellift99/GateCHA/issues/238)) ([eeb68f0](https://github.com/Upellift99/GateCHA/commit/eeb68f0ed9b0842660b9c34974a00357316736f9))
+* **dashboard:** make buttons, labels and dialogs follow one rule ([#236](https://github.com/Upellift99/GateCHA/issues/236)) ([5c591e1](https://github.com/Upellift99/GateCHA/commit/5c591e1bd73029e2f1736e148c41dcdd8720f3d1))
+
 ## [0.9.5](https://github.com/Upellift99/GateCHA/compare/v0.9.4...v0.9.5) (2026-10-23)
 
 
