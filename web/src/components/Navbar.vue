@@ -1,9 +1,18 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { version } = storeToRefs(authStore)
+
+// /version needs a token: calling it signed out answers 401, and the API client
+// then reloads /login, so the call is guarded. fetchVersion() is idempotent.
+onMounted(() => {
+  if (authStore.isAuthenticated) authStore.fetchVersion()
+})
 
 const links = [
   { to: '/', label: 'Dashboard' },
@@ -18,50 +27,30 @@ function logout() {
 </script>
 
 <template>
-  <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
+  <!-- The signage band: navy in both themes, the navigation lives on it. -->
+  <nav class="sticky top-0 z-40 bg-band text-band-ink border-b border-band-rule" aria-label="Main">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center gap-8">
-          <router-link to="/" class="flex items-center gap-2" aria-label="GateCHA home">
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-700 shadow-sm">
-              <svg viewBox="0 0 32 32" fill="none" class="h-5 w-5" aria-hidden="true">
-                <path
-                  d="M16 4L6 9v7c0 7 4.5 11.5 10 14 5.5-2.5 10-7 10-14V9L16 4z"
-                  fill="none"
-                  stroke="#fff"
-                  stroke-width="2.2"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M11 16l3.5 3.5L21 12"
-                  stroke="#fff"
-                  stroke-width="2.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  fill="none"
-                />
-              </svg>
-            </span>
-            <span class="text-xl font-bold tracking-tight">
-              <span class="text-slate-900">Gate</span><span class="text-brand-700">CHA</span>
-            </span>
+      <div class="flex h-14 items-stretch gap-6 sm:gap-10">
+        <router-link to="/" class="flex items-center gap-2.5 font-extrabold text-lg tracking-tight" aria-label="GateCHA home">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-band-ink text-band font-extrabold text-base leading-none" aria-hidden="true">G</span>
+          GateCHA
+        </router-link>
+        <div class="hidden sm:flex items-stretch gap-1">
+          <router-link
+            v-for="link in links"
+            :key="link.to"
+            :to="link.to"
+            class="flex items-center border-b-[3px] border-transparent px-4 pt-[3px] text-sm font-semibold text-band-muted transition-colors hover:text-band-ink"
+            active-class="!border-band-ink !text-band-ink"
+          >
+            {{ link.label }}
           </router-link>
-          <div class="hidden sm:flex gap-1">
-            <router-link
-              v-for="link in links"
-              :key="link.to"
-              :to="link.to"
-              class="rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
-              active-class="!bg-brand-50 !text-brand-700"
-            >
-              {{ link.label }}
-            </router-link>
-          </div>
         </div>
-        <div class="flex items-center">
+        <div class="ml-auto flex items-center gap-4">
+          <span v-if="version" class="hidden sm:inline font-mono text-xs text-band-muted">{{ version }}</span>
           <button
             @click="logout"
-            class="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+            class="inline-flex min-h-8 items-center gap-1.5 rounded border border-band-rule px-3 text-sm font-semibold text-band-ink transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-band-ink"
           >
             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path
@@ -80,14 +69,14 @@ function logout() {
         </div>
       </div>
 
-      <!-- Mobile nav -->
-      <div class="flex sm:hidden gap-1 pb-2 -mt-1">
+      <!-- Mobile nav: same tabs, second row of the band -->
+      <div class="flex sm:hidden items-stretch gap-1 -mt-1">
         <router-link
           v-for="link in links"
           :key="link.to"
           :to="link.to"
-          class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-          active-class="!bg-brand-50 !text-brand-700"
+          class="flex min-h-11 items-center border-b-[3px] border-transparent px-3 text-sm font-semibold text-band-muted hover:text-band-ink"
+          active-class="!border-band-ink !text-band-ink"
         >
           {{ link.label }}
         </router-link>

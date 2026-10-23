@@ -10,26 +10,27 @@ const countries: CountryStat[] = [
 ]
 
 describe('CountryTraffic', () => {
-  it('renders a flag and resolved name per country', () => {
+  it('renders an ISO code tag and resolved name per country', () => {
     const wrapper = mount(CountryTraffic, { props: { countries } })
     const text = wrapper.text()
-    expect(text).toContain('🇫🇷')
+    expect(text).toContain('FR')
     expect(text).toContain('France')
-    expect(text).toContain('🇺🇸')
+    expect(text).toContain('US')
     expect(text).toContain('United States')
+    expect(text).not.toContain('🇫🇷')
   })
 
-  it('shows a globe and "Unknown" for an empty (unlocatable) country code', () => {
+  it('shows a neutral tag and "Unknown" for an empty (unlocatable) country code', () => {
     const wrapper = mount(CountryTraffic, { props: { countries: [countries[2]] } })
-    expect(wrapper.text()).toContain('🌐')
+    expect(wrapper.text()).toContain('··')
     expect(wrapper.text()).toContain('Unknown')
   })
 
   it('computes failure rate and flags high-failure sources', () => {
     const wrapper = mount(CountryTraffic, { props: { countries } })
     // FR: 20/100 = 20%, the unknown bucket: 9/10 = 90%.
-    expect(wrapper.text()).toContain('20%')
-    expect(wrapper.text()).toContain('90%')
+    expect(wrapper.text()).toContain('20% failed')
+    expect(wrapper.text()).toContain('90% failed')
   })
 
   it('honors the limit prop', () => {

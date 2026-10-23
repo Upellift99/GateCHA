@@ -1,0 +1,1051 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T23:06:53+00:00",
+  "title": "Design System: GateCHA",
+  "extensions": {
+    "colorMeta": {
+      "signage-navy": {
+        "role": "primary",
+        "displayName": "Signage Navy",
+        "cssVar": "--color-band / --color-action",
+        "canonical": "#10285A",
+        "tonalRamp": [
+          "#00052C",
+          "#0B2150",
+          "#264074",
+          "#446097",
+          "#6482BC",
+          "#85A5E1",
+          "#AACAFF",
+          "#D2EFFF"
+        ],
+        "dark": "#10285A",
+        "darkNote": "The band stays #10285A in dark; --color-action becomes #3366E0."
+      },
+      "signage-navy-deep": {
+        "role": "primary",
+        "displayName": "Signage Navy Deep",
+        "cssVar": "--color-action-hover",
+        "canonical": "#0B1E45",
+        "tonalRamp": [
+          "#000728",
+          "#0F234A",
+          "#2B416B",
+          "#49618E",
+          "#6982B1",
+          "#8BA5D6",
+          "#AECAFD",
+          "#D6EFFF"
+        ],
+        "dark": "#2B59C3"
+      },
+      "band-ink": {
+        "role": "primary",
+        "displayName": "Band Ink",
+        "cssVar": "--color-band-ink / --color-action-ink",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "band-muted": {
+        "role": "primary",
+        "displayName": "Band Muted",
+        "cssVar": "--color-band-muted",
+        "canonical": "#C6D0E4",
+        "tonalRamp": [
+          "#050B18",
+          "#1E2534",
+          "#3A4252",
+          "#596173",
+          "#798395",
+          "#9CA5B8",
+          "#BFC9DD",
+          "#E5EFFF"
+        ]
+      },
+      "band-rule": {
+        "role": "primary",
+        "displayName": "Band Rule",
+        "cssVar": "--color-band-rule",
+        "canonical": "#2A4479",
+        "tonalRamp": [
+          "#00052C",
+          "#0C2150",
+          "#264074",
+          "#446097",
+          "#6482BC",
+          "#85A5E1",
+          "#AAC9FF",
+          "#D2EFFF"
+        ],
+        "dark": "#2A4479"
+      },
+      "route-blue": {
+        "role": "secondary",
+        "displayName": "Route Blue",
+        "cssVar": "--color-link / --color-focus",
+        "canonical": "#1F4FC1",
+        "tonalRamp": [
+          "#020044",
+          "#001170",
+          "#09339E",
+          "#2556C9",
+          "#457AF0",
+          "#69A0FF",
+          "#93C7FF",
+          "#BEEEFF"
+        ],
+        "dark": "#8AB0FF"
+      },
+      "route-blue-deep": {
+        "role": "secondary",
+        "displayName": "Route Blue Deep",
+        "cssVar": "--color-link-hover",
+        "canonical": "#163B94",
+        "tonalRamp": [
+          "#00003B",
+          "#021964",
+          "#15398F",
+          "#325BB7",
+          "#517EDD",
+          "#74A2FF",
+          "#9CC8FF",
+          "#C6EEFF"
+        ],
+        "dark": "#B3CBFF"
+      },
+      "porcelain-ground": {
+        "role": "neutral",
+        "displayName": "Porcelain Ground",
+        "cssVar": "--color-ground",
+        "canonical": "#F3F5F7",
+        "tonalRamp": [
+          "#0A0B0D",
+          "#242527",
+          "#414244",
+          "#606163",
+          "#818284",
+          "#A3A5A7",
+          "#C7C9CB",
+          "#EDEFF1"
+        ],
+        "dark": "#0B1221"
+      },
+      "panel-white": {
+        "role": "neutral",
+        "displayName": "Panel White",
+        "cssVar": "--color-panel",
+        "canonical": "#FFFFFF",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ],
+        "dark": "#111A2E"
+      },
+      "sunken-grey": {
+        "role": "neutral",
+        "displayName": "Sunken Grey",
+        "cssVar": "--color-sunken",
+        "canonical": "#F7F8FA",
+        "tonalRamp": [
+          "#0B0B0C",
+          "#242526",
+          "#414243",
+          "#606163",
+          "#818284",
+          "#A4A5A7",
+          "#C8C9CB",
+          "#EDEEF0"
+        ],
+        "dark": "#0E1627"
+      },
+      "ink-navy": {
+        "role": "neutral",
+        "displayName": "Ink Navy",
+        "cssVar": "--color-ink",
+        "canonical": "#14213D",
+        "tonalRamp": [
+          "#020922",
+          "#172440",
+          "#334260",
+          "#516182",
+          "#7182A5",
+          "#93A5C9",
+          "#B7CAEF",
+          "#DCEFFF"
+        ],
+        "dark": "#E7EBF3"
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Ink Secondary",
+        "cssVar": "--color-ink-2",
+        "canonical": "#3A4560",
+        "tonalRamp": [
+          "#04091F",
+          "#1A243D",
+          "#36415C",
+          "#55617D",
+          "#7582A0",
+          "#97A5C4",
+          "#BBC9EA",
+          "#E0EEFF"
+        ],
+        "dark": "#C3CAD8"
+      },
+      "muted-slate": {
+        "role": "neutral",
+        "displayName": "Muted Slate",
+        "cssVar": "--color-muted",
+        "canonical": "#5B6478",
+        "tonalRamp": [
+          "#050A19",
+          "#1D2536",
+          "#3A4254",
+          "#586175",
+          "#798297",
+          "#9BA5BB",
+          "#BFC9E0",
+          "#E4EFFF"
+        ],
+        "dark": "#9AA4B8"
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "cssVar": "--color-rule",
+        "canonical": "#DDE2E8",
+        "tonalRamp": [
+          "#080B0F",
+          "#22252A",
+          "#3E4247",
+          "#5D6267",
+          "#7E8388",
+          "#A1A5AB",
+          "#C5CACF",
+          "#EAEFF5"
+        ],
+        "dark": "#24324D"
+      },
+      "hairline-soft": {
+        "role": "neutral",
+        "displayName": "Hairline Soft",
+        "cssVar": "--color-rule-soft",
+        "canonical": "#EBEEF2",
+        "tonalRamp": [
+          "#090B0E",
+          "#232528",
+          "#404245",
+          "#5F6165",
+          "#808286",
+          "#A2A5A9",
+          "#C6C9CD",
+          "#ECEFF3"
+        ],
+        "dark": "#1A2640"
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "cssVar": "--color-rule-strong",
+        "canonical": "#B9C1CD",
+        "tonalRamp": [
+          "#070B13",
+          "#1F252E",
+          "#3C424C",
+          "#5B626C",
+          "#7B838E",
+          "#9EA6B1",
+          "#C2CAD6",
+          "#E7EFFC"
+        ],
+        "dark": "#3A4B6B"
+      },
+      "normal-green": {
+        "role": "state",
+        "displayName": "Normal Green",
+        "cssVar": "--color-ok",
+        "canonical": "#00754E",
+        "tonalRamp": [
+          "#001401",
+          "#003214",
+          "#00532E",
+          "#00744D",
+          "#37966D",
+          "#5EBA8F",
+          "#8ADEB4",
+          "#B8FFDC"
+        ],
+        "dark": "#3DD598"
+      },
+      "normal-green-soft": {
+        "role": "state",
+        "displayName": "Normal Green Soft",
+        "cssVar": "--color-ok-soft",
+        "canonical": "#E3F4EC",
+        "tonalRamp": [
+          "#040E09",
+          "#1B2823",
+          "#38463F",
+          "#57655E",
+          "#77877F",
+          "#99A9A2",
+          "#BDCEC6",
+          "#E2F3EB"
+        ],
+        "dark": "#0F2B24"
+      },
+      "normal-green-edge": {
+        "role": "state",
+        "displayName": "Normal Green Edge",
+        "cssVar": "--color-ok-edge",
+        "canonical": "#A9DCC4",
+        "tonalRamp": [
+          "#001205",
+          "#002E1D",
+          "#1C4C39",
+          "#3D6D58",
+          "#5E8F79",
+          "#80B29B",
+          "#A4D7BF",
+          "#CAFCE4"
+        ],
+        "dark": "#1F5A45"
+      },
+      "disturbed-amber": {
+        "role": "state",
+        "displayName": "Disturbed Amber",
+        "cssVar": "--color-warn",
+        "canonical": "#E8A400",
+        "tonalRamp": [
+          "#230000",
+          "#461200",
+          "#6B3000",
+          "#905100",
+          "#B47300",
+          "#D89700",
+          "#F9BE55",
+          "#FFE58D"
+        ]
+      },
+      "disturbed-amber-ink": {
+        "role": "state",
+        "displayName": "Disturbed Amber Ink",
+        "cssVar": "--color-warn-ink",
+        "canonical": "#2A1E00",
+        "tonalRamp": [
+          "#140900",
+          "#2F2304",
+          "#4D4022",
+          "#6D6040",
+          "#8F8160",
+          "#B2A482",
+          "#D7C8A5",
+          "#FDEDC9"
+        ]
+      },
+      "disturbed-amber-text": {
+        "role": "state",
+        "displayName": "Disturbed Amber Text",
+        "cssVar": "--color-warn-text",
+        "canonical": "#8A5A00",
+        "tonalRamp": [
+          "#1F0100",
+          "#401800",
+          "#633600",
+          "#855600",
+          "#A9772E",
+          "#CE9A53",
+          "#F1BF7E",
+          "#FFE6AC"
+        ],
+        "dark": "#F5C451"
+      },
+      "disturbed-amber-soft": {
+        "role": "state",
+        "displayName": "Disturbed Amber Soft",
+        "cssVar": "--color-warn-soft",
+        "canonical": "#FFF7E0",
+        "tonalRamp": [
+          "#100A00",
+          "#2B2513",
+          "#48422F",
+          "#68614D",
+          "#89826D",
+          "#ACA58F",
+          "#D1C9B3",
+          "#F6EED7"
+        ],
+        "dark": "#2A2208"
+      },
+      "disturbed-amber-edge": {
+        "role": "state",
+        "displayName": "Disturbed Amber Edge",
+        "cssVar": "--color-warn-edge",
+        "canonical": "#F1D88E",
+        "tonalRamp": [
+          "#180700",
+          "#352100",
+          "#553F00",
+          "#755F0A",
+          "#988036",
+          "#BBA35A",
+          "#DFC882",
+          "#FFEDAF"
+        ],
+        "dark": "#5C4710"
+      },
+      "failure-red": {
+        "role": "state",
+        "displayName": "Failure Red",
+        "cssVar": "--color-fail / --color-danger",
+        "canonical": "#C8001A",
+        "tonalRamp": [
+          "#360000",
+          "#610000",
+          "#900000",
+          "#BD000C",
+          "#E63536",
+          "#FF665F",
+          "#FF968A",
+          "#FFC3B7"
+        ],
+        "dark": "#FF6B7A",
+        "darkNote": "Dark: --color-fail #FF6B7A, --color-danger #C92A3E."
+      },
+      "failure-red-soft": {
+        "role": "state",
+        "displayName": "Failure Red Soft",
+        "cssVar": "--color-fail-soft",
+        "canonical": "#FDECEE",
+        "tonalRamp": [
+          "#120809",
+          "#2D2123",
+          "#4B3E40",
+          "#6B5D5F",
+          "#8D7E80",
+          "#B0A0A2",
+          "#D5C4C6",
+          "#FBEAEC"
+        ],
+        "dark": "#2E1219"
+      },
+      "failure-red-edge": {
+        "role": "state",
+        "displayName": "Failure Red Edge",
+        "cssVar": "--color-fail-edge",
+        "canonical": "#F4B6BE",
+        "tonalRamp": [
+          "#200005",
+          "#41121D",
+          "#623039",
+          "#854F58",
+          "#A97078",
+          "#CE929A",
+          "#F4B6BE",
+          "#FFDDE4"
+        ],
+        "dark": "#6B2430"
+      },
+      "danger-red-deep": {
+        "role": "state",
+        "displayName": "Danger Red Deep",
+        "cssVar": "--color-danger-hover",
+        "canonical": "#A30015",
+        "tonalRamp": [
+          "#310000",
+          "#5B0000",
+          "#870000",
+          "#B21D23",
+          "#DA4845",
+          "#FF726A",
+          "#FF9E94",
+          "#FFCABF"
+        ],
+        "dark": "#B01F33"
+      },
+      "closed-grey": {
+        "role": "state",
+        "displayName": "Closed Grey",
+        "cssVar": "--color-closed",
+        "canonical": "#ECEDEF",
+        "tonalRamp": [
+          "#0A0B0C",
+          "#242526",
+          "#414244",
+          "#606163",
+          "#818284",
+          "#A4A5A7",
+          "#C8C9CB",
+          "#EDEEF0"
+        ],
+        "dark": "#232C3F"
+      },
+      "closed-grey-ink": {
+        "role": "state",
+        "displayName": "Closed Grey Ink",
+        "cssVar": "--color-closed-ink",
+        "canonical": "#5E6166",
+        "tonalRamp": [
+          "#090B0F",
+          "#232529",
+          "#3F4247",
+          "#5E6166",
+          "#7F8288",
+          "#A2A5AB",
+          "#C6C9CF",
+          "#EBEFF5"
+        ],
+        "dark": "#AEB6C6"
+      },
+      "code-night": {
+        "role": "neutral",
+        "displayName": "Code Night",
+        "cssVar": "--color-code",
+        "canonical": "#0E1A33",
+        "tonalRamp": [
+          "#020921",
+          "#18243E",
+          "#34425E",
+          "#52617F",
+          "#7283A2",
+          "#94A5C6",
+          "#B8CAEC",
+          "#DDEFFF"
+        ],
+        "dark": "#070E1D"
+      },
+      "code-night-ink": {
+        "role": "neutral",
+        "displayName": "Code Night Ink",
+        "cssVar": "--color-code-ink",
+        "canonical": "#D7E3FF",
+        "tonalRamp": [
+          "#050A1C",
+          "#1C2439",
+          "#384258",
+          "#576179",
+          "#77829B",
+          "#9AA5BF",
+          "#BDC9E4",
+          "#E2EEFF"
+        ]
+      },
+      "line-1": {
+        "role": "tertiary",
+        "displayName": "Line 1 Yellow",
+        "cssVar": "--color-line-1",
+        "canonical": "#FFCD00",
+        "tonalRamp": [
+          "#1F0100",
+          "#401A00",
+          "#633700",
+          "#875800",
+          "#AA7A00",
+          "#CD9E00",
+          "#EEC43E",
+          "#FFEB7F"
+        ]
+      },
+      "line-1-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 1 Yellow Stroke",
+        "cssVar": "--color-line-1-stroke",
+        "canonical": "#B38F00",
+        "tonalRamp": [
+          "#1B0400",
+          "#3B1E00",
+          "#5D3B00",
+          "#7E5B00",
+          "#A17D00",
+          "#C5A12A",
+          "#E7C666",
+          "#FFEC99"
+        ],
+        "dark": "#FFCD00"
+      },
+      "line-2": {
+        "role": "tertiary",
+        "displayName": "Line 2 Teal",
+        "cssVar": "--color-line-2",
+        "canonical": "#00A88F",
+        "tonalRamp": [
+          "#00150A",
+          "#003424",
+          "#005541",
+          "#007660",
+          "#009981",
+          "#33BDA4",
+          "#70E1C8",
+          "#A4FFED"
+        ]
+      },
+      "line-2-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 2 Teal Stroke",
+        "cssVar": "--color-line-2-stroke",
+        "canonical": "#00A88F",
+        "tonalRamp": [
+          "#00150A",
+          "#003424",
+          "#005541",
+          "#007660",
+          "#009981",
+          "#33BDA4",
+          "#70E1C8",
+          "#A4FFED"
+        ],
+        "dark": "#00C2A5"
+      },
+      "line-3": {
+        "role": "tertiary",
+        "displayName": "Line 3 Violet",
+        "cssVar": "--color-line-3",
+        "canonical": "#6E4C9F",
+        "tonalRamp": [
+          "#14002F",
+          "#300D54",
+          "#4F2B7B",
+          "#6E4C9F",
+          "#906EC4",
+          "#B391EA",
+          "#D5B7FF",
+          "#FADFFF"
+        ]
+      },
+      "line-3-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 3 Violet Stroke",
+        "cssVar": "--color-line-3-stroke",
+        "canonical": "#6E4C9F",
+        "tonalRamp": [
+          "#14002F",
+          "#300D54",
+          "#4F2B7B",
+          "#6E4C9F",
+          "#906EC4",
+          "#B391EA",
+          "#D5B7FF",
+          "#FADFFF"
+        ],
+        "dark": "#A68BDB"
+      },
+      "line-4": {
+        "role": "tertiary",
+        "displayName": "Line 4 Orange",
+        "cssVar": "--color-line-4",
+        "canonical": "#F28E1C",
+        "tonalRamp": [
+          "#2A0000",
+          "#500000",
+          "#781F00",
+          "#9F4200",
+          "#C56500",
+          "#EA8A1F",
+          "#FFB261",
+          "#FFDB95"
+        ]
+      },
+      "line-4-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 4 Orange Stroke",
+        "cssVar": "--color-line-4-stroke",
+        "canonical": "#C86A00",
+        "tonalRamp": [
+          "#290000",
+          "#4F0000",
+          "#772000",
+          "#9D4300",
+          "#C36600",
+          "#E98A3B",
+          "#FFB270",
+          "#FFDBA0"
+        ],
+        "dark": "#F28E1C"
+      },
+      "line-5": {
+        "role": "tertiary",
+        "displayName": "Line 5 Sky",
+        "cssVar": "--color-line-5",
+        "canonical": "#00AEEF",
+        "tonalRamp": [
+          "#000933",
+          "#002859",
+          "#004982",
+          "#006BA8",
+          "#008ECD",
+          "#1EB2F2",
+          "#67D7FF",
+          "#9DFCFF"
+        ]
+      },
+      "line-5-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 5 Sky Stroke",
+        "cssVar": "--color-line-5-stroke",
+        "canonical": "#0089C2",
+        "tonalRamp": [
+          "#000A30",
+          "#002855",
+          "#00487D",
+          "#0069A0",
+          "#0B8CC5",
+          "#44B0EB",
+          "#79D5FF",
+          "#AAFAFF"
+        ],
+        "dark": "#33C3F5"
+      },
+      "line-6": {
+        "role": "tertiary",
+        "displayName": "Line 6 Green",
+        "cssVar": "--color-line-6",
+        "canonical": "#84B817",
+        "tonalRamp": [
+          "#001100",
+          "#0D2F00",
+          "#264F00",
+          "#437100",
+          "#639400",
+          "#86B828",
+          "#ADDC67",
+          "#D5FF9B"
+        ]
+      },
+      "line-6-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 6 Green Stroke",
+        "cssVar": "--color-line-6-stroke",
+        "canonical": "#5E8A00",
+        "tonalRamp": [
+          "#001100",
+          "#0F2E00",
+          "#284E00",
+          "#467000",
+          "#669315",
+          "#88B647",
+          "#AFDA79",
+          "#D7FEA8"
+        ],
+        "dark": "#9CD12A"
+      },
+      "line-7": {
+        "role": "tertiary",
+        "displayName": "Line 7 Magenta",
+        "cssVar": "--color-line-7",
+        "canonical": "#A0006E",
+        "tonalRamp": [
+          "#2C0016",
+          "#540033",
+          "#7F0054",
+          "#A91375",
+          "#D04298",
+          "#F56DBA",
+          "#FF99DD",
+          "#FFC5FF"
+        ]
+      },
+      "line-7-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 7 Magenta Stroke",
+        "cssVar": "--color-line-7-stroke",
+        "canonical": "#A0006E",
+        "tonalRamp": [
+          "#2C0016",
+          "#540033",
+          "#7F0054",
+          "#A91375",
+          "#D04298",
+          "#F56DBA",
+          "#FF99DD",
+          "#FFC5FF"
+        ],
+        "dark": "#E04FA8"
+      },
+      "line-8": {
+        "role": "tertiary",
+        "displayName": "Line 8 Grey",
+        "cssVar": "--color-line-8",
+        "canonical": "#8D8D8D",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ]
+      },
+      "line-8-stroke": {
+        "role": "tertiary",
+        "displayName": "Line 8 Grey Stroke",
+        "cssVar": "--color-line-8-stroke",
+        "canonical": "#767676",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#A5A5A5",
+          "#C9C9C9",
+          "#EEEEEE"
+        ],
+        "dark": "#A3A3A3"
+      }
+    },
+    "themes": {
+      "light": "default @theme static in web/src/style.css",
+      "dark": "@media (prefers-color-scheme: dark) redefines the same --color-* names on :root; colorMeta.<token>.dark holds the dark value",
+      "lineRing": {
+        "light": "rgb(20 33 61 / 0.18)",
+        "dark": "rgb(231 235 243 / 0.28)"
+      },
+      "backdrop": {
+        "light": "rgb(11 18 33 / 0.6)",
+        "dark": "rgb(3 6 14 / 0.72)"
+      },
+      "darkAction": "#3366E0",
+      "darkActionHover": "#2B59C3",
+      "darkDanger": "#C92A3E"
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Dashboard page title only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titles of all other pages, including a key's name on its detail page."
+      },
+      "title": {
+        "displayName": "Panel Title",
+        "purpose": "Panel and dialog headings; may carry a 13px medium muted aside."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Copy, table cells, form labels."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Domains under key names, KPI hints, panel subtitles, status chips (bold)."
+      },
+      "label": {
+        "displayName": "Signage Label",
+        "purpose": "Uppercase column headers and KPI labels; scope tags at 0.08em in a 3px hairline box."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "KPI numbers in Overpass Mono tabular figures."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Counts in tables, key ids, version; formatted en-US."
+      },
+      "axis": {
+        "displayName": "Axis",
+        "purpose": "Chart axes and dates, country code tags."
+      }
+    },
+    "shadows": [
+      {
+        "name": "line-ring",
+        "value": "inset 0 0 0 1px var(--color-line-ring)",
+        "purpose": "Hairline ring that keeps pale line bullets legible on the panel. Not a drop shadow."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Tailwind default transition for colour and opacity changes (tabs, buttons, row dimming, legend)."
+      },
+      {
+        "name": "dim-row",
+        "value": "opacity: 0.45",
+        "purpose": "Board rows not belonging to the selected line, only while a line is hovered or focused."
+      },
+      {
+        "name": "dim-chart-line",
+        "value": "stroke-opacity: 0.22",
+        "purpose": "Chart lines other than the active one; the active line draws on top at 2.75px."
+      },
+      {
+        "name": "dim-legend",
+        "value": "opacity: 0.7",
+        "purpose": "Legend entries other than the active line."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "container",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Signage Band",
+      "kind": "nav",
+      "refersTo": "signage-band",
+      "description": "Sticky navy band carrying the mark, tabs, version and Logout; navy in both themes.",
+      "html": "<nav class=\"ds-band\"><a class=\"ds-band-mark\"><span class=\"ds-band-disc\">G</span>GateCHA</a><div class=\"ds-band-tabs\"><a class=\"ds-band-tab ds-active\">Dashboard</a><a class=\"ds-band-tab\">API Keys</a><a class=\"ds-band-tab\">Settings</a></div><span class=\"ds-band-ver\">v0.9.5</span><button class=\"ds-band-logout\">Logout</button></nav>",
+      "css": ".ds-band{display:flex;align-items:stretch;gap:40px;height:56px;padding:0 32px;background:var(--color-band,#10285A);color:var(--color-band-ink,#fff);border-bottom:1px solid var(--color-band-rule,#2A4479);font-family:Overpass,system-ui,sans-serif}.ds-band-mark{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-0.025em}.ds-band-disc{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9999px;background:var(--color-band-ink,#fff);color:var(--color-band,#10285A);font-weight:800;font-size:16px;line-height:1}.ds-band-tabs{display:flex;gap:4px}.ds-band-tab{display:flex;align-items:center;padding:3px 16px 0;border-bottom:3px solid transparent;font-size:14px;font-weight:600;color:var(--color-band-muted,#C6D0E4);transition:color .15s;cursor:pointer}.ds-band-tab:hover{color:var(--color-band-ink,#fff)}.ds-band-tab.ds-active{border-bottom-color:var(--color-band-ink,#fff);color:var(--color-band-ink,#fff)}.ds-band-ver{margin-left:auto;align-self:center;font-family:'Overpass Mono',ui-monospace,monospace;font-size:12px;color:var(--color-band-muted,#C6D0E4)}.ds-band-logout{align-self:center;min-height:32px;padding:0 12px;border-radius:4px;border:1px solid var(--color-band-rule,#2A4479);background:transparent;color:var(--color-band-ink,#fff);font:600 14px Overpass,system-ui,sans-serif;transition:background .15s}.ds-band-logout:hover{background:rgb(255 255 255/.1)}.ds-band-logout:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-band-ink,#fff)}"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Navy action for form submits and dialog confirms.",
+      "html": "<button class=\"ds-btn-primary\">Create key</button>",
+      "css": ".ds-btn-primary{padding:8px 16px;border:none;border-radius:6px;background:var(--color-action,#10285A);color:var(--color-action-ink,#fff);font:500 14px/20px Overpass,system-ui,sans-serif;transition:background .15s;cursor:pointer}.ds-btn-primary:hover{background:var(--color-action-hover,#0B1E45)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}.ds-btn-primary:disabled{opacity:.5}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined panel button for Edit and Enable/Disable on the key detail page.",
+      "html": "<button class=\"ds-btn-secondary\">Edit</button>",
+      "css": ".ds-btn-secondary{padding:8px 16px;border:1px solid var(--color-rule-strong,#B9C1CD);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#14213D);font:600 14px/20px Overpass,system-ui,sans-serif;transition:background .15s;cursor:pointer}.ds-btn-secondary:hover{background:var(--color-sunken,#F7F8FA)}.ds-btn-secondary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive action; always confirmed through the dialog.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger{padding:8px 16px;border:none;border-radius:6px;background:var(--color-danger,#C8001A);color:var(--color-action-ink,#fff);font:600 14px/20px Overpass,system-ui,sans-serif;transition:background .15s;cursor:pointer}.ds-btn-danger:hover{background:var(--color-danger-hover,#A30015)}.ds-btn-danger:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-fail,#C8001A)}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Form field on the panel surface with a strong hairline border.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Name</span><input class=\"ds-input\" placeholder=\"My website\"></label>",
+      "css": ".ds-field{display:block;font-family:Overpass,system-ui,sans-serif}.ds-field-label{display:block;margin-bottom:4px;font-size:14px;font-weight:500;color:var(--color-ink-2,#3A4560)}.ds-input{width:100%;padding:8px 12px;border:1px solid var(--color-rule-strong,#B9C1CD);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#14213D);font:400 14px/20px Overpass,system-ui,sans-serif;caret-color:var(--color-action,#10285A)}.ds-input::placeholder{color:var(--color-muted,#5B6478)}.ds-input:focus{outline:none;border-color:var(--color-focus,#1F4FC1);box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}"
+    },
+    {
+      "name": "Status Chips",
+      "kind": "chip",
+      "refersTo": "status-chip-disturbed",
+      "description": "Transit status vocabulary; colour always backs the words.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-chip ds-normal\"><i></i>Normal service</span><span class=\"ds-chip ds-disturbed\"><i></i>Disturbed — <b>31</b> failed today</span><span class=\"ds-chip ds-quiet\">No traffic today</span><span class=\"ds-chip ds-closed\">Closed</span></div>",
+      "css": ".ds-chips{display:flex;flex-wrap:wrap;gap:8px}.ds-chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:2px 8px;border-radius:3px;font:700 12px/16px Overpass,system-ui,sans-serif}.ds-chip i{width:7px;height:7px;border-radius:9999px;background:currentColor}.ds-chip b{padding:0 4px;border-radius:2px;background:var(--color-panel,#fff);color:var(--color-fail,#C8001A);font-family:'Overpass Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}.ds-normal{color:var(--color-ok,#00754E)}.ds-disturbed{background:var(--color-warn,#E8A400);color:var(--color-warn-ink,#2A1E00)}.ds-quiet{color:var(--color-muted,#5B6478)}.ds-closed{background:var(--color-closed,#ECEDEF);color:var(--color-closed-ink,#5E6166)}"
+    },
+    {
+      "name": "Line Bullets",
+      "kind": "custom",
+      "refersTo": "line-bullet-md",
+      "description": "Round metro bullet carrying the key's id; colours cycle over eight, the number is the identity.",
+      "html": "<div class=\"ds-bullets\"><span class=\"ds-bullet\" style=\"background:var(--color-line-1);color:var(--color-line-1-ink)\">1</span><span class=\"ds-bullet\" style=\"background:var(--color-line-2);color:var(--color-line-2-ink)\">2</span><span class=\"ds-bullet\" style=\"background:var(--color-line-3);color:var(--color-line-3-ink)\">3</span><span class=\"ds-bullet\" style=\"background:var(--color-line-4);color:var(--color-line-4-ink)\">4</span><span class=\"ds-bullet\" style=\"background:var(--color-line-5);color:var(--color-line-5-ink)\">5</span><span class=\"ds-bullet\" style=\"background:var(--color-line-6);color:var(--color-line-6-ink)\">6</span><span class=\"ds-bullet\" style=\"background:var(--color-line-7);color:var(--color-line-7-ink)\">7</span><span class=\"ds-bullet\" style=\"background:var(--color-line-8);color:var(--color-line-8-ink)\">8</span><span class=\"ds-bullet ds-small\" style=\"background:var(--color-line-5);color:var(--color-line-5-ink)\">13</span><span class=\"ds-bullet ds-lg\" style=\"background:var(--color-line-3);color:var(--color-line-3-ink)\">3</span></div>",
+      "css": ".ds-bullets{display:flex;align-items:center;gap:8px}.ds-bullet{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9999px;box-shadow:inset 0 0 0 1px var(--color-line-ring,rgb(20 33 61/.18));font:800 14px/1 Overpass,system-ui,sans-serif;font-variant-numeric:tabular-nums;user-select:none}.ds-bullet.ds-small{width:18px;height:18px;font-size:10px}.ds-bullet.ds-lg{width:36px;height:36px;font-size:18px}"
+    },
+    {
+      "name": "Network Status Board",
+      "kind": "card",
+      "refersTo": "board-row-disturbed",
+      "description": "The dashboard's signature table: one row per line, disturbed first on amber-soft, counts in tabular mono.",
+      "html": "<section class=\"ds-board\"><header class=\"ds-board-head\"><h2>Network status <small>Today (UTC)</small></h2><a>All keys →</a></header><table><thead><tr><th>Line</th><th>Key</th><th class=\"ds-r\">Challenges</th><th class=\"ds-r\">Failed</th><th>Status</th></tr></thead><tbody><tr class=\"ds-dist\"><td><span class=\"ds-b\" style=\"background:var(--color-line-5);color:var(--color-line-5-ink)\">5</span></td><td><b>Carrousel</b><div>muhctv.example.ca</div></td><td class=\"ds-r ds-m\">74</td><td class=\"ds-r ds-m ds-f\">31</td><td><span class=\"ds-st ds-st-d\">Disturbed</span></td></tr><tr><td><span class=\"ds-b\" style=\"background:var(--color-line-1);color:var(--color-line-1-ink)\">1</span></td><td><b>Appel Caisse</b><div>www.example.fr</div></td><td class=\"ds-r ds-m\">75</td><td class=\"ds-r ds-m ds-z\">0</td><td><span class=\"ds-st ds-st-n\">Normal service</span></td></tr></tbody></table></section>",
+      "css": ".ds-board{border:1px solid var(--color-rule,#DDE2E8);border-radius:6px;background:var(--color-panel,#fff);font-family:Overpass,system-ui,sans-serif;color:var(--color-ink,#14213D)}.ds-board-head{display:flex;justify-content:space-between;align-items:baseline;padding:12px 20px;border-bottom:1px solid var(--color-rule,#DDE2E8)}.ds-board-head h2{margin:0;font-size:17px;font-weight:800}.ds-board-head small{margin-left:8px;font-size:13px;font-weight:500;color:var(--color-muted,#5B6478)}.ds-board-head a{font-size:14px;font-weight:600;color:var(--color-link,#1F4FC1)}.ds-board table{width:100%;border-collapse:collapse}.ds-board th{padding:8px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--color-muted,#5B6478)}.ds-board td{padding:8px 12px;border-top:1px solid var(--color-rule-soft,#EBEEF2);font-size:14px;transition:opacity .15s}.ds-board td div{font-size:12px;color:var(--color-muted,#5B6478)}.ds-board tr.ds-dist td{background:var(--color-warn-soft,#FFF7E0);border-color:var(--color-warn-edge,#F1D88E)}.ds-board tr.ds-dist+tr td{border-top-color:var(--color-warn-edge,#F1D88E)}.ds-board tbody:hover tr:not(:hover){opacity:.45}.ds-r{text-align:right!important}.ds-m{font-family:'Overpass Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}.ds-f{font-weight:700;color:var(--color-fail,#C8001A)}.ds-z{color:var(--color-muted,#5B6478)}.ds-b{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:9999px;box-shadow:inset 0 0 0 1px var(--color-line-ring,rgb(20 33 61/.18));font-weight:800;font-size:14px}.ds-st{display:inline-flex;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:700}.ds-st-d{background:var(--color-warn,#E8A400);color:var(--color-warn-ink,#2A1E00)}.ds-st-n{color:var(--color-ok,#00754E)}"
+    },
+    {
+      "name": "KPI Strip",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Four figures divided by 1px hairlines; label, tabular mono number, a line of context.",
+      "html": "<section class=\"ds-kpis\"><div><p class=\"ds-l\">Challenges · all time</p><p class=\"ds-v\">5,231</p><p class=\"ds-h\">264 today</p></div><div><p class=\"ds-l\">Failed · all time</p><p class=\"ds-v ds-fail\">120</p><p class=\"ds-h ds-fail\"><b>36 today</b></p></div></section>",
+      "css": ".ds-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;overflow:hidden;border:1px solid var(--color-rule,#DDE2E8);border-radius:6px;background:var(--color-rule,#DDE2E8);font-family:Overpass,system-ui,sans-serif}.ds-kpis>div{padding:16px 20px;background:var(--color-panel,#fff)}.ds-kpis p{margin:0}.ds-l{font-size:11px;line-height:16px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--color-muted,#5B6478)}.ds-v{margin-top:6px!important;font:600 32px/40px 'Overpass Mono',ui-monospace,monospace;letter-spacing:-0.025em;font-variant-numeric:tabular-nums;color:var(--color-ink,#14213D)}.ds-h{margin-top:4px!important;font-size:12px;color:var(--color-muted,#5B6478)}.ds-fail{color:var(--color-fail,#C8001A)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Info trafic",
+    "overview": "The admin is a transit network's status board. Every API key is a numbered line of the network, drawn as a round metro bullet in one of eight line colours, and the dashboard opens on the board that says, per line, Normal service, No traffic today, Disturbed or Closed. A navy signage band carries the navigation in both themes; below it the ground is porcelain by day and night-navy by night, following the system theme. Light and dark are both designed: the dark theme redefines the same semantic tokens, so no component branches on the theme.\n\nDensity is Operate density: tables on strict columns, every count in Overpass Mono tabular figures, structure drawn by 1px hairlines rather than drop-shadowed cards. Colour is spent on two things only: the identity of a line, and state. Amber means disturbed, red means failures, green means normal service, grey means closed, and every one of those colours is backed by words. The type is Overpass, a face derived from highway signage, self-hosted with its mono sibling; nothing loads from a font CDN.\n\nThe previous system (slate and brand blue, Inter, large rounded cards) is retired and is not a reference.",
+    "keyCharacteristics": [
+      "One number per key everywhere: the line number is the key's database id, shown in the bullet on the board, the list, the detail page and the chart legend.",
+      "Eight line colours cycle; the number, never the colour, is the identity.",
+      "Navy signage band on every screen, including the signed-out login (mark only).",
+      "Hairline grid: panels are bordered, KPI strips are divided by 1px gaps over the rule colour.",
+      "Tabular mono figures for every count, formatted en-US; every date is UTC.",
+      "Focus dims the rest: hovering a board row or pinning a legend entry steps every other line back."
+    ],
+    "rules": [
+      {
+        "name": "The State-Only Rule",
+        "body": "Green, amber, red and grey mean normal, disturbed, failed and closed, and nothing else. They never decorate.",
+        "section": "colors"
+      },
+      {
+        "name": "The Number Is the Line Rule",
+        "body": "Colours cycle every eight lines (`((id - 1) % 8) + 1`). Never let a colour alone identify a key; the bullet always carries its number.",
+        "section": "colors"
+      },
+      {
+        "name": "The Same Names Rule",
+        "body": "Dark mode redefines the same custom properties under `prefers-color-scheme: dark`. Components use semantic tokens only and never write a theme branch.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Every count is set in Overpass Mono with tabular figures and formatted with `toLocaleString('en-US')`. No bare `toLocaleString()`, no proportional digits in a column.",
+        "section": "typography"
+      },
+      {
+        "name": "The UTC Rule",
+        "body": "\"Today\" is the current UTC day and every chart date is formatted in UTC (`en-US`, short month and day). Say so in the UI where it matters (\"Today (UTC)\").",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Rule",
+        "body": "Structure is drawn with 1px rules: panel borders in `hairline`, row separators in `hairline-soft`, KPI strips as a grid with a 1px gap over the `hairline` fill. No shadow cards.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do set every count in Overpass Mono tabular figures and format it with `toLocaleString('en-US')`.",
+      "Do compute \"today\" and format chart dates in UTC, and label it (\"Today (UTC)\").",
+      "Do show a key as its line bullet with its number wherever the key appears.",
+      "Do back every status colour with its words: Normal service, No traffic today, Disturbed, Closed.",
+      "Do put disturbed board rows on `disturbed-amber-soft` with `disturbed-amber-edge` borders and sort them first.",
+      "Do dim non-selected lines only while a line is selected (hover or pin); at rest every row is full strength.",
+      "Do pin the first disturbed line on the dashboard chart by default.",
+      "Do read Chart.js colours from the CSS tokens at runtime and redraw on a theme change.",
+      "Do keep the signage band navy in both themes and redefine only semantic tokens for dark."
+    ],
+    "donts": [
+      "Don't use green, amber, red or grey for decoration; they mean state.",
+      "Don't let a line colour stand alone as an identifier; colours repeat every eight lines.",
+      "Don't add drop shadows to panels or cards; draw structure with 1px hairlines.",
+      "Don't load fonts or assets from a CDN; Overpass and Overpass Mono ship with the app.",
+      "Don't use flag emoji for countries; use the ISO code tag.",
+      "Don't bring back the retired slate/brand-blue, Inter, large-rounded-card look."
+    ]
+  }
+}

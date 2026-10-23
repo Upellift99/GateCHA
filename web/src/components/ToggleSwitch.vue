@@ -50,7 +50,7 @@ function onChange(event: Event) {
          4 units of track on every side, and 20 units of travel. -->
     <svg
       class="block h-6 w-11 rounded-full peer-focus-visible:ring-2
-             peer-focus-visible:ring-brand-600 peer-disabled:opacity-50"
+             peer-focus-visible:ring-focus peer-disabled:opacity-50"
       viewBox="0 0 44 24"
       aria-hidden="true"
       focusable="false"
@@ -60,7 +60,7 @@ function onChange(event: Event) {
         height="24"
         rx="12"
         class="transition-colors"
-        :class="modelValue ? 'fill-brand-600' : 'fill-slate-200'"
+        :class="modelValue ? 'fill-action' : 'fill-rule-strong'"
       />
       <!-- No stroke on the knob. The old box carried a 1px slate border, but a
            stroke is centred on the path, so it pushes the antialiased edge half

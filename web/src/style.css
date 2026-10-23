@@ -1,39 +1,176 @@
 @import "tailwindcss";
 
-/* Self-hosted Inter (no external font CDN — keeps the admin UI tracking-free,
-   matching the marketing site's typography). */
+/* Overpass, a typeface derived from highway signage, carries the UI; Overpass
+   Mono sets every count in tabular figures. Both ship with the app (no font
+   CDN: the admin stays tracking-free). Latin subset only. */
 @font-face {
-  font-family: 'Inter';
+  font-family: 'Overpass';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('./assets/fonts/inter-latin.woff2') format('woff2');
+  src: url('../node_modules/@fontsource-variable/overpass/files/overpass-latin-wght-normal.woff2') format('woff2-variations');
 }
 
-/* Brand theme aligned with the GateCHA website: teal primary, slate neutrals. */
-@theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, Helvetica, Arial, sans-serif;
-  --color-brand-50: #f0fdfa;
-  --color-brand-100: #ccfbf1;
-  --color-brand-200: #99f6e4;
-  --color-brand-300: #5eead4;
-  --color-brand-400: #2dd4bf;
-  --color-brand-500: #14b8a6;
-  --color-brand-600: #0d9488;
-  --color-brand-700: #0f766e;
-  --color-brand-800: #115e59;
-  --color-brand-900: #134e4a;
+@font-face {
+  font-family: 'Overpass Mono';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('../node_modules/@fontsource-variable/overpass-mono/files/overpass-mono-latin-wght-normal.woff2') format('woff2-variations');
 }
 
-/* Contrast floor (WCAG AA 4.5:1 on white): text and solid buttons use
-   brand-700 and up, secondary text slate-500 and up. brand-500/600 are for
-   focus rings, fills and other non-text marks (3:1). */
+/* "Info trafic": every API key is a numbered line of the network. Semantic
+   tokens only; the dark theme below redefines the same names, so components
+   never branch on the theme. Text pairs hold WCAG AA (4.5:1) on ground, panel
+   and sunken in both themes; strokes and marks hold 3:1. `static` emits every
+   variable even when no utility uses it: line colours are applied inline. */
+@theme static {
+  --font-sans: 'Overpass', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Overpass Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Surfaces and text */
+  --color-ground: #F3F5F7;
+  --color-panel: #FFFFFF;
+  --color-sunken: #F7F8FA;
+  --color-ink: #14213D;
+  --color-ink-2: #3A4560;
+  --color-muted: #5B6478;
+  --color-rule: #DDE2E8;
+  --color-rule-soft: #EBEEF2;
+  --color-rule-strong: #B9C1CD;
+
+  /* The signage band and actions */
+  --color-band: #10285A;
+  --color-band-ink: #FFFFFF;
+  --color-band-muted: #C6D0E4;
+  --color-band-rule: #2A4479;
+  --color-action: #10285A;
+  --color-action-hover: #0B1E45;
+  --color-action-ink: #FFFFFF;
+  --color-link: #1F4FC1;
+  --color-link-hover: #163B94;
+  --color-focus: #1F4FC1;
+
+  /* State: only where it means something */
+  --color-ok: #00754E;
+  --color-ok-soft: #E3F4EC;
+  --color-warn: #E8A400;
+  --color-warn-ink: #2A1E00;
+  --color-warn-text: #8A5A00;
+  --color-warn-soft: #FFF7E0;
+  --color-warn-edge: #F1D88E;
+  --color-fail: #C8001A;
+  --color-fail-soft: #FDECEE;
+  --color-fail-edge: #F4B6BE;
+  --color-closed: #ECEDEF;
+  --color-closed-ink: #5E6166;
+  --color-ok-edge: #A9DCC4;
+  --color-danger: #C8001A;
+  --color-danger-hover: #A30015;
+  --color-backdrop: rgb(11 18 33 / 0.6);
+
+  /* Code blocks stay dark in both themes */
+  --color-code: #0E1A33;
+  --color-code-ink: #D7E3FF;
+
+  /* Line colours: bullet fill, the number set on it, and a chart stroke tuned
+     to hold 3:1 on this theme's panel. Colours cycle; the number is the identity. */
+  --color-line-1: #FFCD00; --color-line-1-ink: #14213D; --color-line-1-stroke: #B38F00;
+  --color-line-2: #00A88F; --color-line-2-ink: #14213D; --color-line-2-stroke: #00A88F;
+  --color-line-3: #6E4C9F; --color-line-3-ink: #FFFFFF; --color-line-3-stroke: #6E4C9F;
+  --color-line-4: #F28E1C; --color-line-4-ink: #14213D; --color-line-4-stroke: #C86A00;
+  --color-line-5: #00AEEF; --color-line-5-ink: #14213D; --color-line-5-stroke: #0089C2;
+  --color-line-6: #84B817; --color-line-6-ink: #14213D; --color-line-6-stroke: #5E8A00;
+  --color-line-7: #A0006E; --color-line-7-ink: #FFFFFF; --color-line-7-stroke: #A0006E;
+  --color-line-8: #8D8D8D; --color-line-8-ink: #14213D; --color-line-8-stroke: #767676;
+  --color-line-ring: rgb(20 33 61 / 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ground: #0B1221;
+    --color-panel: #111A2E;
+    --color-sunken: #0E1627;
+    --color-ink: #E7EBF3;
+    --color-ink-2: #C3CAD8;
+    --color-muted: #9AA4B8;
+    --color-rule: #24324D;
+    --color-rule-soft: #1A2640;
+    --color-rule-strong: #3A4B6B;
+
+    --color-band: #10285A;
+    --color-band-rule: #2A4479;
+    --color-action: #3366E0;
+    --color-action-hover: #2B59C3;
+    --color-link: #8AB0FF;
+    --color-link-hover: #B3CBFF;
+    --color-focus: #8AB0FF;
+
+    --color-ok: #3DD598;
+    --color-ok-soft: #0F2B24;
+    --color-warn-text: #F5C451;
+    --color-warn-soft: #2A2208;
+    --color-warn-edge: #5C4710;
+    --color-fail: #FF6B7A;
+    --color-fail-soft: #2E1219;
+    --color-fail-edge: #6B2430;
+    --color-closed: #232C3F;
+    --color-closed-ink: #AEB6C6;
+    --color-ok-edge: #1F5A45;
+    --color-danger: #C92A3E;
+    --color-danger-hover: #B01F33;
+    --color-backdrop: rgb(3 6 14 / 0.72);
+
+    --color-code: #070E1D;
+
+    --color-line-1-stroke: #FFCD00;
+    --color-line-2-stroke: #00C2A5;
+    --color-line-3-stroke: #A68BDB;
+    --color-line-4-stroke: #F28E1C;
+    --color-line-5-stroke: #33C3F5;
+    --color-line-6-stroke: #9CD12A;
+    --color-line-7-stroke: #E04FA8;
+    --color-line-8-stroke: #A3A3A3;
+    --color-line-ring: rgb(231 235 243 / 0.28);
+  }
+}
+
+:root {
+  color-scheme: light dark;
+}
 
 /* Tailwind's default placeholder is the text color at 50% (~3.4:1). */
 input::placeholder,
 textarea::placeholder {
-  color: var(--color-slate-500);
+  color: var(--color-muted);
+}
+
+::selection {
+  background: var(--color-warn);
+  color: var(--color-warn-ink);
+}
+
+/* Form controls take the theme's surface and ink instead of the UA's white. */
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  background-color: var(--color-panel);
+  color: var(--color-ink);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--color-action);
+}
+
+/* Browser surfaces follow the theme too. */
+html {
+  scrollbar-color: var(--color-rule-strong) var(--color-ground);
+}
+
+input,
+textarea {
+  caret-color: var(--color-action);
 }
 
 html {
@@ -41,4 +178,5 @@ html {
   -moz-osx-font-smoothing: grayscale;
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
+  background: var(--color-ground);
 }

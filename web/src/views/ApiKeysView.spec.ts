@@ -151,7 +151,7 @@ describe('ApiKeysView', () => {
 
     const rows = wrapper.findAll('tbody tr')
     expect(rows).toHaveLength(3)
-    expect(rows[0].text()).toContain('Disabled')
+    expect(rows[0].text()).toContain('Closed')
   })
 
   it('sorts by challenges stat', async () => {
@@ -546,9 +546,9 @@ describe('ApiKeysView', () => {
       })
       await flushPromises()
       const failed = wrapper.findAll('tbody tr').map((r) => r.findAll('td')[5])
-      expect(failed[0].classes()).toContain('text-slate-500')
-      expect(failed[0].classes()).not.toContain('text-red-700')
-      expect(failed[1].classes()).toContain('text-red-700')
+      expect(failed[0].classes()).toContain('text-muted')
+      expect(failed[0].classes()).not.toContain('text-fail')
+      expect(failed[1].classes()).toContain('text-fail')
     })
 
     it('says when a key was last used in a short relative form', async () => {
