@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// errRateLimitExceeded is the error body returned with a 429.
+const errRateLimitExceeded = "rate limit exceeded"
+
 // visitor tracks the token-bucket state for a single client IP.
 type visitor struct {
 	tokens   float64
@@ -103,7 +106,7 @@ func RateLimitMiddleware(requestsPerMinute int) func(http.Handler) http.Handler 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !limiter.allow(clientIP(r)) {
-				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": "rate limit exceeded"})
+				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": errRateLimitExceeded})
 				return
 			}
 			next.ServeHTTP(w, r)
@@ -146,7 +149,7 @@ func FailedAuthRateLimitMiddleware(requestsPerMinute int) func(http.Handler) htt
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ip := clientIP(r)
 			if limiter.exhausted(ip) {
-				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": "rate limit exceeded"})
+				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": errRateLimitExceeded})
 				return
 			}
 			rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
@@ -173,7 +176,7 @@ func SourceAndKeyRateLimitMiddleware(requestsPerMinute int) func(http.Handler) h
 				bucket += "|" + key.KeyID
 			}
 			if !limiter.allow(bucket) {
-				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": "rate limit exceeded"})
+				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": errRateLimitExceeded})
 				return
 			}
 			next.ServeHTTP(w, r)
