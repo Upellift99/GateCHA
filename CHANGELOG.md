@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/Upellift99/GateCHA/compare/v0.12.1...v0.13.0) (2026-10-24)
+
+
+### Features
+
+* **dashboard:** delete a key from the key list ([#246](https://github.com/Upellift99/GateCHA/issues/246)) ([78a3f69](https://github.com/Upellift99/GateCHA/commit/78a3f696f57471b731a8d87b223f6d366a632c43))
+
 ## [0.12.1](https://github.com/Upellift99/GateCHA/compare/v0.12.0...v0.12.1) (2026-10-24)
 
 
