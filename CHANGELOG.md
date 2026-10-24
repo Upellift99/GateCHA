@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/Upellift99/GateCHA/compare/v0.13.0...v0.13.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **sonar:** clear the two open SonarQube issues ([#248](https://github.com/Upellift99/GateCHA/issues/248)) ([66ea6a6](https://github.com/Upellift99/GateCHA/commit/66ea6a69ef8777ccee830384d7634dbdd7dc499a))
+
 ## [0.13.0](https://github.com/Upellift99/GateCHA/compare/v0.12.1...v0.13.0) (2026-10-24)
 
 
