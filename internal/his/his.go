@@ -2,8 +2,8 @@
 // Signature": it scores aggregate client interaction signals to estimate the
 // probability that a verification was automated.
 //
-// This is GateCHA's open-source take on the concept behind ALTCHA Sentinel's
-// proprietary HIS. It deliberately consumes only privacy-preserving aggregates
+// This is GateCHA's open-source take on the Human Interaction Signature concept
+// found in ALTCHA Sentinel. It deliberately consumes only privacy-preserving aggregates
 // (counts, distances, durations, timing variance) — never raw coordinates,
 // timestamps, or key contents — so it leaks nothing about what the user typed
 // or where they pointed.

@@ -12,8 +12,9 @@ web
 ## Users
 
 - **Primary: self-hosters.** Developers and sysadmins who run their own
-  infrastructure and want a CAPTCHA they control instead of a SaaS (ALTCHA
-  Sentinel, reCAPTCHA, hCaptcha). They deploy the server with Docker or a
+  infrastructure and want a CAPTCHA they control instead of a third-party
+  service (reCAPTCHA, hCaptcha, Turnstile) or a commercial licence (ALTCHA
+  Sentinel). They deploy the server with Docker or a
   binary, create one API key per site, wire the widget into their forms and
   call `/api/v1/verify` from their backend. Comfortable with a terminal,
   environment variables and a reverse proxy.
@@ -36,8 +37,9 @@ running.
 
 ## Positioning
 
-Same open ALTCHA protocol and official widget as ALTCHA Sentinel, but free,
-self-hosted and fully owned: no cloud, no tracking, no external dependencies
+Same open ALTCHA protocol and official widget as ALTCHA Sentinel. Sentinel is
+self-hosted too: the difference is the licence and the scope. GateCHA is free,
+MIT-licensed, never calls home and covers the essentials: no cloud, no tracking, no external dependencies
 in SQLite mode. GateCHA is not affiliated with ALTCHA, and every surface that
 compares them says so.
 
@@ -96,6 +98,9 @@ Three repositories, one product:
   copy, privacy claims stated precisely (what does and does not leave the
   browser).
 - Always state non-affiliation with ALTCHA when comparing to Sentinel.
+- Sentinel is self-hosted commercial software; ALTCHA's SaaS is ALTCHA Cloud.
+  Never describe Sentinel as a cloud service, and only state Sentinel features
+  checked on altcha.org.
 
 ## Evidence on Hand
 

@@ -9,7 +9,7 @@
 
 🌐 **[Website](https://gatecha.org)** · 📖 **[Documentation](https://gatecha.org/docs)** · 🧩 **[WordPress plugin](https://github.com/Upellift99/GateCHA-WordPress)**
 
-GateCHA is an open-source alternative to [ALTCHA Sentinel](https://altcha.org/docs/v2/sentinel/). It wraps the [ALTCHA](https://altcha.org/) proof-of-work CAPTCHA protocol with a management layer: API key management, per-site configuration, replay protection, and a dashboard with statistics.
+GateCHA is a free, open-source alternative to [ALTCHA Sentinel](https://altcha.org/docs/sentinel/), ALTCHA's commercial self-hosted server. It wraps the [ALTCHA](https://altcha.org/) proof-of-work CAPTCHA protocol with a management layer: API key management, per-site configuration, replay protection, and a dashboard with statistics. GateCHA is not affiliated with ALTCHA.
 
 ## Features
 
