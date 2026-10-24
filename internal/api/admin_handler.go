@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -352,6 +353,51 @@ func (h *AdminHandler) RotateSecret(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, map[string]string{"hmac_secret": newSecret})
+}
+
+// POST /api/admin/keys/{id}/stats-token
+//
+// Issues the key's read-only stats token, replacing any previous one. The
+// secret is in this response and nowhere else afterwards.
+func (h *AdminHandler) IssueStatsToken(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
+		return
+	}
+
+	token, err := models.IssueStatsToken(h.DB, id)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": errKeyNotFound})
+		return
+	}
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to issue stats token"})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{"stats_token": token})
+}
+
+// DELETE /api/admin/keys/{id}/stats-token
+func (h *AdminHandler) RevokeStatsToken(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": errInvalidKeyID})
+		return
+	}
+
+	err = models.RevokeStatsToken(h.DB, id)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": errKeyNotFound})
+		return
+	}
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to revoke stats token"})
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // GET /api/admin/stats/keys-summary

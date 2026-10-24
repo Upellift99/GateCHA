@@ -44,6 +44,7 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	publicHandler := &PublicHandler{DB: db}
 	challengeHandler := &ChallengeHandler{DB: db, Adaptive: newAdaptiveLimiter()}
 	verifyHandler := &VerifyHandler{DB: db}
+	keyStatsHandler := &KeyStatsHandler{DB: db}
 	adminHandler := &AdminHandler{DB: db, SecretKey: secretKey, BuildVersion: cfg.Version}
 
 	// Public endpoints (no auth, used by login page)
@@ -58,12 +59,17 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 		if cfg.RateLimitEnabled {
 			r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
 		}
-		r.Use(APIKeyMiddleware(db))
-		// Per-key throttle runs after auth so the key (and its limit) is known.
-		// No-op for keys whose RateLimitPerMin is 0.
-		r.Use(PerKeyRateLimitMiddleware())
-		r.Get("/challenge", challengeHandler.ServeHTTP)
-		r.Post("/verify", verifyHandler.ServeHTTP)
+		r.Group(func(r chi.Router) {
+			r.Use(APIKeyMiddleware(db))
+			// Per-key throttle runs after auth so the key (and its limit) is known.
+			// No-op for keys whose RateLimitPerMin is 0.
+			r.Use(PerKeyRateLimitMiddleware())
+			r.Get("/challenge", challengeHandler.ServeHTTP)
+			r.Post("/verify", verifyHandler.ServeHTTP)
+		})
+		// Authenticated by the key's stats token, not its public key ID, so it
+		// sits outside the API key middleware.
+		r.Get("/stats", keyStatsHandler.ServeHTTP)
 	})
 
 	// Admin API
@@ -91,6 +97,8 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 			r.Put(keysIDRoute, adminHandler.UpdateKey)
 			r.Delete(keysIDRoute, adminHandler.DeleteKey)
 			r.Post(keysIDRoute+"/rotate-secret", adminHandler.RotateSecret)
+			r.Post(keysIDRoute+"/stats-token", adminHandler.IssueStatsToken)
+			r.Delete(keysIDRoute+"/stats-token", adminHandler.RevokeStatsToken)
 
 			// MCP tokens (long-lived credentials for the MCP endpoint)
 			r.Get("/mcp-tokens", adminHandler.ListMCPTokens)

@@ -50,10 +50,18 @@ type APIKey struct {
 	// keyboard-only or assistive-technology visitor. Operators who have read
 	// their own histogram can and do lower this; operators who have not should
 	// not inherit a number that rejects their accessible traffic.
-	HISThreshold float64   `gorm:"not null;default:0.8" json:"his_threshold"`
-	Enabled      bool      `gorm:"not null;default:true" json:"enabled"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	HISThreshold float64 `gorm:"not null;default:0.8" json:"his_threshold"`
+	// StatsTokenHash is the SHA-256 of the key's read-only stats token (gs_),
+	// which lets a site's backend read this key's statistics without admin
+	// access. Nil when no token was issued: NULLs never collide in the unique
+	// index, an empty string would. Never serialised.
+	StatsTokenHash *string `gorm:"uniqueIndex;size:64" json:"-"`
+	// StatsTokenDisplay holds the token's leading characters so the dashboard
+	// can show which token is live after the secret itself is gone.
+	StatsTokenDisplay string    `gorm:"not null;default:''" json:"stats_token_display"`
+	Enabled           bool      `gorm:"not null;default:true" json:"enabled"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 // DefaultHISThreshold mirrors his.BotSuspectThreshold. It is restated here

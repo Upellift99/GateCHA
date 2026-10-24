@@ -16,6 +16,8 @@ export interface APIKey {
   his_sampling: boolean
   his_enforce: boolean
   his_threshold: number
+  /** Leading characters of the key's stats token, empty when none is issued. */
+  stats_token_display: string
   enabled: boolean
   created_at: string
   updated_at: string
@@ -24,6 +26,16 @@ export interface APIKey {
 async function rotateSecret(id: number) {
   const { data } = await api.post(`/keys/${id}/rotate-secret`)
   return data.hmac_secret as string
+}
+
+/** Issues (or replaces) the key's stats token; the secret is returned only here. */
+async function issueStatsToken(id: number) {
+  const { data } = await api.post(`/keys/${id}/stats-token`)
+  return data.stats_token as string
+}
+
+async function revokeStatsToken(id: number) {
+  await api.delete(`/keys/${id}/stats-token`)
 }
 
 export const useApiKeysStore = defineStore('apikeys', () => {
@@ -62,5 +74,5 @@ export const useApiKeysStore = defineStore('apikeys', () => {
     await fetchKeys()
   }
 
-  return { keys, loading, fetchKeys, createKey, getKey, updateKey, deleteKey, rotateSecret }
+  return { keys, loading, fetchKeys, createKey, getKey, updateKey, deleteKey, rotateSecret, issueStatsToken, revokeStatsToken }
 })

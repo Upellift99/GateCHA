@@ -33,6 +33,7 @@ const mockKey = {
   his_sampling: false,
   his_enforce: false,
   his_threshold: 0.8,
+  stats_token_display: '',
   enabled: true,
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
@@ -253,5 +254,45 @@ describe('ApiKeyDetailView', () => {
     mockApi.get.mockReset().mockReturnValue(new Promise(() => {})) // never resolves
     const wrapper = mountView()
     expect(wrapper.text()).toContain('Loading...')
+  })
+
+  it('generates a stats token and shows it once', async () => {
+    mockApi.post.mockResolvedValueOnce({ data: { stats_token: 'gs_0123456789abcdef0123456789abcdef' } })
+    mockApi.get.mockResolvedValueOnce({ data: { ...mockKey, stats_token_display: 'gs_01234567' } })
+
+    const wrapper = mountView()
+    await flushPromises()
+    expect(wrapper.text()).toContain('Stats token')
+    expect(wrapper.text()).toContain('None')
+
+    await wrapper.findAll('button').find(b => b.text() === 'Generate')!.trigger('click')
+    await flushPromises()
+
+    expect(mockApi.post).toHaveBeenCalledWith('/keys/1/stats-token')
+    expect(wrapper.text()).toContain('gs_0123456789abcdef0123456789abcdef')
+    expect(wrapper.text()).toContain('not shown again')
+    expect(wrapper.find('button[aria-label="Copy stats token"]').exists()).toBe(true)
+  })
+
+  it('revokes the stats token only after confirmation', async () => {
+    mockApi.get
+      .mockReset()
+      .mockResolvedValueOnce({ data: { ...mockKey, stats_token_display: 'gs_01234567' } })
+      .mockResolvedValueOnce({ data: { days: [] } })
+      .mockResolvedValueOnce({ data: { ...mockKey, stats_token_display: '' } })
+    mockApi.delete.mockResolvedValueOnce({})
+
+    const wrapper = mountView()
+    await flushPromises()
+    expect(wrapper.text()).toContain('gs_01234567…')
+
+    await wrapper.findAll('button').find(b => b.text() === 'Revoke')!.trigger('click')
+    expect(mockApi.delete).not.toHaveBeenCalled()
+
+    await wrapper.findAll('dialog button').find(b => b.text() === 'Revoke')!.trigger('click')
+    await flushPromises()
+
+    expect(mockApi.delete).toHaveBeenCalledWith('/keys/1/stats-token')
+    expect(wrapper.text()).toContain('None')
   })
 })

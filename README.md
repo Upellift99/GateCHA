@@ -278,6 +278,18 @@ Four things worth knowing before you switch it on:
 | `GET` | `/api/v1/challenge` | Generate a PoW challenge |
 | `POST` | `/api/v1/verify` | Verify a solution |
 
+### Key statistics (stats token auth via `Authorization: Bearer gs_xxx`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/v1/stats?days=30` | One key's statistics, read-only: totals, one row per day (zero-filled, oldest first) and the top 10 countries. `days` from 1 to 90, default 30 |
+
+The key ID cannot guard this endpoint: it is public, in the HTML of every protected page. Each key gets its own stats token instead, issued from the key's page in the dashboard (or `POST /api/admin/keys/:id/stats-token`) and shown once. Keep it server-side; the WordPress plugin uses it to show the site owner their numbers. A disabled key still answers, with `"enabled": false`.
+
+```bash
+curl -H "Authorization: Bearer gs_your_stats_token" https://your-gatecha-host/api/v1/stats?days=7
+```
+
 ### Public (no auth)
 
 | Method | Endpoint | Description |
@@ -293,6 +305,7 @@ Four things worth knowing before you switch it on:
 | `POST` | `/api/admin/keys` | Create API key |
 | `GET/PUT/DELETE` | `/api/admin/keys/:id` | Manage API key |
 | `POST` | `/api/admin/keys/:id/rotate-secret` | Rotate HMAC secret |
+| `POST/DELETE` | `/api/admin/keys/:id/stats-token` | Issue (or replace) / revoke the key's stats token |
 | `GET` | `/api/admin/stats/overview` | Global statistics |
 | `GET` | `/api/admin/stats/keys/:id` | Per-key statistics |
 | `GET` | `/healthz` | Health check |

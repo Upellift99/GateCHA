@@ -203,3 +203,37 @@ func TestMySQL_HISCalibration(t *testing.T) {
 		t.Errorf("expected 0 samples and 10 buckets, got %d / %d", empty.Samples, len(empty.ScoreHistogram))
 	}
 }
+
+// TestMySQL_StatsToken covers the two places MySQL differs from SQLite here:
+// several keys without a token share a NULL in the unique stats_token_hash
+// index, and revoking a key that has no token changes no row, which MySQL
+// reports as zero rows affected but must not read as "key not found".
+func TestMySQL_StatsToken(t *testing.T) {
+	db := testutil.SetupTestMySQL(t)
+
+	a, err := models.CreateAPIKey(db, "A", "", 0, 0, "")
+	if err != nil {
+		t.Fatalf("CreateAPIKey A: %v", err)
+	}
+	if _, err := models.CreateAPIKey(db, "B", "", 0, 0, ""); err != nil {
+		t.Fatalf("second key without a token must not collide: %v", err)
+	}
+
+	token, err := models.IssueStatsToken(db, a.ID)
+	if err != nil {
+		t.Fatalf("IssueStatsToken: %v", err)
+	}
+	found, err := models.GetAPIKeyByStatsToken(db, token)
+	if err != nil || found.ID != a.ID {
+		t.Fatalf("GetAPIKeyByStatsToken: %v, %+v", err, found)
+	}
+
+	for i := range 2 {
+		if err := models.RevokeStatsToken(db, a.ID); err != nil {
+			t.Fatalf("revoke #%d: %v", i+1, err)
+		}
+	}
+	if _, err := models.GetAPIKeyByStatsToken(db, token); err != models.ErrStatsTokenNotFound {
+		t.Errorf("revoked token: expected ErrStatsTokenNotFound, got %v", err)
+	}
+}
