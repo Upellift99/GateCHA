@@ -573,4 +573,31 @@ describe('ApiKeysView', () => {
       }
     })
   })
+
+  it('deletes a key from the list after confirmation', async () => {
+    mockApi.delete.mockResolvedValueOnce({})
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Delete Alpha"]').trigger('click')
+    expect(mockApi.delete).not.toHaveBeenCalled()
+    expect(wrapper.find('dialog').text()).toContain('Alpha')
+
+    const confirm = wrapper.findAll('dialog button').find(b => b.text() === 'Delete')!
+    await confirm.trigger('click')
+    await confirm.trigger('click')
+    await flushPromises()
+
+    expect(mockApi.delete).toHaveBeenCalledTimes(1)
+    expect(mockApi.delete).toHaveBeenCalledWith('/keys/2')
+  })
+
+  it('cancelling the dialog deletes nothing', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+    await wrapper.find('button[aria-label="Delete Bravo"]').trigger('click')
+    await wrapper.findAll('dialog button').find(b => b.text() === 'Cancel')!.trigger('click')
+    await flushPromises()
+    expect(mockApi.delete).not.toHaveBeenCalled()
+  })
 })

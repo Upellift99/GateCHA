@@ -6,9 +6,28 @@ import CopyButton from '../components/CopyButton.vue'
 import { domainList } from '../lib/format'
 import StatusChip from '../components/StatusChip.vue'
 import { keyStatus, todayUTC } from '../lib/status'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 const store = useApiKeysStore()
 const statsStore = useStatsStore()
+
+// Deleting from the list, so a key no longer means opening its page first.
+// Same confirmation as on the key's page: the key and its statistics go.
+const pendingDelete = ref<APIKey | null>(null)
+const deleting = ref(false)
+
+async function confirmDelete() {
+  // The dialog stays up until the request ends; without this a second click
+  // sends a second DELETE.
+  if (deleting.value || !pendingDelete.value) return
+  deleting.value = true
+  try {
+    await store.deleteKey(pendingDelete.value.id)
+    pendingDelete.value = null
+  } finally {
+    deleting.value = false
+  }
+}
 
 type SortColumn = 'name' | 'domain' | 'enabled' | 'challenges' | 'verified' | 'failed' | 'lastUsed'
 const sortColumn = ref<SortColumn>('name')
@@ -356,6 +375,14 @@ onMounted(() => {
                   <router-link :to="`/keys/${key.id}/edit`" :aria-label="`Edit ${key.name || key.key_id}`" class="inline-flex min-h-8 items-center px-2 text-ink-2 hover:text-ink text-sm">
                     Edit
                   </router-link>
+                  <button
+                    type="button"
+                    :aria-label="`Delete ${key.name || key.key_id}`"
+                    class="inline-flex min-h-8 items-center px-2 text-fail hover:text-ink text-sm"
+                    @click="pendingDelete = key"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -405,5 +432,17 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <ConfirmDialog
+      :open="pendingDelete !== null"
+      title="Delete API Key?"
+      confirm-label="Delete"
+      tone="danger"
+      :busy="deleting"
+      @cancel="pendingDelete = null"
+      @confirm="confirmDelete"
+    >
+      This will permanently delete <strong class="font-medium text-ink-2">{{ pendingDelete?.name || pendingDelete?.key_id }}</strong>
+      and all its statistics. This action cannot be undone.
+    </ConfirmDialog>
   </div>
 </template>
