@@ -1,52 +1,46 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useStatsStore } from '../stores/stats'
 import { useApiKeysStore } from '../stores/apikeys'
-import StatsSummaryCard from '../components/StatsSummaryCard.vue'
+import AttentionBanner from '../components/AttentionBanner.vue'
+import KeysToday from '../components/KeysToday.vue'
+import VerificationsChart from '../components/VerificationsChart.vue'
 import CountryTraffic from '../components/CountryTraffic.vue'
-import NetworkStatus from '../components/NetworkStatus.vue'
-import LinesChart from '../components/LinesChart.vue'
-import LineBullet from '../components/LineBullet.vue'
-import { lineStatus, todayUTC } from '../lib/lines'
+import { keyStatus, todayUTC, type FailingKey } from '../lib/status'
 
 const statsStore = useStatsStore()
 const keysStore = useApiKeysStore()
 
-// The board hovers a line; the chart legend pins one. Hover wins while it lasts.
-const hovered = ref<number | null>(null)
-const pinned = ref<number | null>(null)
-
 const today = computed(() => todayUTC())
-const todayRows = computed(() => statsStore.keysDaily.filter((d) => d.date === today.value))
-const challengesToday = computed(() => todayRows.value.reduce((n, d) => n + d.challenges_issued, 0))
-const failedToday = computed(() => todayRows.value.reduce((n, d) => n + d.verifications_fail, 0))
-
-const statuses = computed(() =>
-  keysStore.keys.map((k) => ({ id: k.id, status: lineStatus(k.enabled, todayRows.value.find((d) => d.api_key_id === k.id)) })),
+const todayLabel = computed(() =>
+  new Date(today.value + 'T00:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' }),
 )
-const disturbed = computed(() => statuses.value.filter((s) => s.status === 'disturbed'))
-const closedCount = computed(() => statuses.value.filter((s) => s.status === 'closed').length)
+const todayRows = computed(() => statsStore.keysDaily.filter((d) => d.date === today.value))
+const sum = (f: (d: (typeof todayRows.value)[number]) => number) => todayRows.value.reduce((n, d) => n + f(d), 0)
+const issuedToday = computed(() => sum((d) => d.challenges_issued))
+const verifiedToday = computed(() => sum((d) => d.verifications_ok))
+const failedToday = computed(() => sum((d) => d.verifications_fail))
+const checkedToday = computed(() => verifiedToday.value + failedToday.value)
+const passPct = computed(() => (checkedToday.value ? Math.round((verifiedToday.value / checkedToday.value) * 100) : 0))
 
-const successRate = computed(() => {
+const failing = computed<FailingKey[]>(() =>
+  keysStore.keys
+    .map((key) => ({ key, row: todayRows.value.find((d) => d.api_key_id === key.id) }))
+    .filter(({ key, row }) => keyStatus(key.enabled, row) === 'failing')
+    .map(({ key, row }) => ({ key, failed: row!.verifications_fail, verified: row!.verifications_ok + row!.verifications_fail }))
+    .sort((a, b) => b.failed - a.failed),
+)
+const failedOnFailing = computed(() => failing.value.reduce((n, f) => n + f.failed, 0))
+
+const thirtyDay = computed(() => {
   const o = statsStore.overview
-  if (!o) return 0
-  const total = o.total_verifications_ok + o.total_verifications_fail
-  return total === 0 ? 0 : Math.round((o.total_verifications_ok / total) * 100)
+  if (!o) return { issued: 0, pct: 0 }
+  const days = o.daily ?? []
+  const issued = days.reduce((n, d) => n + d.challenges_issued, 0)
+  const ok = days.reduce((n, d) => n + d.verifications_ok, 0)
+  const fail = days.reduce((n, d) => n + d.verifications_fail, 0)
+  return { issued, pct: ok + fail ? Math.round((ok / (ok + fail)) * 100) : 0 }
 })
-
-// The chart opens on the problem: the first disturbed line is pinned until the
-// admin picks another line (or clears it) from the legend.
-let pinTouched = false
-watch(disturbed, (lines) => {
-  if (!pinTouched && pinned.value === null && lines.length) pinned.value = lines[0]!.id
-})
-function pin(id: number | null) {
-  pinTouched = true
-  pinned.value = id
-}
-
-// The chart and its legend read in line order.
-const linesById = computed(() => [...keysStore.keys].sort((a, b) => a.id - b.id))
 
 const hisSuspectedPct = computed(() => {
   const o = statsStore.overview
@@ -56,7 +50,7 @@ const hisSuspectedPct = computed(() => {
 
 onMounted(() => {
   statsStore.fetchOverview(30)
-  statsStore.fetchKeysDaily(30)
+  statsStore.fetchKeysDaily(7)
   keysStore.fetchKeys()
 })
 </script>
@@ -66,7 +60,7 @@ onMounted(() => {
     <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-[32px] font-extrabold leading-9 tracking-tight text-ink">Dashboard</h1>
-        <p class="mt-1 text-sm text-muted">Every API key is a line of your network. Totals cover all time; today is the current UTC day.</p>
+        <p class="mt-1 text-sm text-muted">Today, {{ todayLabel }} (UTC)</p>
       </div>
       <router-link
         to="/keys/new"
@@ -78,59 +72,82 @@ onMounted(() => {
     </div>
 
     <div v-if="statsStore.overview" class="space-y-6">
-      <!-- KPI strip: four figures divided by hairlines -->
-      <section class="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-rule bg-rule lg:grid-cols-4" aria-label="Totals">
-        <StatsSummaryCard label="Challenges · all time" :value="statsStore.overview.total_challenges" :hint="`${challengesToday.toLocaleString('en-US')} today`" />
-        <StatsSummaryCard label="Verified · all time" :value="statsStore.overview.total_verifications_ok">
-          <span class="font-bold text-ok">{{ successRate }}% success</span>
-        </StatsSummaryCard>
-        <StatsSummaryCard label="Failed · all time" :value="statsStore.overview.total_verifications_fail" tone="fail">
-          <template v-if="failedToday">
-            <span class="font-bold text-fail">{{ failedToday.toLocaleString('en-US') }} today</span>
-            <template v-if="disturbed.length">
-              on
-              <span class="inline-flex gap-0.5"><LineBullet v-for="d in disturbed" :key="d.id" :id="d.id" size="sm" /></span>
-            </template>
-          </template>
-          <template v-else>None today</template>
-        </StatsSummaryCard>
-        <StatsSummaryCard
-          label="Active lines"
-          :value="statsStore.overview.active_keys"
-          :hint="`${disturbed.length} disturbed · ${closedCount} closed`"
-        />
-      </section>
+      <AttentionBanner :failing="failing" :active-keys="statsStore.overview.active_keys" :checked-today="checkedToday" />
 
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div class="space-y-6 lg:col-span-2 min-w-0">
-          <NetworkStatus :keys="keysStore.keys" :daily="statsStore.keysDaily" :selected="hovered" @select="hovered = $event" />
-          <LinesChart
-            v-if="keysStore.keys.length"
-            :keys="linesById"
-            :daily="statsStore.keysDaily"
-            :selected="hovered"
-            :pinned="pinned"
-            @pin="pin"
-          />
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div class="min-w-0 space-y-6">
+          <!-- Today's funnel: puzzles handed out, then what the sites' backends checked -->
+          <section class="rounded-md border border-rule bg-panel" aria-labelledby="today-title">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-rule px-5 py-3">
+              <h2 id="today-title" class="text-[17px] font-extrabold text-ink">Today's verifications</h2>
+              <span class="text-[13px] text-muted">challenge issued → solved → checked by your backend</span>
+            </div>
+            <div class="p-5">
+              <dl class="grid grid-cols-3 gap-4 sm:gap-5">
+                <div>
+                  <dt class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Challenges</dt>
+                  <dd class="mt-1.5 font-mono text-[26px] font-semibold leading-8 sm:text-[32px] sm:leading-10 tracking-tight tabular-nums text-ink">{{ issuedToday.toLocaleString('en-US') }}</dd>
+                  <dd class="mt-1 hidden text-xs text-muted sm:block">widgets that asked for a puzzle</dd>
+                </div>
+                <div>
+                  <dt class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Verified</dt>
+                  <dd class="mt-1.5 font-mono text-[26px] font-semibold leading-8 sm:text-[32px] sm:leading-10 tracking-tight tabular-nums text-ok">{{ verifiedToday.toLocaleString('en-US') }}</dd>
+                  <dd class="mt-1 hidden text-xs text-muted sm:block">
+                    <template v-if="checkedToday">{{ passPct }}% of verifications passed</template>
+                    <template v-else>no verification yet today</template>
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Failed</dt>
+                  <dd class="mt-1.5 font-mono text-[26px] font-semibold leading-8 sm:text-[32px] sm:leading-10 tracking-tight tabular-nums" :class="failedToday ? 'text-fail' : 'text-ink'">{{ failedToday.toLocaleString('en-US') }}</dd>
+                  <dd class="mt-1 hidden text-xs text-muted sm:block">
+                    <template v-if="failing.length === 1 && failedOnFailing">{{ failedOnFailing.toLocaleString('en-US') }} on one key</template>
+                    <template v-else-if="failing.length > 1">{{ failedOnFailing.toLocaleString('en-US') }} on {{ failing.length }} keys</template>
+                    <template v-else>spread across keys</template>
+                  </dd>
+                </div>
+              </dl>
+              <div v-if="checkedToday" class="mt-5">
+                <div class="flex h-3.5 overflow-hidden rounded-[3px] bg-sunken" aria-hidden="true">
+                  <span class="block h-full bg-ok" :style="{ width: (verifiedToday / checkedToday) * 100 + '%' }"></span>
+                  <span class="block h-full bg-fail" :style="{ width: (failedToday / checkedToday) * 100 + '%' }"></span>
+                </div>
+                <div class="mt-2 flex justify-between text-xs text-muted">
+                  <span>Verified <span class="font-mono tabular-nums">{{ verifiedToday.toLocaleString('en-US') }}</span></span>
+                  <span>Failed <span class="font-mono tabular-nums">{{ failedToday.toLocaleString('en-US') }}</span></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <KeysToday :keys="keysStore.keys" :daily="statsStore.keysDaily" />
         </div>
 
-        <aside class="space-y-6 min-w-0">
-          <CountryTraffic :countries="statsStore.overview.countries ?? []" />
+        <aside class="min-w-0 space-y-6">
+          <section class="rounded-md border border-rule bg-panel" aria-labelledby="month-title">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-rule px-5 py-3">
+              <h2 id="month-title" class="text-[17px] font-extrabold text-ink">Last 30 days</h2>
+              <span class="text-[13px] text-muted"><span class="font-mono tabular-nums">{{ thirtyDay.issued.toLocaleString('en-US') }}</span> challenges · {{ thirtyDay.pct }}% verified</span>
+            </div>
+            <div class="px-5 pt-4 pb-4">
+              <VerificationsChart :data="statsStore.overview.daily ?? []" />
+            </div>
+          </section>
+
+          <CountryTraffic :countries="statsStore.overview.countries ?? []" title="Countries" />
 
           <!-- HIS: instance-wide totals. Not labelled "Monitor mode": blocking is
                a per-key switch, so this panel cannot claim the whole instance. -->
           <section class="rounded-md border border-rule bg-panel" aria-labelledby="his-title">
-            <div class="flex items-center justify-between gap-3 border-b border-rule px-5 py-3">
-              <h2 id="his-title" class="text-[17px] font-extrabold text-ink">Human Interaction Signature</h2>
-              <span class="whitespace-nowrap rounded-[3px] border border-rule px-1.5 pt-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted">All keys</span>
+            <div class="flex items-baseline justify-between gap-3 border-b border-rule px-5 py-3">
+              <h2 id="his-title" class="text-[17px] font-extrabold text-ink">Bot-suspected</h2>
+              <span class="font-mono font-bold tabular-nums text-ink">{{ hisSuspectedPct }}%</span>
             </div>
-            <div class="grid grid-cols-3 gap-px bg-rule">
-              <StatsSummaryCard label="Observed" :value="statsStore.overview.total_his_observations" />
-              <StatsSummaryCard label="Suspected" :value="statsStore.overview.total_his_bot_suspected" tone="fail" />
-              <StatsSummaryCard label="Share" :value="hisSuspectedPct" suffix="%" />
-            </div>
-            <p class="border-t border-rule-soft px-5 py-3 text-xs leading-[18px] text-muted">
-              Scores how forms are filled, from aggregates only. Blocking is off by default and switched on per key, once its calibration histogram shows where to set the threshold.
+            <p class="px-5 py-3 text-[13px] leading-5 text-muted">
+              <span class="font-mono tabular-nums text-ink">{{ statsStore.overview.total_his_bot_suspected.toLocaleString('en-US') }}</span>
+              of
+              <span class="font-mono tabular-nums text-ink">{{ statsStore.overview.total_his_observations.toLocaleString('en-US') }}</span>
+              scored forms looked automated (Human Interaction Signature). Blocking is off by default and switched on per key.
             </p>
           </section>
         </aside>

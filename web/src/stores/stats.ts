@@ -72,8 +72,8 @@ export const useStatsStore = defineStore('stats', () => {
   const keyStats = ref<DailyStat[]>([])
   const keyCountries = ref<CountryStat[]>([])
   const keysSummary = ref<Record<string, KeyStatsSummary>>({})
-  // Every key's daily rows in one request, for the network board and the
-  // per-line chart (GET /stats/keys-daily).
+  // Every key's daily rows in one request, for the dashboard's keys list and
+  // the keys page status (GET /stats/keys-daily).
   const keysDaily = ref<DailyStat[]>([])
 
   async function fetchOverview(days = 30) {

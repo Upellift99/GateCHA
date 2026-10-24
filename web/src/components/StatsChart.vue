@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { Line } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -13,15 +13,11 @@ import {
   Filler,
 } from 'chart.js'
 import type { DailyStat } from '../stores/stats'
-import { lastDays, lineVars } from '../lib/lines'
+import { lastDays } from '../lib/status'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
-const props = defineProps<{
-  data: DailyStat[]
-  /** The key's line: its challenges series takes that line's colour. */
-  lineId?: number
-}>()
+const props = defineProps<{ data: DailyStat[] }>()
 
 // Chart.js paints on canvas and cannot read CSS variables, so resolve the
 // theme tokens here and read them again when the system theme flips.
@@ -40,14 +36,9 @@ function token(name: string, fallback: string): string {
   return v || fallback
 }
 
-function resolve(cssValue: string, fallback: string): string {
-  const m = /^var\((--[\w-]+)\)$/.exec(cssValue)
-  return m ? token(m[1]!, fallback) : cssValue
-}
-
 function readColours() {
   return {
-    challenges: props.lineId ? resolve(lineVars(props.lineId).stroke, '#1F4FC1') : token('--color-link', '#1F4FC1'),
+    challenges: token('--color-link', '#1F4FC1'),
     ok: token('--color-ok', '#00754E'),
     fail: token('--color-fail', '#C8001A'),
     muted: token('--color-muted', '#5B6478'),
@@ -56,7 +47,6 @@ function readColours() {
 }
 
 const colours = ref(readColours())
-watch(() => props.lineId, onThemeChange)
 
 // The API only returns days that had traffic. Plotting those rows as-is draws
 // a line straight across quiet days, and a single day collapses the chart, so

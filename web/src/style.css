@@ -19,11 +19,10 @@
   src: url('../node_modules/@fontsource-variable/overpass-mono/files/overpass-mono-latin-wght-normal.woff2') format('woff2-variations');
 }
 
-/* "Info trafic": every API key is a numbered line of the network. Semantic
-   tokens only; the dark theme below redefines the same names, so components
+/* Semantic tokens only; the dark theme below redefines the same names, so components
    never branch on the theme. Text pairs hold WCAG AA (4.5:1) on ground, panel
    and sunken in both themes; strokes and marks hold 3:1. `static` emits every
-   variable even when no utility uses it: line colours are applied inline. */
+   variable even when no utility uses it: charts and sparklines read them inline. */
 @theme static {
   --font-sans: 'Overpass', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Overpass Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -39,7 +38,7 @@
   --color-rule-soft: #EBEEF2;
   --color-rule-strong: #B9C1CD;
 
-  /* The signage band and actions */
+  /* The navy header band and actions */
   --color-band: #10285A;
   --color-band-ink: #FFFFFF;
   --color-band-muted: #C6D0E4;
@@ -73,17 +72,6 @@
   --color-code: #0E1A33;
   --color-code-ink: #D7E3FF;
 
-  /* Line colours: bullet fill, the number set on it, and a chart stroke tuned
-     to hold 3:1 on this theme's panel. Colours cycle; the number is the identity. */
-  --color-line-1: #FFCD00; --color-line-1-ink: #14213D; --color-line-1-stroke: #B38F00;
-  --color-line-2: #00A88F; --color-line-2-ink: #14213D; --color-line-2-stroke: #00A88F;
-  --color-line-3: #6E4C9F; --color-line-3-ink: #FFFFFF; --color-line-3-stroke: #6E4C9F;
-  --color-line-4: #F28E1C; --color-line-4-ink: #14213D; --color-line-4-stroke: #C86A00;
-  --color-line-5: #00AEEF; --color-line-5-ink: #14213D; --color-line-5-stroke: #0089C2;
-  --color-line-6: #84B817; --color-line-6-ink: #14213D; --color-line-6-stroke: #5E8A00;
-  --color-line-7: #A0006E; --color-line-7-ink: #FFFFFF; --color-line-7-stroke: #A0006E;
-  --color-line-8: #8D8D8D; --color-line-8-ink: #14213D; --color-line-8-stroke: #767676;
-  --color-line-ring: rgb(20 33 61 / 0.18);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -122,16 +110,6 @@
     --color-backdrop: rgb(3 6 14 / 0.72);
 
     --color-code: #070E1D;
-
-    --color-line-1-stroke: #FFCD00;
-    --color-line-2-stroke: #00C2A5;
-    --color-line-3-stroke: #A68BDB;
-    --color-line-4-stroke: #F28E1C;
-    --color-line-5-stroke: #33C3F5;
-    --color-line-6-stroke: #9CD12A;
-    --color-line-7-stroke: #E04FA8;
-    --color-line-8-stroke: #A3A3A3;
-    --color-line-ring: rgb(231 235 243 / 0.28);
   }
 }
 

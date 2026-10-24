@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/auth'
+import BrandMark from './BrandMark.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -27,12 +28,12 @@ function logout() {
 </script>
 
 <template>
-  <!-- The signage band: navy in both themes, the navigation lives on it. -->
+  <!-- The header band: navy in both themes, the navigation lives on it. -->
   <nav class="sticky top-0 z-40 bg-band text-band-ink border-b border-band-rule" aria-label="Main">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex h-14 items-stretch gap-6 sm:gap-10">
         <router-link to="/" class="flex items-center gap-2.5 font-extrabold text-lg tracking-tight" aria-label="GateCHA home">
-          <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-band-ink text-band font-extrabold text-base leading-none" aria-hidden="true">G</span>
+          <BrandMark />
           GateCHA
         </router-link>
         <div class="hidden sm:flex items-stretch gap-1">

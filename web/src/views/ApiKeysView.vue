@@ -3,10 +3,9 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useApiKeysStore, type APIKey } from '../stores/apikeys'
 import { useStatsStore } from '../stores/stats'
 import CopyButton from '../components/CopyButton.vue'
-import LineBullet from '../components/LineBullet.vue'
 import { domainList } from '../lib/format'
 import StatusChip from '../components/StatusChip.vue'
-import { lineStatus, todayUTC } from '../lib/lines'
+import { keyStatus, todayUTC } from '../lib/status'
 
 const store = useApiKeysStore()
 const statsStore = useStatsStore()
@@ -33,7 +32,7 @@ const todayByKey = computed(() => {
 
 function todayStatus(key: APIKey) {
   const row = todayByKey.value.get(key.id)
-  return { status: lineStatus(key.enabled, row), failed: row?.verifications_fail ?? 0 }
+  return { status: keyStatus(key.enabled, row), failed: row?.verifications_fail ?? 0 }
 }
 
 function getLastUsed(keyId: number): string {
@@ -301,11 +300,10 @@ onMounted(() => {
               <tr
                 v-for="key in pagedKeys"
                 :key="key.id"
-                :class="todayStatus(key).status === 'disturbed' ? 'bg-warn-soft' : 'hover:bg-sunken'"
+                :class="todayStatus(key).status === 'failing' ? 'bg-warn-soft' : 'hover:bg-sunken'"
               >
                 <td class="px-4 py-3">
-                  <div class="flex items-center gap-3">
-                    <LineBullet :id="key.id" />
+                  <div>
                     <div class="min-w-0">
                       <router-link :to="`/keys/${key.id}`" class="inline-flex min-h-6 items-center text-sm font-bold text-ink hover:text-link">{{ key.name || '-' }}</router-link>
                       <div class="flex items-center gap-1.5">

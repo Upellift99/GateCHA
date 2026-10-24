@@ -151,7 +151,7 @@ describe('ApiKeysView', () => {
 
     const rows = wrapper.findAll('tbody tr')
     expect(rows).toHaveLength(3)
-    expect(rows[0].text()).toContain('Closed')
+    expect(rows[0].text()).toContain('Disabled')
   })
 
   it('sorts by challenges stat', async () => {
