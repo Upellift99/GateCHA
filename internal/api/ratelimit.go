@@ -111,6 +111,53 @@ func RateLimitMiddleware(requestsPerMinute int) func(http.Handler) http.Handler 
 	}
 }
 
+// exhausted reports whether ip has no token left, refilling but not consuming.
+func (l *ipRateLimiter) exhausted(ip string) bool {
+	now := l.now()
+
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	v, ok := l.visitors[ip]
+	if !ok {
+		return false
+	}
+	return min(l.burst, v.tokens+now.Sub(v.lastSeen).Seconds()*l.ratePerSec) < 1
+}
+
+// statusRecorder remembers the status code a handler wrote.
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (s *statusRecorder) WriteHeader(code int) {
+	s.status = code
+	s.ResponseWriter.WriteHeader(code)
+}
+
+// FailedAuthRateLimitMiddleware caps, per IP, the requests that fail API key
+// authentication (401). It runs before APIKeyMiddleware, so an IP cycling
+// through made-up keys is stopped before each one costs a database lookup,
+// while requests carrying a valid key never draw on this budget.
+func FailedAuthRateLimitMiddleware(requestsPerMinute int) func(http.Handler) http.Handler {
+	limiter := newIPRateLimiter(requestsPerMinute)
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ip := clientIP(r)
+			if limiter.exhausted(ip) {
+				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": "rate limit exceeded"})
+				return
+			}
+			rec := &statusRecorder{ResponseWriter: w, status: http.StatusOK}
+			next.ServeHTTP(rec, r)
+			if rec.status == http.StatusUnauthorized {
+				limiter.allow(ip)
+			}
+		})
+	}
+}
+
 // SourceAndKeyRateLimitMiddleware applies the per-IP budget to each (client IP,
 // API key) pair rather than to the IP alone. It guards /verify, which is called
 // by site backends, not browsers: on shared hosting many sites post from one

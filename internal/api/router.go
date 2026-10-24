@@ -72,7 +72,11 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 		})
 		// Site backends verify: the per-IP budget is counted per key, so sites
 		// sharing a hosting provider's outbound IP do not throttle each other.
+		// Failed authentications still count per IP before the key lookup.
 		r.Group(func(r chi.Router) {
+			if cfg.RateLimitEnabled {
+				r.Use(FailedAuthRateLimitMiddleware(cfg.RateLimitAPI))
+			}
 			r.Use(APIKeyMiddleware(db))
 			if cfg.RateLimitEnabled {
 				r.Use(SourceAndKeyRateLimitMiddleware(cfg.RateLimitAPI))

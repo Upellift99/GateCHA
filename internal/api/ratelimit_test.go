@@ -242,12 +242,30 @@ func TestChallengeRateLimit_StaysPerIP(t *testing.T) {
 	}
 }
 
-// An unknown key is refused by auth before it can open a bucket of its own.
-func TestVerifyRateLimit_UnknownKeyRejectedFirst(t *testing.T) {
-	router, _, _ := limitedRouter(t, 1)
+// Made-up keys are refused (401) and, past the per-IP budget, stopped (429)
+// before any key lookup; a valid key from the same IP is not affected.
+func TestVerifyRateLimit_FailedAuthCappedPerIP(t *testing.T) {
+	router, keyA, _ := limitedRouter(t, 3)
+	const attacker = "203.0.113.8"
+
 	for i := range 3 {
-		if code := hit(router, "POST", "/api/v1/verify?apiKey=gk_000000000000000000000000", "203.0.113.8"); code != http.StatusUnauthorized {
+		if code := hit(router, "POST", "/api/v1/verify?apiKey=gk_000000000000000000000000", attacker); code != http.StatusUnauthorized {
 			t.Fatalf("request %d: expected 401, got %d", i+1, code)
 		}
+	}
+	if code := hit(router, "POST", "/api/v1/verify?apiKey=gk_111111111111111111111111", attacker); code != http.StatusTooManyRequests {
+		t.Errorf("failed-auth budget spent: expected 429, got %d", code)
+	}
+	if code := hit(router, "POST", "/api/v1/verify?apiKey=gk_000000000000000000000000", "198.51.100.20"); code != http.StatusUnauthorized {
+		t.Errorf("another IP: expected 401, got %d", code)
+	}
+
+	// Valid keys never draw on the failed-auth budget.
+	router, keyA, _ = limitedRouter(t, 3)
+	for range 3 {
+		hit(router, "POST", "/api/v1/verify?apiKey="+keyA, attacker)
+	}
+	if code := hit(router, "POST", "/api/v1/verify?apiKey=gk_000000000000000000000000", attacker); code != http.StatusUnauthorized {
+		t.Errorf("valid traffic consumed the failed-auth budget: expected 401, got %d", code)
 	}
 }
