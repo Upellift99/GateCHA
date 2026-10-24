@@ -14,10 +14,15 @@ const name = (k: APIKey) => k.name || k.key_id
 <template>
   <section
     v-if="failing.length"
-    class="grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-3 rounded-md border border-warn-edge border-l-4 border-l-warn bg-warn-soft px-5 py-4 sm:grid-cols-[auto_1fr_auto] sm:items-center"
+    class="grid grid-cols-[auto_1fr] items-start gap-x-4 gap-y-3 rounded-md border border-warn-edge bg-warn-soft px-5 py-4 sm:grid-cols-[auto_1fr_auto] sm:items-center"
     aria-labelledby="attention-title"
   >
-    <span class="grid h-9 w-9 place-items-center rounded-full bg-warn text-xl font-extrabold text-warn-ink" aria-hidden="true">!</span>
+    <span class="grid h-9 w-9 place-items-center rounded-full bg-warn text-warn-ink" aria-hidden="true">
+      <svg class="h-5 w-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+        <path d="M10 5v6" />
+        <circle cx="10" cy="14.75" r="0.6" fill="currentColor" />
+      </svg>
+    </span>
     <div class="min-w-0">
       <h2 id="attention-title" class="text-[17px] font-extrabold text-ink">
         {{ failing.length === 1 ? '1 key needs attention' : `${failing.length} keys need attention` }}

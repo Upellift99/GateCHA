@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Overpass, a typeface derived from highway signage, carries the UI; Overpass
+/* Overpass carries the UI; Overpass
    Mono sets every count in tabular figures. Both ship with the app (no font
    CDN: the admin stays tracking-free). Latin subset only. */
 @font-face {
@@ -61,8 +61,8 @@
   --color-fail: #C8001A;
   --color-fail-soft: #FDECEE;
   --color-fail-edge: #F4B6BE;
-  --color-closed: #ECEDEF;
-  --color-closed-ink: #5E6166;
+  --color-disabled: #ECEDEF;
+  --color-disabled-ink: #5E6166;
   --color-ok-edge: #A9DCC4;
   --color-danger: #C8001A;
   --color-danger-hover: #A30015;
@@ -102,8 +102,8 @@
     --color-fail: #FF6B7A;
     --color-fail-soft: #2E1219;
     --color-fail-edge: #6B2430;
-    --color-closed: #232C3F;
-    --color-closed-ink: #AEB6C6;
+    --color-disabled: #232C3F;
+    --color-disabled-ink: #AEB6C6;
     --color-ok-edge: #1F5A45;
     --color-danger: #C92A3E;
     --color-danger-hover: #B01F33;

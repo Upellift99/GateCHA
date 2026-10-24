@@ -1,199 +1,189 @@
 ---
 name: GateCHA
-description: Self-hosted ALTCHA proof-of-work CAPTCHA; the admin reads as a transit network status board, "Info trafic".
+description: Self-hosted ALTCHA proof-of-work CAPTCHA; the admin is a plain operations console that says first whether any key is failing.
 colors:
-  signage-navy: "#10285A"
-  signage-navy-deep: "#0B1E45"
+  band: "#10285A"
   band-ink: "#FFFFFF"
   band-muted: "#C6D0E4"
   band-rule: "#2A4479"
-  route-blue: "#1F4FC1"
-  route-blue-deep: "#163B94"
-  porcelain-ground: "#F3F5F7"
-  panel-white: "#FFFFFF"
-  sunken-grey: "#F7F8FA"
-  ink-navy: "#14213D"
-  ink-secondary: "#3A4560"
-  muted-slate: "#5B6478"
-  hairline: "#DDE2E8"
-  hairline-soft: "#EBEEF2"
-  hairline-strong: "#B9C1CD"
-  normal-green: "#00754E"
-  normal-green-soft: "#E3F4EC"
-  normal-green-edge: "#A9DCC4"
-  disturbed-amber: "#E8A400"
-  disturbed-amber-ink: "#2A1E00"
-  disturbed-amber-text: "#8A5A00"
-  disturbed-amber-soft: "#FFF7E0"
-  disturbed-amber-edge: "#F1D88E"
-  failure-red: "#C8001A"
-  failure-red-soft: "#FDECEE"
-  failure-red-edge: "#F4B6BE"
-  danger-red-deep: "#A30015"
-  closed-grey: "#ECEDEF"
-  closed-grey-ink: "#5E6166"
-  code-night: "#0E1A33"
-  code-night-ink: "#D7E3FF"
-  line-1: "#FFCD00"
-  line-1-stroke: "#B38F00"
-  line-2: "#00A88F"
-  line-2-stroke: "#00A88F"
-  line-3: "#6E4C9F"
-  line-3-stroke: "#6E4C9F"
-  line-4: "#F28E1C"
-  line-4-stroke: "#C86A00"
-  line-5: "#00AEEF"
-  line-5-stroke: "#0089C2"
-  line-6: "#84B817"
-  line-6-stroke: "#5E8A00"
-  line-7: "#A0006E"
-  line-7-stroke: "#A0006E"
-  line-8: "#8D8D8D"
-  line-8-stroke: "#767676"
+  action: "#10285A"
+  action-hover: "#0B1E45"
+  action-ink: "#FFFFFF"
+  link: "#1F4FC1"
+  link-hover: "#163B94"
+  focus: "#1F4FC1"
+  mark-yellow: "#FFCD00"
+  ok: "#00754E"
+  ok-soft: "#E3F4EC"
+  ok-edge: "#A9DCC4"
+  warn: "#E8A400"
+  warn-ink: "#2A1E00"
+  warn-text: "#8A5A00"
+  warn-soft: "#FFF7E0"
+  warn-edge: "#F1D88E"
+  fail: "#C8001A"
+  fail-soft: "#FDECEE"
+  fail-edge: "#F4B6BE"
+  danger: "#C8001A"
+  danger-hover: "#A30015"
+  disabled: "#ECEDEF"
+  disabled-ink: "#5E6166"
+  ground: "#F3F5F7"
+  panel: "#FFFFFF"
+  sunken: "#F7F8FA"
+  ink: "#14213D"
+  ink-2: "#3A4560"
+  muted: "#5B6478"
+  rule: "#DDE2E8"
+  rule-soft: "#EBEEF2"
+  rule-strong: "#B9C1CD"
+  code: "#0E1A33"
+  code-ink: "#D7E3FF"
+  backdrop: "rgb(11 18 33 / 0.6)"
 typography:
   display:
-    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "32px"
     fontWeight: 800
     lineHeight: "36px"
     letterSpacing: "-0.025em"
   headline:
-    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "24px"
     fontWeight: 800
     lineHeight: "32px"
     letterSpacing: "-0.025em"
   title:
-    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "17px"
     fontWeight: 800
     lineHeight: "1.5"
   body:
-    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: "20px"
   caption:
-    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "12px"
     fontWeight: 400
     lineHeight: "16px"
   label:
-    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+    fontFamily: "Overpass, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "11px"
     fontWeight: 700
-    lineHeight: "16px"
     letterSpacing: "0.09em"
   figure:
-    fontFamily: "'Overpass Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    fontFamily: "Overpass Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
     fontSize: "32px"
     fontWeight: 600
     lineHeight: "40px"
     letterSpacing: "-0.025em"
     fontFeature: "tnum"
   data:
-    fontFamily: "'Overpass Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    fontFamily: "Overpass Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: "20px"
-    fontFeature: "tnum"
-  axis:
-    fontFamily: "'Overpass Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-    fontSize: "11px"
-    fontWeight: 400
     fontFeature: "tnum"
 rounded:
   chip: "3px"
   sm: "4px"
   md: "6px"
+  mark: "7px"
   full: "9999px"
 spacing:
-  row: "8px"
+  row: "10px"
   panel-head: "12px"
-  inset: "20px"
+  panel-inset: "20px"
   card: "24px"
-  gutter: "24px"
-  page: "32px"
+  section: "24px"
+  band: "56px"
+  aside: "380px"
+  container: "1280px"
 components:
-  signage-band:
-    backgroundColor: "{colors.signage-navy}"
+  button-primary:
+    backgroundColor: "{colors.action}"
+    textColor: "{colors.action-ink}"
+    typography: "{typography.body}"
+    rounded: "{rounded.md}"
+    padding: "8px 16px"
+    height: "40px"
+  button-primary-hover:
+    backgroundColor: "{colors.action-hover}"
+    textColor: "{colors.action-ink}"
+  button-secondary:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "8px 16px"
+  button-secondary-hover:
+    backgroundColor: "{colors.sunken}"
+  button-danger:
+    backgroundColor: "{colors.danger}"
+    textColor: "{colors.action-ink}"
+    rounded: "{rounded.md}"
+    padding: "8px 16px"
+  button-danger-hover:
+    backgroundColor: "{colors.danger-hover}"
+  input:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink}"
+    typography: "{typography.body}"
+    rounded: "{rounded.md}"
+    padding: "8px 12px"
+  panel:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.panel-inset}"
+  card:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.card}"
+  status-failing:
+    backgroundColor: "{colors.warn}"
+    textColor: "{colors.warn-ink}"
+    typography: "{typography.caption}"
+    rounded: "{rounded.chip}"
+    padding: "2px 8px"
+  status-ok:
+    textColor: "{colors.ok}"
+    rounded: "{rounded.chip}"
+    padding: "2px 8px"
+  status-idle:
+    textColor: "{colors.muted}"
+    rounded: "{rounded.chip}"
+    padding: "2px 8px"
+  status-disabled:
+    backgroundColor: "{colors.disabled}"
+    textColor: "{colors.disabled-ink}"
+    rounded: "{rounded.chip}"
+    padding: "2px 8px"
+  attention-banner:
+    backgroundColor: "{colors.warn-soft}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "16px 20px"
+  all-clear-line:
+    backgroundColor: "{colors.ok-soft}"
+    textColor: "{colors.ok}"
+    rounded: "{rounded.md}"
+    padding: "12px 20px"
+  nav-band:
+    backgroundColor: "{colors.band}"
     textColor: "{colors.band-ink}"
-    height: "56px"
+    height: "{spacing.band}"
   nav-tab:
     textColor: "{colors.band-muted}"
     typography: "{typography.body}"
     padding: "0 16px"
   nav-tab-active:
     textColor: "{colors.band-ink}"
-  button-primary:
-    backgroundColor: "{colors.signage-navy}"
-    textColor: "{colors.band-ink}"
-    rounded: "{rounded.md}"
-    padding: "8px 16px"
-  button-primary-hover:
-    backgroundColor: "{colors.signage-navy-deep}"
-  button-header-cta:
-    backgroundColor: "{colors.signage-navy}"
-    textColor: "{colors.band-ink}"
-    rounded: "{rounded.md}"
-    padding: "0 16px"
-    height: "40px"
-  button-secondary:
-    backgroundColor: "{colors.panel-white}"
-    textColor: "{colors.ink-navy}"
-    rounded: "{rounded.md}"
-    padding: "8px 16px"
-  button-secondary-hover:
-    backgroundColor: "{colors.sunken-grey}"
-  button-danger:
-    backgroundColor: "{colors.failure-red}"
-    textColor: "{colors.band-ink}"
-    rounded: "{rounded.md}"
-    padding: "8px 16px"
-  button-danger-hover:
-    backgroundColor: "{colors.danger-red-deep}"
-  input-text:
-    backgroundColor: "{colors.panel-white}"
-    textColor: "{colors.ink-navy}"
-    rounded: "{rounded.md}"
-    padding: "8px 12px"
-  panel:
-    backgroundColor: "{colors.panel-white}"
-    rounded: "{rounded.md}"
-  status-chip-normal:
-    textColor: "{colors.normal-green}"
-    typography: "{typography.caption}"
-    rounded: "{rounded.chip}"
-    padding: "2px 8px"
-  status-chip-disturbed:
-    backgroundColor: "{colors.disturbed-amber}"
-    textColor: "{colors.disturbed-amber-ink}"
-    rounded: "{rounded.chip}"
-    padding: "2px 8px"
-  status-chip-quiet:
-    textColor: "{colors.muted-slate}"
-    rounded: "{rounded.chip}"
-    padding: "2px 8px"
-  status-chip-closed:
-    backgroundColor: "{colors.closed-grey}"
-    textColor: "{colors.closed-grey-ink}"
-    rounded: "{rounded.chip}"
-    padding: "2px 8px"
-  line-bullet-sm:
-    rounded: "{rounded.full}"
-    size: "18px"
-  line-bullet-md:
-    rounded: "{rounded.full}"
-    size: "26px"
-  line-bullet-lg:
-    rounded: "{rounded.full}"
-    size: "36px"
-  board-row-disturbed:
-    backgroundColor: "{colors.disturbed-amber-soft}"
-    padding: "8px 12px"
   code-block:
-    backgroundColor: "{colors.code-night}"
-    textColor: "{colors.code-night-ink}"
+    backgroundColor: "{colors.code}"
+    textColor: "{colors.code-ink}"
     rounded: "{rounded.md}"
     padding: "16px"
 ---
@@ -202,159 +192,162 @@ components:
 
 ## Overview
 
-**Creative North Star: "Info trafic"**
+**Creative North Star: "The Plain Console"**
 
-The admin is a transit network's status board. Every API key is a numbered line of the network, drawn as a round metro bullet in one of eight line colours, and the dashboard opens on the board that says, per line, Normal service, No traffic today, Disturbed or Closed. A navy signage band carries the navigation in both themes; below it the ground is porcelain by day and night-navy by night, following the system theme. Light and dark are both designed: the dark theme redefines the same semantic tokens, so no component branches on the theme.
+The admin answers one question before anything else: does any of my sites have a problem right now? Every surface is built around that order. Failing keys are named first with their counts, then today's verification funnel, then every key grouped by what the admin has to do about it, then the 30-day history. When nothing fails the page says so in one line, and it says nothing about keys working until a verification has actually happened today.
 
-Density is Operate density: tables on strict columns, every count in Overpass Mono tabular figures, structure drawn by 1px hairlines rather than drop-shadowed cards. Colour is spent on two things only: the identity of a line, and state. Amber means disturbed, red means failures, green means normal service, grey means closed, and every one of those colours is backed by words. The type is Overpass, a face derived from highway signage, self-hosted with its mono sibling; nothing loads from a font CDN.
+The world is a navy header band over a porcelain ground (night ground in dark mode), Overpass for every word and Overpass Mono tabular figures for every count. Structure is drawn with 1px hairlines; there are no drop shadows anywhere. Colour is reserved for state: green verified, red failures, amber failing, grey disabled. The density is that of an operations table: 14px body, 10px row padding, panels inset 20px, and the numbers lead.
 
-The previous system (slate and brand blue, Inter, large rounded cards) is retired and is not a reference.
+The 2026-10-23 transit metaphor was retired by the owner on 2026-10-24 and must not return in any form, nor be replaced by another borrowed metaphor.
 
 **Key Characteristics:**
-- One number per key everywhere: the line number is the key's database id, shown in the bullet on the board, the list, the detail page and the chart legend.
-- Eight line colours cycle; the number, never the colour, is the identity.
-- Navy signage band on every screen, including the signed-out login (mark only).
-- Hairline grid: panels are bordered, KPI strips are divided by 1px gaps over the rule colour.
-- Tabular mono figures for every count, formatted en-US; every date is UTC.
-- Focus dims the rest: hovering a board row or pinning a legend entry steps every other line back.
+- Attention first: failing keys open the page and sort first in every list.
+- Navy band in both themes, carrying the mark, the navigation, the version and Logout.
+- Hairline panels on a tinted ground; no shadow, no gradient, no decorative colour.
+- Counts in Overpass Mono with tabular figures, formatted `en-US`.
+- Light and dark both designed, following the system theme through the same token names.
+- Self-hosted fonts only; nothing loads from a third-party host.
 
 ## Colors
 
-A cool navy-and-porcelain signage palette, with eight metro inks for line identity and four state colours held strictly for state.
+A cool navy-and-porcelain neutral set with four state colours that appear only when they mean something.
 
 ### Primary
-- **Signage Navy** (`signage-navy`): the band behind the navigation and the primary action fill in the light theme. In dark the band stays this navy while the action lifts to a brighter blue (#3366E0) so it holds contrast on the night panel.
-- **Signage Navy Deep** (`signage-navy-deep`): primary action hover.
-- **Band Ink / Band Muted / Band Rule** (`band-ink`, `band-muted`, `band-rule`): the active tab and mark, inactive tabs and the version, and the band's bottom edge and button outline.
+- **Header Navy** (band, action): the header band in both themes, the brand tile, and the primary button in light mode. In dark mode the action lifts to a brighter blue (#3366E0, hover #2B59C3) so it holds contrast on the night ground; the band stays navy.
+- **Link Blue** (link, focus): text links, focus rings, the challenges sparkline and per-key chart line. Dark mode: #8AB0FF.
 
 ### Secondary
-- **Route Blue** (`route-blue`): links, focus rings, the default single-key chart stroke. Hover deepens to `route-blue-deep`. In dark, links and focus become #8AB0FF.
-
-### Tertiary: line colours
-- **Line 1 to 8** (`line-1` ... `line-8`): yellow, teal, violet, orange, sky, green, magenta, grey. Bullet fills. The number on the bullet is navy, except lines 3 and 7, which carry white. Each line also has a `-stroke` value tuned to hold 3:1 on the theme's panel for chart lines and sparks; dark redefines the strokes brighter (see sidecar). A 1px inset ring (`rgb(20 33 61 / 0.18)`, dark `rgb(231 235 243 / 0.28)`) keeps pale fills legible on white.
+- **Check Yellow** (mark-yellow): the check stroke in the mark only. It is not a UI token and is not used anywhere else.
 
 ### State
-- **Normal Green** (`normal-green`, soft `normal-green-soft`, edge `normal-green-edge`): normal service, verified counts, success rates.
-- **Disturbed Amber** (`disturbed-amber`, ink `disturbed-amber-ink`, text `disturbed-amber-text`, soft `disturbed-amber-soft`, edge `disturbed-amber-edge`): the disturbed chip fill, disturbed board rows, and the text selection highlight.
-- **Failure Red** (`failure-red`, soft, edge): failed counts, failure bars, error alerts. Destructive buttons use the same red with `danger-red-deep` on hover; dark sets danger to #C92A3E and failure text to #FF6B7A.
-- **Closed Grey** (`closed-grey`, ink `closed-grey-ink`): the closed chip, for disabled keys.
+- **Verified Green** (ok, ok-soft, ok-edge): verified counts, the OK status, the all-clear line, the verified segment of the funnel and country bars. The 30-day chart fills verified bars with ok-edge so the red failed segment stays readable on top.
+- **Failing Amber** (warn, warn-ink, warn-soft, warn-edge, warn-text): the Failing status chip, the attention banner, and the row tint of keys that need attention.
+- **Failure Red** (fail, fail-soft, fail-edge): failure counts and failed segments. Danger buttons use the separate danger pair, identical to fail in light mode (#C8001A) and darker in dark mode (#C92A3E) so white text holds AA.
+- **Disabled Grey** (disabled, disabled-ink): the Disabled status chip.
 
 ### Neutral
-- **Porcelain Ground** (`porcelain-ground`): the page. Night ground in dark: #0B1221.
-- **Panel White** (`panel-white`): panels, inputs, the footer. Dark: #111A2E.
-- **Sunken Grey** (`sunken-grey`): row hover, bar tracks, the cancel button, quiet tags. Dark: #0E1627.
-- **Ink Navy / Ink Secondary / Muted Slate** (`ink-navy`, `ink-secondary`, `muted-slate`): primary text, labels and secondary text, hints and zero counts. Muted is also the placeholder colour.
-- **Hairline / Soft / Strong** (`hairline`, `hairline-soft`, `hairline-strong`): panel borders and KPI dividers, row separators and chart gridlines, input borders and the off switch track.
-- **Code Night** (`code-night`, ink `code-night-ink`): code snippets stay dark in both themes.
+- **Porcelain Ground** (ground): page background. Dark: #0B1221.
+- **Panel White** (panel): panels, cards, inputs, the footer. Dark: #111A2E.
+- **Sunken** (sunken): group header rows, inline code, meter tracks, secondary-button hover. Dark: #0E1627.
+- **Ink / Ink 2 / Muted** (ink, ink-2, muted): headings and figures; field labels and secondary text; captions, column labels, empty states. Dark: #E7EBF3 / #C3CAD8 / #9AA4B8.
+- **Hairlines** (rule, rule-soft, rule-strong): panel borders; row separators and chart gridlines; input and secondary-button borders, disabled sparklines.
+- **Code Night** (code, code-ink): integration snippets, dark in both themes.
 
 ### Named Rules
-**The State-Only Rule.** Green, amber, red and grey mean normal, disturbed, failed and closed, and nothing else. They never decorate.
+**The State-Only Rule.** Green, amber, red and grey mean verified, failing, failed and disabled, and nothing else. They never decorate. The one standing exception is text selection, which borrows the amber.
 
-**The Number Is the Line Rule.** Colours cycle every eight lines (`((id - 1) % 8) + 1`). Never let a colour alone identify a key; the bullet always carries its number.
+**The Words-First Rule.** Colour backs a word, it never replaces one. Every status chip spells OK, No traffic, Failing or Disabled; every sparkline carries an aria-label; a disabled key's trend is dashed as well as grey.
 
-**The Same Names Rule.** Dark mode redefines the same custom properties under `prefers-color-scheme: dark`. Components use semantic tokens only and never write a theme branch.
+**The Same Names Rule.** Dark mode redefines the same custom properties under `prefers-color-scheme: dark`. Components use semantic tokens only and never branch on the theme. Text pairs hold 4.5:1 on ground, panel and sunken in both themes; strokes and marks hold 3:1.
 
 ## Typography
 
-**Display Font:** Overpass (with ui-sans-serif, system-ui fallback), self-hosted variable, Latin subset
+**Display Font:** Overpass (with ui-sans-serif, system-ui)
 **Body Font:** Overpass
-**Label/Mono Font:** Overpass Mono (with ui-monospace fallback), self-hosted variable
+**Label/Mono Font:** Overpass Mono (with ui-monospace, SFMono-Regular, Menlo)
 
-**Character:** Signage sans for words, a monospaced sibling for every number, so figures line up on strict columns and read like a departures board.
+**Character:** One sturdy humanist sans in heavy weights for headings and plain weights for text, paired with its own mono for figures, so numbers align in columns without changing voice. Both ship as self-hosted variable woff2, Latin subset.
 
 ### Hierarchy
 - **Display** (800, 32px, 36px): the Dashboard page title only.
-- **Headline** (800, 24px, 32px, tight): titles of every other page, including the key's name on its detail page.
-- **Title** (800, 17px): panel and dialog headings. A 13px medium muted aside may follow on the same line ("Today (UTC)", "Line 5 selected").
-- **Body** (400, 14px): copy, table cells, form labels (500, ink-secondary).
-- **Caption** (400, 12px): domains under a key name, hints under KPI figures, panel subtitles.
-- **Label** (700, 11px, 0.09em, uppercase): column headers of every table (board, keys list, MCP tokens) and labels above KPI and calibration figures. Scope tags beside a panel title use the same style at 0.08em inside a 3px hairline box.
-- **Figure** (Overpass Mono 600, 32px, 40px, tabular): KPI numbers.
-- **Data** (Overpass Mono, 14px, tabular): counts in tables, key ids, the version; 11px for chart axes and country codes.
+- **Headline** (800, 24px, 32px): page titles on API Keys, key detail, key form, Settings, Sign in.
+- **Title** (800, 17px): every panel and dialog heading, the attention banner heading.
+- **Body** (400 to 600, 14px, 20px): table cells, buttons, links, form text. Field labels are 14px 500 in ink-2. Help text under fields caps at 52ch.
+- **Caption** (400, 12px to 13px): panel sub-lines, domains under key names, chart legends.
+- **Label** (700, 11px, 0.09em, uppercase): column headers, group header rows and the funnel's figure labels. It names the data directly beneath it and is never placed above a heading.
+- **Figure** (Overpass Mono 600, 32px/40px, 26px/32px below 640px): the funnel's three counts.
+- **Data** (Overpass Mono, 14px or 12px): counts in tables, key IDs, secrets, domains, version, chart axes.
 
 ### Named Rules
-**The Tabular Figures Rule.** Every count is set in Overpass Mono with tabular figures and formatted with `toLocaleString('en-US')`. No bare `toLocaleString()`, no proportional digits in a column.
+**The Tabular Figures Rule.** Every count is set in Overpass Mono with `tabular-nums` and formatted with `toLocaleString('en-US')`. No bare `toLocaleString()`, no proportional digits in a column.
 
-**The UTC Rule.** "Today" is the current UTC day and every chart date is formatted in UTC (`en-US`, short month and day). Say so in the UI where it matters ("Today (UTC)").
+**The UTC Rule.** "Today" is the current UTC day and every date is formatted in UTC (`en-US`, short month and day). The dashboard title says "(UTC)".
 
 ## Layout
 
-Content sits in a centred 1280px column with 16px side padding, 24px from 640px and 32px from 1024px, and 32px of vertical page padding. Panels stack with 24px gaps. The dashboard places a page header (title and description left, "Create key" right), then a KPI strip of four figures (two columns below 1024px), then a three-column grid: the network board and the 30-day chart take two thirds, traffic by country and the HIS summary take the right third. Below 1024px everything stacks.
+One centred container (max 1280px) with 16px side padding, 24px from 640px, 32px from 1024px, and 32px of vertical padding. Pages stack sections 24px apart.
 
-Panel headers take 12px vertical and 20px horizontal padding and are separated from the body by a hairline; detail and settings cards use a 24px inset. Board rows have 8px vertical padding, list rows 12px. On phones the status column folds under the key name, low-priority columns drop away (spark below 768px, counts below 640px), and the band's tabs move to a second row with 44px touch targets.
+The dashboard is a two-column grid from 1024px: a fluid main column (funnel, then keys) and a fixed 380px aside (30-day chart, countries, bot-suspected). Below 1024px everything stacks in reading order, the attention banner always above both columns. The keys table hides its 7-day column below 640px; the API Keys table drops columns at 640px and 768px and moves the status chip under the key name on mobile.
+
+Dashboard panels use a header strip (20px inset, 12px tall padding, hairline below) over a 20px body. Detail, form and settings pages use cards with 24px padding; CountryTraffic switches between the two insets with its `roomy` prop. Rows are 10px tall padding with rule-soft separators. Forms cap at 576px, login at 384px. Settings splits into a 5-column grid from 1024px.
+
+### Named Rules
+**The Attention-First Rule.** Failing keys come first everywhere: named in the banner, first group in the keys panel, rank 0 in sorting (failing, OK, no traffic, disabled). A key is failing when today it has at least 5 failures and those are at least 20% of its verifications.
+
+**The Honest Quiet Rule.** "All keys are working today." appears only when today has verifications. With active keys but no verification yet, the line reads "No verification yet today." in muted text on a plain panel.
 
 ## Elevation & Depth
 
-The system is flat. Depth comes from tone (ground, panel, sunken) and 1px hairlines, never from drop shadows on cards or panels. The only structural non-flat devices are the line bullet's 1px inset ring and the native top-layer backdrop of the confirm dialog (`--color-backdrop`, with a light blur). The dialog itself is drawn with a `hairline-strong` border, not a shadow; tooltips are flat too.
+Flat. No element casts a shadow. Depth comes from tonal layering (ground under panel, sunken inside panel) and 1px hairlines. The only lifted layer is the modal dialog, which sits on a translucent backdrop (`backdrop` token) with a small blur, framed by a rule-strong border, not a shadow.
 
 ### Named Rules
-**The Hairline Rule.** Structure is drawn with 1px rules: panel borders in `hairline`, row separators in `hairline-soft`, KPI strips as a grid with a 1px gap over the `hairline` fill. No shadow cards.
+**The Hairline Rule.** Structure is drawn with 1px rules: panel borders in rule, row separators and chart gridlines in rule-soft, controls in rule-strong. No shadow cards.
 
 ## Shapes
 
-Small, firm corners. Panels, inputs, every button and code blocks use 6px; band controls and small tags use 4px; status chips and country code tags use 3px, like enamel signs. The only round forms are line bullets, the mark, the status dot (7px), the switch track and bar tracks. Closed lines are drawn as dashed strokes (3-3 on sparks, 4-4 on the chart) in `hairline-strong`.
+Small, consistent corners: 6px on panels, cards, buttons, inputs, banners and code blocks; 4px on inline code, the Logout button and small tags; 3px on status chips, the funnel meter and country code tags; full round on status dots, the banner's alert disc, the toggle switch and the thin country meters. The attention banner adds a 4px amber left edge to its hairline. The mark is a navy rounded tile (7px on 32px) with a 1.5px band-rule inner stroke.
 
 ## Components
 
 ### Buttons
-- **Shape:** 6px corners and 14px semibold text on every button.
-- **Primary:** signage navy fill, white text, 8px 16px. The page-header "Create key" is at least 40px tall, with a 14px plus glyph drawn as an SVG.
-- **Hover / Focus:** hover deepens the fill; focus-visible shows a 2px route-blue ring (offset 2px on the header action). Disabled drops to 50% opacity.
-- **Secondary:** panel fill, `hairline-strong` border, ink text, hover to sunken.
-- **Danger:** failure red fill, white text, deeper red on hover. Destructive actions always pass through the confirm dialog.
+Plain and direct; colour tells weight, not decoration.
+- **Shape:** gently rounded (6px).
+- **Primary:** action navy with white text, 14px semibold, 8px by 16px; page-level primaries ("Create key") are 40px tall with a leading plus icon.
+- **Hover / Focus:** hover darkens to action-hover; focus shows a 2px focus-colour ring (offset 2px on page-level primaries). Disabled is 50% opacity.
+- **Secondary:** panel background, rule-strong border, ink text; hover fills sunken. Used for Cancel, Disable, Edit, Open key, pagination.
+- **Danger:** danger red with white text, for Delete and destructive dialog confirms only.
+- **On the band:** Logout is a 32px outlined button in band-rule with a white 10% hover.
 
-### Chips
-- **Status chip:** 12px bold, 3px corners, 2px 8px. Normal service is green text with a 7px dot and no fill; Disturbed is a solid amber fill with dark ink, a dot, and the failure count in a white mono inset ("Disturbed — 31 failed today"); No traffic today is muted text; Closed is a grey fill. The words are always present.
-- **Compact:** in the keys table the disturbed chip keeps the count but drops "failed today". Disturbed rows sit on `warn-soft` in the keys table as on the board.
+### Status chip
+The one status vocabulary: OK, No traffic, Failing, Disabled, from `lib/status.ts`.
+- **Style:** 12px bold, 3px corners, 2px by 8px. OK is green text with a 7px dot; No traffic is muted text; Failing is amber fill with warn-ink text, a dot, and today's failure count in red mono on a panel-white inset, followed by "failures today" from 640px; Disabled is grey fill.
+- **Compact:** drops the words "failures today" for tables without room; the count stays.
 
 ### Cards / Containers
 - **Corner Style:** 6px.
 - **Background:** panel on ground.
-- **Shadow Strategy:** none (see Elevation & Depth).
-- **Border:** 1px `hairline`; header separated by a hairline.
-- **Internal Padding:** 20px on dashboard panels, 24px on detail and settings cards.
+- **Shadow Strategy:** none; see Elevation & Depth.
+- **Border:** 1px rule.
+- **Internal Padding:** 20px for dashboard panels with a header strip, 24px for detail, form, settings and login cards.
 
 ### Inputs / Fields
-- **Style:** panel fill, 1px `hairline-strong` border, 6px corners, 8px 12px, muted placeholder.
-- **Focus:** 2px route-blue ring, border shifting to the focus colour. Checkboxes take the action colour as accent.
-- **Toggle switch:** a single 44x24 SVG, action fill when on, `hairline-strong` when off, white 16px knob.
+- **Style:** panel background, 1px rule-strong border, 6px corners, 8px by 12px; placeholders in muted. Checkboxes and the caret take the action colour.
+- **Focus:** border turns focus blue with a focus-colour ring.
+- **Toggle switch:** a 44 by 24 SVG track (action when on, rule-strong when off) with a 16px white knob that slides 20px; focus ring on the track.
 
 ### Navigation
-- **Signage band:** sticky, 56px, navy in both themes. The mark is a white disc with a navy "G" beside the extrabold word mark. Tabs are 14px semibold `band-muted`; the active tab turns white over a 3px white bottom bar. The version sits in mono on the right beside an outlined Logout button. Signed out, the same band carries only the mark.
-- **Footer:** panel fill with a top hairline, muted 14px links that turn route blue on hover.
+The navy band, 56px tall, sticky, identical in both themes. The mark and "GateCHA" in 18px extrabold lead; tabs (Dashboard, API Keys, Settings) are 14px semibold in band-muted with a transparent 3px bottom edge, turning band-ink with a band-ink bottom edge when active. Version in mono and Logout sit at the right. Below 640px the tabs drop to a second row of the band, 44px tall. Signed out, the band carries only the mark.
 
-### Line Bullet
-A round metro bullet carrying the key's id in extrabold tabular figures: 18px in legends and inline references, 26px in tables, 36px beside the detail title. Ids of three digits or more shrink the type, never the circle.
+### Attention banner
+The first element under the page title. With failing keys: amber-soft fill, amber-edge hairline, 4px amber left edge, an amber disc, a 17px heading ("1 key needs attention" / "N keys need attention"), the key name with failed of verified counts and percentage, and an "Open key" secondary button for a single key. With none failing it collapses to one line: ok-soft with a green dot when verifications happened today, plain muted panel otherwise.
 
-### Network Status Board
-The dashboard's signature table: Line, Key (name and first domain, "+n more"), 7-day spark (88x20, line stroke), today's challenges and failures, status. Disturbed lines sort first, closed last; within a status, by name. Disturbed rows sit on `disturbed-amber-soft` with `disturbed-amber-edge` borders above and below. Failures today above zero turn bold red. Hovering or focusing a row selects its line; only while a line is selected, every other row dims to 45% opacity.
+### Today's verifications funnel
+A panel with three figures (Challenges, Verified in green, Failed in red when non-zero) and, once anything was checked, a 14px verified/failed meter with mono counts under each end.
 
-### Lines Chart
-Thirty days of challenges, one polyline per key in its line stroke, zero-filled so quiet days are real zeros. The legend is a row of small bullets that pin a line (`aria-pressed`). The active line, hovered on the board or pinned, draws on top at 2.75px; others drop to 22% stroke opacity, and inactive legend entries to 70%. On load the first disturbed line is pinned until the admin picks or clears one. Disabled keys draw dashed in `hairline-strong`.
+### Keys today
+Every key in one table grouped Needs attention, Working, No traffic today, Disabled, each group headed by a sunken label row with its count. Rows show the name (bold, link on hover), first domain with "+N more", a 7-day challenges sparkline (88 by 22, link blue; fail red for failing keys; dashed rule-strong for disabled), today's challenges and failures. Failing rows are tinted warn-soft and their failure count is bold red.
 
-### Key Stats Chart
-The detail page's Chart.js chart reads its colours from the CSS tokens at render time (the key's line stroke for challenges, `normal-green` for verified, `failure-red` for failed, muted ticks, soft-hairline grid) and redraws when the system theme changes. Lines are straight (no tension), pointless until hover; ticks are Overpass Mono 11px, the legend Overpass 600 with circle markers.
+### Charts
+The dashboard's 30-day chart is inline SVG: stacked bars (verified in ok-edge, failed in fail) with challenges issued as a 1.75px ink line, two rule-soft gridlines, mono date ends, a legend and a full-text aria-label. Countries are listed with an ISO code tag (never a flag emoji), the count, the failure share (bold red from 50%) and a thin verified/failed meter.
 
-### Traffic by Country
-Rows with a 3px-cornered ISO code tag (mono, no flag emoji), the country name, the total in mono and a failure share that turns bold red at 50% or more, over a 6px bar track split green and red.
+### Code block
+Code Night background in both themes, code-ink text, 14px mono, 16px padding with room for a copy button in the corner.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** set every count in Overpass Mono tabular figures and format it with `toLocaleString('en-US')`.
-- **Do** compute "today" and format chart dates in UTC, and label it ("Today (UTC)").
-- **Do** show a key as its line bullet with its number wherever the key appears.
-- **Do** back every status colour with its words: Normal service, No traffic today, Disturbed, Closed.
-- **Do** put disturbed board rows on `disturbed-amber-soft` with `disturbed-amber-edge` borders and sort them first.
-- **Do** dim non-selected lines only while a line is selected (hover or pin); at rest every row is full strength.
-- **Do** pin the first disturbed line on the dashboard chart by default.
-- **Do** read Chart.js colours from the CSS tokens at runtime and redraw on a theme change.
-- **Do** keep the signage band navy in both themes and redefine only semantic tokens for dark.
+- **Do** name failing keys first, with failed-of-verified counts, before any chart.
+- **Do** use the four statuses OK, No traffic, Failing, Disabled from `lib/status.ts`, always as words, with colour behind them.
+- **Do** set every count in Overpass Mono with `tabular-nums` and `toLocaleString('en-US')`.
+- **Do** draw structure with 1px hairlines (rule, rule-soft, rule-strong) on panel over ground.
+- **Do** use semantic tokens only, so dark mode follows by redefining the same names.
+- **Do** keep the navy band and the mark identical in both themes; the mark in `BrandMark.vue` and `public/favicon.svg` is one drawing.
+- **Do** say "today" in UTC and format dates in UTC.
 
 ### Don't:
-- **Don't** use green, amber, red or grey for decoration; they mean state.
-- **Don't** let a line colour stand alone as an identifier; colours repeat every eight lines.
-- **Don't** add drop shadows to panels or cards; draw structure with 1px hairlines.
-- **Don't** load fonts or assets from a CDN; Overpass and Overpass Mono ship with the app.
+- **Don't** bring back the retired metaphor or any other borrowed metaphor: no numbering keys, no per-key colours, no themed status vocabulary.
+- **Don't** use green, amber, red or grey for anything but state.
+- **Don't** add drop shadows or shadowed cards.
+- **Don't** say keys are working before any verification has happened today.
 - **Don't** use flag emoji for countries; use the ISO code tag.
-- **Don't** bring back the retired slate/brand-blue, Inter, large-rounded-card look.
+- **Don't** load fonts, scripts or images from a third-party host.

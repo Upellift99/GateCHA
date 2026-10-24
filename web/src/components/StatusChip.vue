@@ -13,7 +13,7 @@ defineProps<{ status: KeyStatus; failedToday?: number; compact?: boolean }>()
       'text-ok': status === 'ok',
       'bg-warn text-warn-ink': status === 'failing',
       'text-muted': status === 'idle',
-      'bg-closed text-closed-ink': status === 'disabled',
+      'bg-disabled text-disabled-ink': status === 'disabled',
     }"
   >
     <span
