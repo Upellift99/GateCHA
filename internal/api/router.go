@@ -42,10 +42,6 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 	r.Use(CORSMiddleware(cfg.CORSAllowAll))
 
 	publicHandler := &PublicHandler{DB: db}
-	challengeHandler := &ChallengeHandler{DB: db, Adaptive: newAdaptiveLimiter()}
-	verifyHandler := &VerifyHandler{DB: db}
-	keyStatsHandler := &KeyStatsHandler{DB: db}
-	adminHandler := &AdminHandler{DB: db, SecretKey: secretKey, BuildVersion: cfg.Version}
 
 	// Public endpoints (no auth, used by login page)
 	r.Route("/api/public", func(r chi.Router) {
@@ -56,91 +52,119 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 
 	// Public API (API key auth)
 	r.Route("/api/v1", func(r chi.Router) {
-		// Per-key throttle runs after auth so the key (and its limit) is known.
-		// No-op for keys whose RateLimitPerMin is 0. One instance, so challenges
-		// and verifications draw on the same per-key budget.
-		perKey := PerKeyRateLimitMiddleware()
-
-		// Browsers fetch challenges: the per-IP budget applies before auth.
-		r.Group(func(r chi.Router) {
-			if cfg.RateLimitEnabled {
-				r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
-			}
-			r.Use(APIKeyMiddleware(db))
-			r.Use(perKey)
-			r.Get("/challenge", challengeHandler.ServeHTTP)
-		})
-		// Site backends verify: the per-IP budget is counted per key, so sites
-		// sharing a hosting provider's outbound IP do not throttle each other.
-		// Failed authentications still count per IP before the key lookup.
-		r.Group(func(r chi.Router) {
-			if cfg.RateLimitEnabled {
-				r.Use(FailedAuthRateLimitMiddleware(cfg.RateLimitAPI))
-			}
-			r.Use(APIKeyMiddleware(db))
-			if cfg.RateLimitEnabled {
-				r.Use(SourceAndKeyRateLimitMiddleware(cfg.RateLimitAPI))
-			}
-			r.Use(perKey)
-			r.Post("/verify", verifyHandler.ServeHTTP)
-		})
-		// Authenticated by the key's stats token, not its public key ID, so it
-		// sits outside the API key middleware.
-		r.Group(func(r chi.Router) {
-			if cfg.RateLimitEnabled {
-				r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
-			}
-			r.Get("/stats", keyStatsHandler.ServeHTTP)
-		})
+		mountPublicAPI(r, db, cfg)
 	})
 
 	// Admin API
 	r.Route("/api/admin", func(r chi.Router) {
-		// Login is rate-limited more strictly to slow down credential brute-force.
-		r.Group(func(r chi.Router) {
-			if cfg.RateLimitEnabled {
-				r.Use(RateLimitMiddleware(cfg.RateLimitLogin))
-			}
-			r.Post("/login", adminHandler.Login)
-		})
-
-		r.Group(func(r chi.Router) {
-			r.Use(AdminAuthMiddleware(secretKey))
-			r.Get("/me", adminHandler.Me)
-			r.Get("/version", adminHandler.Version)
-			r.Post("/change-password", adminHandler.ChangePassword)
-			r.Get("/settings", adminHandler.GetSettings)
-			r.Put("/settings", adminHandler.UpdateSettings)
-
-			// API Keys CRUD
-			r.Get("/keys", adminHandler.ListKeys)
-			r.Post("/keys", adminHandler.CreateKey)
-			r.Get(keysIDRoute, adminHandler.GetKey)
-			r.Put(keysIDRoute, adminHandler.UpdateKey)
-			r.Delete(keysIDRoute, adminHandler.DeleteKey)
-			r.Post(keysIDRoute+"/rotate-secret", adminHandler.RotateSecret)
-			r.Post(keysIDRoute+"/stats-token", adminHandler.IssueStatsToken)
-			r.Delete(keysIDRoute+"/stats-token", adminHandler.RevokeStatsToken)
-
-			// MCP tokens (long-lived credentials for the MCP endpoint)
-			r.Get("/mcp-tokens", adminHandler.ListMCPTokens)
-			r.Post("/mcp-tokens", adminHandler.CreateMCPToken)
-			r.Delete("/mcp-tokens/{id}", adminHandler.DeleteMCPToken)
-
-			// Statistics
-			r.Get("/stats/overview", adminHandler.StatsOverview)
-			r.Get("/stats/keys-summary", adminHandler.KeysStatsSummary)
-			r.Get("/stats/keys-daily", adminHandler.KeysDailyStats)
-			r.Get("/stats/keys/{id}", adminHandler.KeyStats)
-
-			// HIS sampling calibration (score distribution over stored samples)
-			r.Get("/his/calibration", adminHandler.HISCalibration)
-		})
+		mountAdminAPI(r, db, secretKey, cfg)
 	})
 
-	// MCP endpoint. Off unless an operator turns it on: once served, it is a
-	// second authentication path to full admin capability that bypasses the
-	// dashboard login and its captcha.
+	mountMCP(r, db, cfg)
+
+	// Health check
+	r.Get("/healthz", healthzHandler(db))
+
+	// SPA Dashboard (catch-all)
+	r.Handle("/*", dashboard.SPAHandler())
+
+	return r
+}
+
+// mountPublicAPI registers the API key authenticated /api/v1 routes.
+func mountPublicAPI(r chi.Router, db *gorm.DB, cfg RouterConfig) {
+	challengeHandler := &ChallengeHandler{DB: db, Adaptive: newAdaptiveLimiter()}
+	verifyHandler := &VerifyHandler{DB: db}
+	keyStatsHandler := &KeyStatsHandler{DB: db}
+
+	// Per-key throttle runs after auth so the key (and its limit) is known.
+	// No-op for keys whose RateLimitPerMin is 0. One instance, so challenges
+	// and verifications draw on the same per-key budget.
+	perKey := PerKeyRateLimitMiddleware()
+
+	// Browsers fetch challenges: the per-IP budget applies before auth.
+	r.Group(func(r chi.Router) {
+		if cfg.RateLimitEnabled {
+			r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
+		}
+		r.Use(APIKeyMiddleware(db))
+		r.Use(perKey)
+		r.Get("/challenge", challengeHandler.ServeHTTP)
+	})
+	// Site backends verify: the per-IP budget is counted per key, so sites
+	// sharing a hosting provider's outbound IP do not throttle each other.
+	// Failed authentications still count per IP before the key lookup.
+	r.Group(func(r chi.Router) {
+		if cfg.RateLimitEnabled {
+			r.Use(FailedAuthRateLimitMiddleware(cfg.RateLimitAPI))
+		}
+		r.Use(APIKeyMiddleware(db))
+		if cfg.RateLimitEnabled {
+			r.Use(SourceAndKeyRateLimitMiddleware(cfg.RateLimitAPI))
+		}
+		r.Use(perKey)
+		r.Post("/verify", verifyHandler.ServeHTTP)
+	})
+	// Authenticated by the key's stats token, not its public key ID, so it
+	// sits outside the API key middleware.
+	r.Group(func(r chi.Router) {
+		if cfg.RateLimitEnabled {
+			r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
+		}
+		r.Get("/stats", keyStatsHandler.ServeHTTP)
+	})
+}
+
+// mountAdminAPI registers the JWT authenticated /api/admin routes.
+func mountAdminAPI(r chi.Router, db *gorm.DB, secretKey string, cfg RouterConfig) {
+	adminHandler := &AdminHandler{DB: db, SecretKey: secretKey, BuildVersion: cfg.Version}
+
+	// Login is rate-limited more strictly to slow down credential brute-force.
+	r.Group(func(r chi.Router) {
+		if cfg.RateLimitEnabled {
+			r.Use(RateLimitMiddleware(cfg.RateLimitLogin))
+		}
+		r.Post("/login", adminHandler.Login)
+	})
+
+	r.Group(func(r chi.Router) {
+		r.Use(AdminAuthMiddleware(secretKey))
+		r.Get("/me", adminHandler.Me)
+		r.Get("/version", adminHandler.Version)
+		r.Post("/change-password", adminHandler.ChangePassword)
+		r.Get("/settings", adminHandler.GetSettings)
+		r.Put("/settings", adminHandler.UpdateSettings)
+
+		// API Keys CRUD
+		r.Get("/keys", adminHandler.ListKeys)
+		r.Post("/keys", adminHandler.CreateKey)
+		r.Get(keysIDRoute, adminHandler.GetKey)
+		r.Put(keysIDRoute, adminHandler.UpdateKey)
+		r.Delete(keysIDRoute, adminHandler.DeleteKey)
+		r.Post(keysIDRoute+"/rotate-secret", adminHandler.RotateSecret)
+		r.Post(keysIDRoute+"/stats-token", adminHandler.IssueStatsToken)
+		r.Delete(keysIDRoute+"/stats-token", adminHandler.RevokeStatsToken)
+
+		// MCP tokens (long-lived credentials for the MCP endpoint)
+		r.Get("/mcp-tokens", adminHandler.ListMCPTokens)
+		r.Post("/mcp-tokens", adminHandler.CreateMCPToken)
+		r.Delete("/mcp-tokens/{id}", adminHandler.DeleteMCPToken)
+
+		// Statistics
+		r.Get("/stats/overview", adminHandler.StatsOverview)
+		r.Get("/stats/keys-summary", adminHandler.KeysStatsSummary)
+		r.Get("/stats/keys-daily", adminHandler.KeysDailyStats)
+		r.Get("/stats/keys/{id}", adminHandler.KeyStats)
+
+		// HIS sampling calibration (score distribution over stored samples)
+		r.Get("/his/calibration", adminHandler.HISCalibration)
+	})
+}
+
+// mountMCP registers the MCP endpoint. Off unless an operator turns it on:
+// once served, it is a second authentication path to full admin capability
+// that bypasses the dashboard login and its captcha.
+func mountMCP(r chi.Router, db *gorm.DB, cfg RouterConfig) {
 	r.Group(func(r chi.Router) {
 		r.Use(MCPEnabledMiddleware(db))
 		if cfg.RateLimitEnabled {
@@ -149,19 +173,16 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 		r.Use(MCPAuthMiddleware(db))
 		r.Handle("/mcp", MCPHandler(db, cfg.Version))
 	})
+}
 
-	// Health check
-	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+// healthzHandler reports whether the database answers a ping.
+func healthzHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		sqlDB, err := db.DB()
 		if err != nil || sqlDB.Ping() != nil {
 			writeJSON(w, http.StatusServiceUnavailable, map[string]string{"status": "unhealthy"})
 			return
 		}
 		writeJSON(w, http.StatusOK, map[string]string{"status": "healthy"})
-	})
-
-	// SPA Dashboard (catch-all)
-	r.Handle("/*", dashboard.SPAHandler())
-
-	return r
+	}
 }
