@@ -111,6 +111,29 @@ func RateLimitMiddleware(requestsPerMinute int) func(http.Handler) http.Handler 
 	}
 }
 
+// SourceAndKeyRateLimitMiddleware applies the per-IP budget to each (client IP,
+// API key) pair rather than to the IP alone. It guards /verify, which is called
+// by site backends, not browsers: on shared hosting many sites post from one
+// outbound IP, and a plain per-IP bucket made them throttle each other. Each
+// site now gets the full budget from that IP, and one site still cannot exceed
+// it. It must run after APIKeyMiddleware, so only real keys open a bucket.
+func SourceAndKeyRateLimitMiddleware(requestsPerMinute int) func(http.Handler) http.Handler {
+	limiter := newIPRateLimiter(requestsPerMinute)
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			bucket := clientIP(r)
+			if key := GetAPIKeyFromContext(r); key != nil {
+				bucket += "|" + key.KeyID
+			}
+			if !limiter.allow(bucket) {
+				writeJSON(w, http.StatusTooManyRequests, map[string]string{"error": "rate limit exceeded"})
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 // keyRateLimiter is a token-bucket limiter keyed by an arbitrary string (here an
 // API key ID). Unlike ipRateLimiter the per-minute budget is supplied per call,
 // so each key enforces its own configured limit and a runtime change to that

@@ -56,20 +56,38 @@ func NewRouter(db *gorm.DB, secretKey string, cfg RouterConfig) http.Handler {
 
 	// Public API (API key auth)
 	r.Route("/api/v1", func(r chi.Router) {
-		if cfg.RateLimitEnabled {
-			r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
-		}
+		// Per-key throttle runs after auth so the key (and its limit) is known.
+		// No-op for keys whose RateLimitPerMin is 0. One instance, so challenges
+		// and verifications draw on the same per-key budget.
+		perKey := PerKeyRateLimitMiddleware()
+
+		// Browsers fetch challenges: the per-IP budget applies before auth.
+		r.Group(func(r chi.Router) {
+			if cfg.RateLimitEnabled {
+				r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
+			}
+			r.Use(APIKeyMiddleware(db))
+			r.Use(perKey)
+			r.Get("/challenge", challengeHandler.ServeHTTP)
+		})
+		// Site backends verify: the per-IP budget is counted per key, so sites
+		// sharing a hosting provider's outbound IP do not throttle each other.
 		r.Group(func(r chi.Router) {
 			r.Use(APIKeyMiddleware(db))
-			// Per-key throttle runs after auth so the key (and its limit) is known.
-			// No-op for keys whose RateLimitPerMin is 0.
-			r.Use(PerKeyRateLimitMiddleware())
-			r.Get("/challenge", challengeHandler.ServeHTTP)
+			if cfg.RateLimitEnabled {
+				r.Use(SourceAndKeyRateLimitMiddleware(cfg.RateLimitAPI))
+			}
+			r.Use(perKey)
 			r.Post("/verify", verifyHandler.ServeHTTP)
 		})
 		// Authenticated by the key's stats token, not its public key ID, so it
 		// sits outside the API key middleware.
-		r.Get("/stats", keyStatsHandler.ServeHTTP)
+		r.Group(func(r chi.Router) {
+			if cfg.RateLimitEnabled {
+				r.Use(RateLimitMiddleware(cfg.RateLimitAPI))
+			}
+			r.Get("/stats", keyStatsHandler.ServeHTTP)
+		})
 	})
 
 	// Admin API

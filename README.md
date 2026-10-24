@@ -447,7 +447,7 @@ The compose file pulls `latest-mysql`. Set `GATECHA_IMAGE` to run another image,
 | `GATECHA_MAX_BODY_BYTES` | `1048576` | Maximum accepted request body size, in bytes |
 | `GATECHA_RATE_LIMIT_ENABLED` | `true` | Enable per-IP rate limiting |
 | `GATECHA_RATE_LIMIT_LOGIN` | `5` | Admin login requests per minute, per IP |
-| `GATECHA_RATE_LIMIT_API` | `60` | Public API (`/api/v1/*`) requests per minute, per IP |
+| `GATECHA_RATE_LIMIT_API` | `60` | Public API requests per minute: per IP on `/api/v1/challenge` and `/api/v1/stats`, per IP **and API key** on `/api/v1/verify`, so sites sharing a hosting provider's outbound IP each get the full budget |
 
 > ⚠️ **Behind a reverse proxy, set `GATECHA_TRUST_PROXY=true`.**
 > Per-IP rate limiting keys off the connecting IP. With `GATECHA_TRUST_PROXY=false`
