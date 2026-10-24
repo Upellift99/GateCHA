@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/Upellift99/GateCHA/compare/v0.11.0...v0.12.0) (2026-10-24)
+
+
+### Features
+
+* **api:** per-key stats token and GET /api/v1/stats ([#242](https://github.com/Upellift99/GateCHA/issues/242)) ([7abbb6d](https://github.com/Upellift99/GateCHA/commit/7abbb6d14b773b35caebf996c786d5a9e15f4b58))
+
 ## [0.11.0](https://github.com/Upellift99/GateCHA/compare/v0.10.0...v0.11.0) (2026-10-24)
 
 
