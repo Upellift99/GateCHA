@@ -7,8 +7,13 @@
       "project_key": "Upellift99_GateCHA_c0245f13-9627-4cb9-b8ec-5ede86610844"
     },
     "glitchtip": false,
-    "zabbix": false
+    "zabbix": false,
+    "wikijs": false,
+    "anytype": false,
+    "openproject": false
   },
   "bypass_permissions": true,
-  "memory_sync": true
+  "permissions_guard": true,
+  "memory_sync": true,
+  "session_sync": true
 }
