@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/Upellift99/GateCHA/compare/v0.10.0...v0.11.0) (2026-10-24)
+
+
+### Features
+
+* **dashboard:** attention-first dashboard in GateCHA teal, drop the metro theme ([#239](https://github.com/Upellift99/GateCHA/issues/239)) ([c34eedb](https://github.com/Upellift99/GateCHA/commit/c34eedba225a47715bb4782d183af0779183240f))
+
 ## [0.10.0](https://github.com/Upellift99/GateCHA/compare/v0.9.5...v0.10.0) (2026-10-23)
 
 
