@@ -48,7 +48,7 @@ onBeforeUnmount(() => clearTimeout(timer))
     class="inline-flex shrink-0 items-center justify-center rounded transition-colors"
     :class="{
       relative: variant !== 'overlay',
-      'h-7 w-7 bg-code text-code-ink ring-1 ring-white/15 hover:bg-band': variant === 'overlay',
+      'h-7 w-7 bg-code text-code-ink ring-1 ring-white/15 hover:bg-white/10': variant === 'overlay',
       'h-6 w-6 text-muted hover:text-link-hover': variant === 'inline',
       'gap-1.5 rounded-md bg-action px-3 py-2 text-sm font-medium text-action-ink hover:bg-action-hover focus:outline-none focus:ring-2 focus:ring-focus focus:ring-offset-2':
         variant === 'button',

@@ -27,32 +27,32 @@
   --font-sans: 'Overpass', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Overpass Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Surfaces and text */
-  --color-ground: #F3F5F7;
+  /* Surfaces and text: the slate neutrals gatecha.org uses */
+  --color-ground: #F8FAFC;
   --color-panel: #FFFFFF;
-  --color-sunken: #F7F8FA;
-  --color-ink: #14213D;
-  --color-ink-2: #3A4560;
-  --color-muted: #5B6478;
-  --color-rule: #DDE2E8;
-  --color-rule-soft: #EBEEF2;
-  --color-rule-strong: #B9C1CD;
+  --color-sunken: #F1F5F9;
+  --color-ink: #0F172A;
+  --color-ink-2: #334155;
+  --color-muted: #475569;
+  --color-rule: #E2E8F0;
+  --color-rule-soft: #EEF2F6;
+  --color-rule-strong: #CBD5E1;
 
-  /* The navy header band and actions */
-  --color-band: #10285A;
-  --color-band-ink: #FFFFFF;
-  --color-band-muted: #C6D0E4;
-  --color-band-rule: #2A4479;
-  --color-action: #10285A;
-  --color-action-hover: #0B1E45;
+  /* The header band (light, like the site) and the GateCHA teal for actions */
+  --color-band: #FFFFFF;
+  --color-band-ink: #0F172A;
+  --color-band-muted: #475569;
+  --color-band-rule: #E2E8F0;
+  --color-action: #0F766E;
+  --color-action-hover: #115E59;
   --color-action-ink: #FFFFFF;
-  --color-link: #1F4FC1;
-  --color-link-hover: #163B94;
-  --color-focus: #1F4FC1;
+  --color-link: #0F766E;
+  --color-link-hover: #115E59;
+  --color-focus: #0F766E;
 
   /* State: only where it means something */
-  --color-ok: #00754E;
-  --color-ok-soft: #E3F4EC;
+  --color-ok: #15803D;
+  --color-ok-soft: #E7F8EC;
   --color-warn: #E8A400;
   --color-warn-ink: #2A1E00;
   --color-warn-text: #8A5A00;
@@ -63,39 +63,41 @@
   --color-fail-edge: #F4B6BE;
   --color-disabled: #ECEDEF;
   --color-disabled-ink: #5E6166;
-  --color-ok-edge: #A9DCC4;
+  --color-ok-edge: #A7E0B8;
   --color-danger: #C8001A;
   --color-danger-hover: #A30015;
-  --color-backdrop: rgb(11 18 33 / 0.6);
+  --color-backdrop: rgb(15 23 42 / 0.6);
 
   /* Code blocks stay dark in both themes */
-  --color-code: #0E1A33;
-  --color-code-ink: #D7E3FF;
+  --color-code: #1E293B;
+  --color-code-ink: #E2E8F0;
 
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ground: #0B1221;
-    --color-panel: #111A2E;
-    --color-sunken: #0E1627;
-    --color-ink: #E7EBF3;
-    --color-ink-2: #C3CAD8;
-    --color-muted: #9AA4B8;
-    --color-rule: #24324D;
-    --color-rule-soft: #1A2640;
-    --color-rule-strong: #3A4B6B;
+    --color-ground: #0B1120;
+    --color-panel: #131C2E;
+    --color-sunken: #0F1726;
+    --color-ink: #F1F5F9;
+    --color-ink-2: #CBD5E1;
+    --color-muted: #94A3B8;
+    --color-rule: #2A3648;
+    --color-rule-soft: #1D2738;
+    --color-rule-strong: #475569;
 
-    --color-band: #10285A;
-    --color-band-rule: #2A4479;
-    --color-action: #3366E0;
-    --color-action-hover: #2B59C3;
-    --color-link: #8AB0FF;
-    --color-link-hover: #B3CBFF;
-    --color-focus: #8AB0FF;
+    --color-band: #131C2E;
+    --color-band-ink: #F1F5F9;
+    --color-band-muted: #94A3B8;
+    --color-band-rule: #2A3648;
+    --color-action: #0F766E;
+    --color-action-hover: #0D9488;
+    --color-link: #5EEAD4;
+    --color-link-hover: #99F6E4;
+    --color-focus: #5EEAD4;
 
-    --color-ok: #3DD598;
-    --color-ok-soft: #0F2B24;
+    --color-ok: #4ADE80;
+    --color-ok-soft: #10281A;
     --color-warn-text: #F5C451;
     --color-warn-soft: #2A2208;
     --color-warn-edge: #5C4710;
@@ -104,12 +106,12 @@
     --color-fail-edge: #6B2430;
     --color-disabled: #232C3F;
     --color-disabled-ink: #AEB6C6;
-    --color-ok-edge: #1F5A45;
+    --color-ok-edge: #1E5A35;
     --color-danger: #C92A3E;
     --color-danger-hover: #B01F33;
-    --color-backdrop: rgb(3 6 14 / 0.72);
+    --color-backdrop: rgb(2 6 23 / 0.72);
 
-    --color-code: #070E1D;
+    --color-code: #0B1220;
   }
 }
 
