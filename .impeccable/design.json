@@ -1,691 +1,663 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-24T12:00:00Z",
+  "generatedAt": "2026-10-24T18:00:00Z",
   "title": "Design System: GateCHA",
   "extensions": {
     "colorMeta": {
-      "band": {
-        "role": "primary",
-        "displayName": "Header Navy",
-        "canonical": "#10285A",
-        "oklch": "oklch(29.1% 0.095 262.7)",
-        "dark": "#10285A",
-        "purpose": "Header band in both themes; brand tile.",
-        "tonalRamp": [
-          "#010922",
-          "#132445",
-          "#2C416A",
-          "#476092",
-          "#6482BB",
-          "#89A5DB",
-          "#AFCAFB",
-          "#E2EFFF"
-        ]
-      },
-      "band-ink": {
-        "role": "primary",
-        "displayName": "Band Ink",
-        "canonical": "#FFFFFF",
-        "oklch": "oklch(100.0% 0.000 89.9)",
-        "dark": "#FFFFFF",
-        "purpose": "Text on the band.",
-        "tonalRamp": [
-          "#0B0B0B",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#A5A5A5",
-          "#C9C9C9",
-          "#EEEEEE"
-        ]
-      },
-      "band-muted": {
-        "role": "primary",
-        "displayName": "Band Muted",
-        "canonical": "#C6D0E4",
-        "oklch": "oklch(85.6% 0.030 264.4)",
-        "dark": "#C6D0E4",
-        "purpose": "Inactive tabs and version on the band.",
-        "tonalRamp": [
-          "#080B13",
-          "#20252F",
-          "#3C424F",
-          "#5A6171",
-          "#798395",
-          "#9DA5B6",
-          "#C1C9D9",
-          "#E8EFFD"
-        ]
-      },
-      "band-rule": {
-        "role": "primary",
-        "displayName": "Band Rule",
-        "canonical": "#2A4479",
-        "oklch": "oklch(39.4% 0.095 263.0)",
-        "dark": "#2A4479",
-        "purpose": "Band bottom edge, Logout outline, mark inner stroke.",
-        "tonalRamp": [
-          "#020923",
-          "#132445",
-          "#2C416B",
-          "#476092",
-          "#6482BB",
-          "#89A5DB",
-          "#B0CAFB",
-          "#E2EFFF"
-        ]
-      },
       "action": {
         "role": "primary",
-        "displayName": "Action Navy",
-        "canonical": "#10285A",
-        "oklch": "oklch(29.1% 0.095 262.7)",
-        "dark": "#3366E0",
-        "purpose": "Primary buttons, toggles on, checkbox accent, caret.",
+        "displayName": "GateCHA Teal",
+        "canonical": "#0F766E",
+        "oklch": "oklch(51.1% 0.086 186.4)",
         "tonalRamp": [
-          "#010922",
-          "#132445",
-          "#2C416A",
-          "#476092",
-          "#6482BB",
-          "#89A5DB",
-          "#AFCAFB",
-          "#E2EFFF"
-        ]
+          "#000F0D",
+          "#022B27",
+          "#084A45",
+          "#126C65",
+          "#338E85",
+          "#58B0A7",
+          "#7FD7CD",
+          "#BBFEF5"
+        ],
+        "dark": "#0F766E",
+        "purpose": "Primary buttons, checkboxes, caret, the mark tile and the wordmark \"CHA\"."
       },
       "action-hover": {
         "role": "primary",
-        "displayName": "Action Navy Deep",
-        "canonical": "#0B1E45",
-        "oklch": "oklch(24.6% 0.078 262.6)",
-        "dark": "#2B59C3",
-        "purpose": "Primary button hover.",
+        "displayName": "Teal Deep",
+        "canonical": "#115E59",
+        "oklch": "oklch(43.7% 0.071 188.2)",
         "tonalRamp": [
-          "#030A1E",
-          "#16243F",
-          "#304263",
-          "#4C6189",
-          "#6982B1",
-          "#8EA6D1",
-          "#B4CAF2",
-          "#E2EFFF"
-        ]
+          "#000F0D",
+          "#032B28",
+          "#0B4A46",
+          "#226A65",
+          "#468B85",
+          "#68ADA7",
+          "#8ED3CD",
+          "#B8FFF7"
+        ],
+        "dark": "#0D9488",
+        "purpose": "Primary button hover."
       },
       "action-ink": {
         "role": "primary",
         "displayName": "Action Ink",
         "canonical": "#FFFFFF",
         "oklch": "oklch(100.0% 0.000 89.9)",
-        "dark": "#FFFFFF",
-        "purpose": "Text on action and danger fills.",
         "tonalRamp": [
           "#0B0B0B",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#A5A5A5",
-          "#C9C9C9",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#7D7D7D",
+          "#9E9E9E",
+          "#C4C4C4",
           "#EEEEEE"
-        ]
+        ],
+        "dark": "#FFFFFF",
+        "purpose": "Text on teal and danger fills."
       },
       "link": {
         "role": "primary",
-        "displayName": "Link Blue",
-        "canonical": "#1F4FC1",
-        "oklch": "oklch(47.0% 0.186 263.5)",
-        "dark": "#8AB0FF",
-        "purpose": "Text links, challenges sparkline and per-key chart line.",
+        "displayName": "Link Teal",
+        "canonical": "#0F766E",
+        "oklch": "oklch(51.1% 0.086 186.4)",
         "tonalRamp": [
-          "#000039",
-          "#021A63",
-          "#153990",
-          "#2C59BF",
-          "#467BEF",
-          "#74A2FF",
-          "#ACC9FF",
-          "#E3EFFF"
-        ]
+          "#000F0D",
+          "#022B27",
+          "#084A45",
+          "#126C65",
+          "#338E85",
+          "#58B0A7",
+          "#7FD7CD",
+          "#BBFEF5"
+        ],
+        "dark": "#5EEAD4",
+        "purpose": "Text links, healthy-key sparklines, key-detail challenges line."
       },
       "link-hover": {
         "role": "primary",
-        "displayName": "Link Blue Deep",
-        "canonical": "#163B94",
-        "oklch": "oklch(38.7% 0.153 263.7)",
-        "dark": "#B3CBFF",
-        "purpose": "Link hover.",
+        "displayName": "Link Teal Hover",
+        "canonical": "#115E59",
+        "oklch": "oklch(43.7% 0.071 188.2)",
         "tonalRamp": [
-          "#000330",
-          "#081F58",
-          "#1E3D82",
-          "#375CAF",
-          "#527EDC",
-          "#78A3FA",
-          "#ACC9FF",
-          "#E3EFFF"
-        ]
+          "#000F0D",
+          "#032B28",
+          "#0B4A46",
+          "#226A65",
+          "#468B85",
+          "#68ADA7",
+          "#8ED3CD",
+          "#B8FFF7"
+        ],
+        "dark": "#99F6E4",
+        "purpose": "Link hover."
       },
       "focus": {
         "role": "primary",
-        "displayName": "Focus Blue",
-        "canonical": "#1F4FC1",
-        "oklch": "oklch(47.0% 0.186 263.5)",
-        "dark": "#8AB0FF",
-        "purpose": "Focus rings and focused input borders.",
+        "displayName": "Focus Teal",
+        "canonical": "#0F766E",
+        "oklch": "oklch(51.1% 0.086 186.4)",
         "tonalRamp": [
-          "#000039",
-          "#021A63",
-          "#153990",
-          "#2C59BF",
-          "#467BEF",
-          "#74A2FF",
-          "#ACC9FF",
-          "#E3EFFF"
-        ]
+          "#000F0D",
+          "#022B27",
+          "#084A45",
+          "#126C65",
+          "#338E85",
+          "#58B0A7",
+          "#7FD7CD",
+          "#BBFEF5"
+        ],
+        "dark": "#5EEAD4",
+        "purpose": "Focus rings and focused input borders."
       },
-      "mark-yellow": {
-        "role": "secondary",
-        "displayName": "Check Yellow",
-        "canonical": "#FFCD00",
-        "oklch": "oklch(86.7% 0.177 90.8)",
-        "dark": "#FFCD00",
-        "purpose": "Check stroke in the mark only; not a UI token.",
+      "band": {
+        "role": "neutral",
+        "displayName": "Band",
+        "canonical": "#FFFFFF",
+        "oklch": "oklch(100.0% 0.000 89.9)",
         "tonalRamp": [
-          "#120A00",
-          "#302300",
-          "#533F00",
-          "#785E00",
-          "#9F7E00",
-          "#C6A019",
-          "#EBC550",
-          "#FFEC8B"
-        ]
+          "#0B0B0B",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#7D7D7D",
+          "#9E9E9E",
+          "#C4C4C4",
+          "#EEEEEE"
+        ],
+        "dark": "#131C2E",
+        "purpose": "Header band surface: white in light, panel in dark."
+      },
+      "band-ink": {
+        "role": "neutral",
+        "displayName": "Band Ink",
+        "canonical": "#0F172A",
+        "oklch": "oklch(20.8% 0.040 265.8)",
+        "tonalRamp": [
+          "#040A1C",
+          "#1B2337",
+          "#363F55",
+          "#535D75",
+          "#727D96",
+          "#939EB8",
+          "#B8C4DF",
+          "#E7EFFE"
+        ],
+        "dark": "#F1F5F9",
+        "purpose": "Brand text, active tab, Logout text in the header."
+      },
+      "band-muted": {
+        "role": "neutral",
+        "displayName": "Band Muted",
+        "canonical": "#475569",
+        "oklch": "oklch(44.6% 0.037 257.3)",
+        "tonalRamp": [
+          "#030B1B",
+          "#182536",
+          "#334154",
+          "#505F73",
+          "#6F7E94",
+          "#90A0B6",
+          "#B5C5DD",
+          "#E5EFFE"
+        ],
+        "dark": "#94A3B8",
+        "purpose": "Inactive tabs and version in the header."
+      },
+      "band-rule": {
+        "role": "neutral",
+        "displayName": "Band Rule",
+        "canonical": "#E2E8F0",
+        "oklch": "oklch(92.9% 0.013 255.5)",
+        "tonalRamp": [
+          "#080B10",
+          "#20242A",
+          "#3B4046",
+          "#595E65",
+          "#787E85",
+          "#999FA6",
+          "#BFC5CC",
+          "#E9EFF7"
+        ],
+        "dark": "#2A3648",
+        "purpose": "Header bottom hairline and Logout outline."
       },
       "ok": {
         "role": "state",
         "displayName": "Verified Green",
-        "canonical": "#00754E",
-        "oklch": "oklch(49.7% 0.110 161.5)",
-        "dark": "#3DD598",
-        "purpose": "Verified counts, OK status, verified meter segments.",
+        "canonical": "#15803D",
+        "oklch": "oklch(52.7% 0.137 150.1)",
         "tonalRamp": [
-          "#001105",
-          "#002F1A",
-          "#005033",
-          "#1A724F",
-          "#38966D",
-          "#69B892",
-          "#95DBB8",
-          "#C2FFDF"
-        ]
+          "#011003",
+          "#012D10",
+          "#054D21",
+          "#0F7034",
+          "#31934F",
+          "#57B66F",
+          "#7EDD94",
+          "#C7FFD1"
+        ],
+        "dark": "#4ADE80",
+        "purpose": "Verified counts, OK status, all-clear line."
       },
       "ok-soft": {
         "role": "state",
-        "displayName": "Verified Green Soft",
-        "canonical": "#E3F4EC",
-        "oklch": "oklch(95.2% 0.021 166.1)",
-        "dark": "#0F2B24",
-        "purpose": "All-clear line fill.",
+        "displayName": "Verified Soft",
+        "canonical": "#E7F8EC",
+        "oklch": "oklch(96.3% 0.024 155.2)",
         "tonalRamp": [
-          "#070D0A",
-          "#1F2723",
-          "#3A4540",
-          "#58655F",
-          "#77867F",
-          "#9BA9A2",
-          "#C0CDC7",
-          "#E6F2EC"
-        ]
+          "#040E07",
+          "#1B281F",
+          "#36443A",
+          "#536258",
+          "#738277",
+          "#93A398",
+          "#B9C9BD",
+          "#E3F4E8"
+        ],
+        "dark": "#10281A",
+        "purpose": "All-clear line fill."
       },
       "ok-edge": {
         "role": "state",
-        "displayName": "Verified Green Edge",
-        "canonical": "#A9DCC4",
-        "oklch": "oklch(85.2% 0.062 164.5)",
-        "dark": "#1F5A45",
-        "purpose": "All-clear border; verified bars in the 30-day chart.",
+        "displayName": "Verified Edge",
+        "canonical": "#A7E0B8",
+        "oklch": "oklch(85.7% 0.081 153.9)",
         "tonalRamp": [
-          "#001007",
-          "#0D2C1F",
-          "#264A3B",
-          "#416C59",
-          "#5E8E79",
-          "#85B19C",
-          "#ACD4C1",
-          "#D5F8E7"
-        ]
+          "#001005",
+          "#032C15",
+          "#134C2B",
+          "#356B48",
+          "#558B67",
+          "#76AD87",
+          "#9BD4AC",
+          "#C9FED8"
+        ],
+        "dark": "#1E5A35",
+        "purpose": "Verified bars in the 30-day chart."
       },
       "warn": {
         "role": "state",
         "displayName": "Failing Amber",
         "canonical": "#E8A400",
         "oklch": "oklch(76.4% 0.159 78.8)",
-        "dark": "#E8A400",
-        "purpose": "Failing chip fill, banner left edge and disc; text selection.",
         "tonalRamp": [
-          "#140800",
-          "#362000",
-          "#593B00",
-          "#815900",
-          "#AB7700",
-          "#D49921",
-          "#F5BF64",
-          "#FFE699"
-        ]
+          "#120900",
+          "#322000",
+          "#553A03",
+          "#7B5609",
+          "#A1741B",
+          "#CB9325",
+          "#FBB62E",
+          "#FEECD0"
+        ],
+        "dark": "#E8A400",
+        "purpose": "Failing chip, banner edge and disc, text selection."
       },
       "warn-ink": {
         "role": "state",
-        "displayName": "Failing Amber Ink",
+        "displayName": "Amber Ink",
         "canonical": "#2A1E00",
         "oklch": "oklch(24.3% 0.050 87.2)",
-        "dark": "#2A1E00",
-        "purpose": "Text on amber.",
         "tonalRamp": [
-          "#100A00",
-          "#2C2410",
-          "#4B4129",
-          "#6C6044",
-          "#8F8160",
-          "#B1A486",
-          "#D4C8AD",
-          "#F8EED5"
-        ]
+          "#110A00",
+          "#2E2203",
+          "#4B3E1F",
+          "#6A5C3D",
+          "#8A7C5B",
+          "#AC9D7B",
+          "#D2C3A0",
+          "#FDEDC9"
+        ],
+        "dark": "#2A1E00",
+        "purpose": "Text on amber."
       },
       "warn-text": {
         "role": "state",
-        "displayName": "Failing Amber Text",
+        "displayName": "Amber Text",
         "canonical": "#8A5A00",
         "oklch": "oklch(50.8% 0.108 73.3)",
-        "dark": "#F5C451",
-        "purpose": "Amber as text on neutral surfaces.",
         "tonalRamp": [
-          "#150800",
-          "#381E00",
-          "#5D3900",
-          "#825712",
-          "#A9772F",
-          "#CA9C5E",
-          "#EBC18B",
-          "#FFE8B8"
-        ]
+          "#130900",
+          "#341F00",
+          "#583802",
+          "#7F5307",
+          "#A47228",
+          "#C7934C",
+          "#EFB972",
+          "#FEEBD4"
+        ],
+        "dark": "#F5C451",
+        "purpose": "Amber used as text on light surfaces."
       },
       "warn-soft": {
         "role": "state",
-        "displayName": "Failing Amber Soft",
+        "displayName": "Amber Soft",
         "canonical": "#FFF7E0",
         "oklch": "oklch(97.6% 0.031 91.0)",
-        "dark": "#2A2208",
-        "purpose": "Banner fill and failing row tint.",
         "tonalRamp": [
-          "#0E0B04",
-          "#292519",
-          "#474233",
-          "#67614F",
-          "#89826E",
-          "#ABA592",
-          "#CFC9B7",
-          "#F4EEDF"
-        ]
+          "#100A00",
+          "#2A2312",
+          "#463F2D",
+          "#645D4A",
+          "#847D68",
+          "#A69E89",
+          "#CCC4AE",
+          "#F6EED7"
+        ],
+        "dark": "#2A2208",
+        "purpose": "Attention banner and failing row tint."
       },
       "warn-edge": {
         "role": "state",
-        "displayName": "Failing Amber Edge",
+        "displayName": "Amber Edge",
         "canonical": "#F1D88E",
         "oklch": "oklch(88.7% 0.097 91.5)",
-        "dark": "#5C4710",
-        "purpose": "Banner hairline.",
         "tonalRamp": [
-          "#110A00",
-          "#302300",
-          "#514000",
-          "#735F1C",
-          "#978037",
-          "#B9A464",
-          "#DBC890",
-          "#FFEEBC"
-        ]
+          "#100A00",
+          "#2D2303",
+          "#4E3E00",
+          "#725B03",
+          "#927B31",
+          "#B49C54",
+          "#DBC279",
+          "#FEEEBE"
+        ],
+        "dark": "#5C4710",
+        "purpose": "Attention banner hairline."
       },
       "fail": {
         "role": "state",
         "displayName": "Failure Red",
         "canonical": "#C8001A",
         "oklch": "oklch(52.4% 0.213 26.1)",
-        "dark": "#FF6B7A",
-        "purpose": "Failure counts and failed segments.",
         "tonalRamp": [
-          "#220000",
-          "#510000",
-          "#80000D",
-          "#B5111C",
-          "#E63637",
-          "#FF6B63",
-          "#FFB0A7",
-          "#FFE6E2"
-        ]
+          "#1F0001",
+          "#4A0306",
+          "#790D12",
+          "#AC191F",
+          "#E02D30",
+          "#FA6960",
+          "#FFABA2",
+          "#FFE9E6"
+        ],
+        "dark": "#FF6B7A",
+        "purpose": "Failure counts and failed segments."
       },
       "fail-soft": {
         "role": "state",
-        "displayName": "Failure Red Soft",
+        "displayName": "Failure Soft",
         "canonical": "#FDECEE",
         "oklch": "oklch(95.7% 0.019 9.3)",
-        "dark": "#2E1219",
-        "purpose": "Danger dialog icon disc.",
         "tonalRamp": [
           "#120809",
-          "#2D2123",
-          "#4B3E40",
-          "#6B5D5F",
-          "#8D7E80",
-          "#B0A0A2",
-          "#D5C4C6",
+          "#2C2022",
+          "#493C3E",
+          "#68595B",
+          "#88797B",
+          "#AA9A9C",
+          "#D0BFC1",
           "#FBEAEC"
-        ]
+        ],
+        "dark": "#2E1219",
+        "purpose": "Error message fills."
       },
       "fail-edge": {
         "role": "state",
-        "displayName": "Failure Red Edge",
+        "displayName": "Failure Edge",
         "canonical": "#F4B6BE",
         "oklch": "oklch(83.5% 0.073 10.2)",
-        "dark": "#6B2430",
-        "purpose": "Failure hairlines.",
         "tonalRamp": [
-          "#190307",
-          "#3A1A1F",
-          "#5D343B",
-          "#825158",
-          "#A97078",
-          "#CA959C",
-          "#ECBAC0",
-          "#FFE5E9"
-        ]
+          "#1E0006",
+          "#40111C",
+          "#602E37",
+          "#814C54",
+          "#A36B73",
+          "#C78C94",
+          "#EFB1B9",
+          "#FEE8EB"
+        ],
+        "dark": "#6B2430",
+        "purpose": "Error message hairlines."
       },
       "danger": {
         "role": "state",
         "displayName": "Danger Red",
         "canonical": "#C8001A",
         "oklch": "oklch(52.4% 0.213 26.1)",
-        "dark": "#C92A3E",
-        "purpose": "Destructive buttons only.",
         "tonalRamp": [
-          "#220000",
-          "#510000",
-          "#80000D",
-          "#B5111C",
-          "#E63637",
-          "#FF6B63",
-          "#FFB0A7",
-          "#FFE6E2"
-        ]
+          "#1F0001",
+          "#4A0306",
+          "#790D12",
+          "#AC191F",
+          "#E02D30",
+          "#FA6960",
+          "#FFABA2",
+          "#FFE9E6"
+        ],
+        "dark": "#C92A3E",
+        "purpose": "Delete and destructive confirms."
       },
       "danger-hover": {
         "role": "state",
-        "displayName": "Danger Red Deep",
+        "displayName": "Danger Deep",
         "canonical": "#A30015",
         "oklch": "oklch(45.0% 0.183 25.7)",
-        "dark": "#B01F33",
-        "purpose": "Destructive button hover.",
         "tonalRamp": [
-          "#210000",
-          "#4F0002",
-          "#7E0A12",
-          "#AB2B2B",
-          "#DA4945",
-          "#FA776E",
-          "#FFAEA6",
-          "#FFE6E2"
-        ]
+          "#1F0001",
+          "#4A0206",
+          "#7A0A12",
+          "#AD161F",
+          "#D44240",
+          "#FC6760",
+          "#FBADA5",
+          "#FFE9E6"
+        ],
+        "dark": "#B01F33",
+        "purpose": "Danger hover."
       },
       "disabled": {
         "role": "state",
         "displayName": "Disabled Grey",
         "canonical": "#ECEDEF",
         "oklch": "oklch(94.6% 0.003 264.5)",
-        "dark": "#232C3F",
-        "purpose": "Disabled status chip fill.",
         "tonalRamp": [
           "#0A0B0C",
-          "#242526",
-          "#414244",
-          "#606163",
-          "#818284",
-          "#A4A5A7",
-          "#C8C9CB",
+          "#232425",
+          "#3F4041",
+          "#5D5E5F",
+          "#7C7D7F",
+          "#9D9EA0",
+          "#C3C4C6",
           "#EDEEF0"
-        ]
+        ],
+        "dark": "#232C3F",
+        "purpose": "Disabled chip fill."
       },
       "disabled-ink": {
         "role": "state",
-        "displayName": "Disabled Grey Ink",
+        "displayName": "Disabled Ink",
         "canonical": "#5E6166",
         "oklch": "oklch(49.2% 0.009 260.7)",
-        "dark": "#AEB6C6",
-        "purpose": "Disabled status chip text.",
         "tonalRamp": [
           "#090B0F",
-          "#232529",
-          "#3F4247",
-          "#5E6166",
-          "#7F8288",
-          "#A2A5AB",
-          "#C6C9CF",
+          "#222428",
+          "#3D4045",
+          "#5B5E63",
+          "#7A7D83",
+          "#9B9FA4",
+          "#C1C4CA",
           "#EBEFF5"
-        ]
+        ],
+        "dark": "#AEB6C6",
+        "purpose": "Disabled chip text."
       },
       "ground": {
         "role": "neutral",
-        "displayName": "Porcelain Ground",
-        "canonical": "#F3F5F7",
-        "oklch": "oklch(96.9% 0.003 247.9)",
-        "dark": "#0B1221",
-        "purpose": "Page background.",
+        "displayName": "Slate Ground",
+        "canonical": "#F8FAFC",
+        "oklch": "oklch(98.4% 0.003 247.9)",
         "tonalRamp": [
           "#0A0B0D",
-          "#242527",
-          "#414244",
-          "#606163",
-          "#818284",
-          "#A3A5A7",
-          "#C7C9CB",
+          "#232426",
+          "#3E4041",
+          "#5C5E5F",
+          "#7C7D7F",
+          "#9D9FA0",
+          "#C2C4C6",
           "#EDEFF1"
-        ]
+        ],
+        "dark": "#0B1120",
+        "purpose": "Page background."
       },
       "panel": {
         "role": "neutral",
         "displayName": "Panel White",
         "canonical": "#FFFFFF",
         "oklch": "oklch(100.0% 0.000 89.9)",
-        "dark": "#111A2E",
-        "purpose": "Panels, cards, inputs, footer.",
         "tonalRamp": [
           "#0B0B0B",
-          "#252525",
-          "#424242",
-          "#616161",
-          "#828282",
-          "#A5A5A5",
-          "#C9C9C9",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#7D7D7D",
+          "#9E9E9E",
+          "#C4C4C4",
           "#EEEEEE"
-        ]
+        ],
+        "dark": "#131C2E",
+        "purpose": "Panels, cards, inputs, footer."
       },
       "sunken": {
         "role": "neutral",
         "displayName": "Sunken",
-        "canonical": "#F7F8FA",
-        "oklch": "oklch(97.9% 0.003 264.5)",
-        "dark": "#0E1627",
-        "purpose": "Group header rows, inline code, meter tracks, secondary hover.",
+        "canonical": "#F1F5F9",
+        "oklch": "oklch(96.8% 0.007 247.9)",
         "tonalRamp": [
-          "#0B0B0C",
-          "#242526",
-          "#414243",
-          "#606163",
-          "#818284",
-          "#A4A5A7",
-          "#C8C9CB",
-          "#EDEEF0"
-        ]
+          "#090B0E",
+          "#212427",
+          "#3D4043",
+          "#5B5E61",
+          "#7A7E81",
+          "#9B9FA2",
+          "#C1C5C8",
+          "#EBEFF3"
+        ],
+        "dark": "#0F1726",
+        "purpose": "Group rows, table heads, inline code, meter tracks, hovers."
       },
       "ink": {
         "role": "neutral",
         "displayName": "Ink",
-        "canonical": "#14213D",
-        "oklch": "oklch(25.2% 0.056 264.0)",
-        "dark": "#E7EBF3",
-        "purpose": "Headings, figures, primary text; challenges line in the chart.",
+        "canonical": "#0F172A",
+        "oklch": "oklch(20.8% 0.040 265.8)",
         "tonalRamp": [
-          "#050B19",
-          "#1B2538",
-          "#36425A",
-          "#53617F",
-          "#7182A5",
-          "#95A5C5",
-          "#BBCAE7",
-          "#E3EFFF"
-        ]
+          "#040A1C",
+          "#1B2337",
+          "#363F55",
+          "#535D75",
+          "#727D96",
+          "#939EB8",
+          "#B8C4DF",
+          "#E7EFFE"
+        ],
+        "dark": "#F1F5F9",
+        "purpose": "Headings, names, figures, wordmark \"Gate\"."
       },
       "ink-2": {
         "role": "neutral",
         "displayName": "Ink 2",
-        "canonical": "#3A4560",
-        "oklch": "oklch(39.3% 0.048 267.1)",
-        "dark": "#C3CAD8",
-        "purpose": "Field labels and secondary text.",
+        "canonical": "#334155",
+        "oklch": "oklch(37.2% 0.039 257.3)",
         "tonalRamp": [
-          "#060B17",
-          "#1E2536",
-          "#394257",
-          "#56617B",
-          "#7582A0",
-          "#99A5C1",
-          "#BEC9E3",
-          "#E4EEFF"
-        ]
+          "#020B1B",
+          "#182437",
+          "#334155",
+          "#505F74",
+          "#6F7E95",
+          "#8FA0B7",
+          "#B4C6DE",
+          "#E5EFFF"
+        ],
+        "dark": "#CBD5E1",
+        "purpose": "Field labels and secondary text."
       },
       "muted": {
         "role": "neutral",
         "displayName": "Muted",
-        "canonical": "#5B6478",
-        "oklch": "oklch(50.3% 0.034 266.1)",
-        "dark": "#9AA4B8",
-        "purpose": "Captions, column labels, empty states, placeholders.",
+        "canonical": "#475569",
+        "oklch": "oklch(44.6% 0.037 257.3)",
         "tonalRamp": [
-          "#070B14",
-          "#202531",
-          "#3B4251",
-          "#596173",
-          "#798297",
-          "#9CA5B9",
-          "#C1C9DB",
-          "#E7EFFF"
-        ]
+          "#030B1B",
+          "#182536",
+          "#334154",
+          "#505F73",
+          "#6F7E94",
+          "#90A0B6",
+          "#B5C5DD",
+          "#E5EFFE"
+        ],
+        "dark": "#94A3B8",
+        "purpose": "Captions, column labels, empty states."
       },
       "rule": {
         "role": "neutral",
         "displayName": "Rule",
-        "canonical": "#DDE2E8",
-        "oklch": "oklch(91.1% 0.010 252.8)",
-        "dark": "#24324D",
-        "purpose": "Panel borders.",
+        "canonical": "#E2E8F0",
+        "oklch": "oklch(92.9% 0.013 255.5)",
         "tonalRamp": [
-          "#080B0F",
-          "#22252A",
-          "#3E4247",
-          "#5D6267",
-          "#7E8388",
-          "#A1A5AB",
-          "#C5CACF",
-          "#EAEFF5"
-        ]
+          "#080B10",
+          "#20242A",
+          "#3B4046",
+          "#595E65",
+          "#787E85",
+          "#999FA6",
+          "#BFC5CC",
+          "#E9EFF7"
+        ],
+        "dark": "#2A3648",
+        "purpose": "Panel borders and band edge."
       },
       "rule-soft": {
         "role": "neutral",
         "displayName": "Rule Soft",
-        "canonical": "#EBEEF2",
-        "oklch": "oklch(94.8% 0.006 255.5)",
-        "dark": "#1A2640",
-        "purpose": "Row separators, chart gridlines.",
+        "canonical": "#EEF2F6",
+        "oklch": "oklch(95.9% 0.007 247.9)",
         "tonalRamp": [
           "#090B0E",
-          "#232528",
-          "#404245",
-          "#5F6165",
-          "#808286",
-          "#A2A5A9",
-          "#C6C9CD",
-          "#ECEFF3"
-        ]
+          "#212427",
+          "#3D4043",
+          "#5B5E61",
+          "#7A7E81",
+          "#9B9FA3",
+          "#C1C5C8",
+          "#EBEFF3"
+        ],
+        "dark": "#1D2738",
+        "purpose": "Row separators and chart gridlines."
       },
       "rule-strong": {
         "role": "neutral",
         "displayName": "Rule Strong",
-        "canonical": "#B9C1CD",
-        "oklch": "oklch(80.8% 0.019 258.4)",
-        "dark": "#3A4B6B",
-        "purpose": "Control borders, toggle off, disabled sparkline.",
+        "canonical": "#CBD5E1",
+        "oklch": "oklch(86.9% 0.020 252.9)",
         "tonalRamp": [
-          "#070B13",
-          "#1F252E",
-          "#3C424C",
-          "#5B626C",
-          "#7B838E",
-          "#9EA6B1",
-          "#C2CAD6",
-          "#E7EFFC"
-        ]
+          "#060C13",
+          "#1D252E",
+          "#38414A",
+          "#565F69",
+          "#757E89",
+          "#969FAB",
+          "#BBC5D1",
+          "#E5F0FC"
+        ],
+        "dark": "#475569",
+        "purpose": "Input and secondary-button borders, disabled sparklines."
       },
       "code": {
         "role": "neutral",
-        "displayName": "Code Night",
-        "canonical": "#0E1A33",
-        "oklch": "oklch(22.2% 0.052 263.4)",
-        "dark": "#070E1D",
-        "purpose": "Code blocks in both themes.",
+        "displayName": "Code Slate",
+        "canonical": "#1E293B",
+        "oklch": "oklch(27.9% 0.037 260.0)",
         "tonalRamp": [
-          "#050B18",
-          "#1C2537",
-          "#364258",
-          "#53617C",
-          "#7283A2",
-          "#96A5C3",
-          "#BBCAE5",
-          "#E2EFFF"
-        ]
+          "#030B1A",
+          "#192436",
+          "#344053",
+          "#525E73",
+          "#717E94",
+          "#919FB6",
+          "#B6C5DD",
+          "#E6EFFE"
+        ],
+        "dark": "#0B1220",
+        "purpose": "Integration snippet background, dark in both themes."
       },
       "code-ink": {
         "role": "neutral",
         "displayName": "Code Ink",
-        "canonical": "#D7E3FF",
-        "oklch": "oklch(91.5% 0.040 267.1)",
-        "dark": "#D7E3FF",
-        "purpose": "Text in code blocks.",
+        "canonical": "#E2E8F0",
+        "oklch": "oklch(92.9% 0.013 255.5)",
         "tonalRamp": [
-          "#070B15",
-          "#1F2533",
-          "#3A4254",
-          "#586177",
-          "#77829B",
-          "#9BA5BC",
-          "#C0C9DF",
-          "#E6EEFF"
-        ]
+          "#080B10",
+          "#20242A",
+          "#3B4046",
+          "#595E65",
+          "#787E85",
+          "#999FA6",
+          "#BFC5CC",
+          "#E9EFF7"
+        ],
+        "dark": "#E2E8F0",
+        "purpose": "Text in code blocks."
       },
       "backdrop": {
         "role": "neutral",
         "displayName": "Backdrop",
-        "canonical": "rgb(11 18 33 / 0.6)",
-        "dark": "rgb(3 6 14 / 0.72)",
-        "purpose": "Modal dialog backdrop.",
-        "tonalRamp": [
-          "#070B13",
-          "#1F2530",
-          "#3B4250",
-          "#596173",
-          "#798396",
-          "#9CA5B8",
-          "#C1C9DB",
-          "#E7EFFE"
-        ]
+        "canonical": "rgb(15 23 42 / 0.6)",
+        "dark": "rgb(2 6 23 / 0.72)",
+        "purpose": "Modal backdrop."
       }
     },
     "typographyMeta": {
@@ -699,11 +671,11 @@
       },
       "title": {
         "displayName": "Panel Title",
-        "purpose": "Panel, dialog and banner headings."
+        "purpose": "Panel, dialog and banner headings, semibold."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Table cells, buttons, links, form text; field labels at 500 in ink-2."
+        "purpose": "Table cells and form text; buttons, tabs, links and names at 600; field labels at 500 in ink-2."
       },
       "caption": {
         "displayName": "Caption",
@@ -711,7 +683,7 @@
       },
       "label": {
         "displayName": "Data Label",
-        "purpose": "Uppercase column headers, group rows and funnel figure labels; names the data directly beneath."
+        "purpose": "Uppercase 600 column headers, group rows and funnel figure labels; names the data directly beneath."
       },
       "figure": {
         "displayName": "Figure",
@@ -752,11 +724,29 @@
       }
     ],
     "drift": [
-      "Two chart implementations: dashboard VerificationsChart.vue is inline SVG stacked bars reading CSS tokens; key detail StatsChart.vue is a Chart.js three-line chart resolving tokens at runtime.",
       "Page title size: Dashboard 32px, every other view 24px.",
-      "Focus rings vary: login inputs ring 2px, search and page-size select ring 1px; CopyButton button variant uses focus (not focus-visible) and font-medium; detail Delete rings in focus blue, dialog danger confirm in fail red.",
+      "Focus rings vary: login inputs ring 2px, search and page-size select ring 1px; CopyButton button variant uses focus (not focus-visible) and font-medium; dialog danger confirm rings in fail red.",
       "Mark colours are hard-coded hex in BrandMark.vue and favicon.svg rather than tokens."
-    ]
+    ],
+    "fonts": [
+      {
+        "family": "Inter",
+        "src": "web/src/assets/fonts/inter-latin.woff2",
+        "weights": "100 900",
+        "purpose": "All UI text; chosen for legibility and continuity with gatecha.org. Detector overused-font ignore for Inter is sanctioned."
+      },
+      {
+        "family": "Overpass Mono",
+        "src": "@fontsource-variable/overpass-mono latin",
+        "weights": "300 700",
+        "purpose": "Counts, key IDs, secrets, version, chart axes."
+      }
+    ],
+    "brand": {
+      "mark": "Shield with a check, white on a teal (#0F766E) tile, rx 7 on a 32 grid; BrandMark.vue = public/favicon.svg = gatecha.org = WordPress.org icon/banners.",
+      "wordmark": "\"Gate\" in ink + \"CHA\" in text-action; header, signed-out header, footer.",
+      "history": "2026-10-24: owner rejected the metro metaphor, then the navy band + yellow \"G\" identity; kept GateCHA teal and shield. Do not re-propose either."
+    }
   },
   "components": [
     {
@@ -765,7 +755,7 @@
       "refersTo": "button-primary",
       "description": "Create key, Save, Sign in, primary dialog confirm.",
       "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 14 14\" width=\"14\" height=\"14\" aria-hidden=\"true\"><path d=\"M7 1v12M1 7h12\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>Create key</button>",
-      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border:0;border-radius:6px;background:var(--color-action,#10285A);color:var(--color-action-ink,#fff);font:600 14px/20px 'Overpass', ui-sans-serif, system-ui, sans-serif;cursor:pointer;transition:background-color .15s cubic-bezier(.4,0,.2,1)}.ds-btn-primary:hover{background:var(--color-action-hover,#0B1E45)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--color-focus,#1F4FC1)}"
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border:0;border-radius:6px;background:var(--color-action,#0F766E);color:var(--color-action-ink,#fff);font:600 14px/20px 'Inter', ui-sans-serif, system-ui, sans-serif;cursor:pointer;transition:background-color .15s cubic-bezier(.4,0,.2,1)}.ds-btn-primary:hover{background:var(--color-action-hover,#115E59)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--color-focus,#0F766E)}"
     },
     {
       "name": "Secondary Button",
@@ -773,7 +763,7 @@
       "refersTo": "button-secondary",
       "description": "Cancel, Disable, Edit, Open key, pagination.",
       "html": "<button class=\"ds-btn-secondary\">Open key</button>",
-      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid var(--color-rule-strong,#B9C1CD);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#14213D);font:600 14px/20px 'Overpass', ui-sans-serif, system-ui, sans-serif;cursor:pointer}.ds-btn-secondary:hover{background:var(--color-sunken,#F7F8FA)}.ds-btn-secondary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}"
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid var(--color-rule-strong,#CBD5E1);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#0F172A);font:600 14px/20px 'Inter', ui-sans-serif, system-ui, sans-serif;cursor:pointer}.ds-btn-secondary:hover{background:var(--color-sunken,#F1F5F9)}.ds-btn-secondary:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#0F766E)}"
     },
     {
       "name": "Danger Button",
@@ -781,7 +771,7 @@
       "refersTo": "button-danger",
       "description": "Delete and destructive confirms only.",
       "html": "<button class=\"ds-btn-danger\">Delete</button>",
-      "css": ".ds-btn-danger{padding:8px 16px;border:0;border-radius:6px;background:var(--color-danger,#C8001A);color:var(--color-action-ink,#fff);font:600 14px/20px 'Overpass', ui-sans-serif, system-ui, sans-serif;cursor:pointer}.ds-btn-danger:hover{background:var(--color-danger-hover,#A30015)}.ds-btn-danger:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}"
+      "css": ".ds-btn-danger{padding:8px 16px;border:0;border-radius:6px;background:var(--color-danger,#C8001A);color:var(--color-action-ink,#fff);font:600 14px/20px 'Inter', ui-sans-serif, system-ui, sans-serif;cursor:pointer}.ds-btn-danger:hover{background:var(--color-danger-hover,#A30015)}.ds-btn-danger:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#0F766E)}"
     },
     {
       "name": "Text Field",
@@ -789,15 +779,15 @@
       "refersTo": "input",
       "description": "Labelled field, label above in ink-2.",
       "html": "<label class=\"ds-field\"><span>Name</span><input class=\"ds-input\" placeholder=\"Marketing site\"></label>",
-      "css": ".ds-field{display:block;font:500 14px/20px 'Overpass', ui-sans-serif, system-ui, sans-serif;color:var(--color-ink-2,#3A4560)}.ds-field span{display:block;margin-bottom:4px}.ds-input{width:100%;padding:8px 12px;border:1px solid var(--color-rule-strong,#B9C1CD);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#14213D);font:400 14px/20px 'Overpass', ui-sans-serif, system-ui, sans-serif;caret-color:var(--color-action,#10285A)}.ds-input::placeholder{color:var(--color-muted,#5B6478)}.ds-input:focus{outline:none;border-color:var(--color-focus,#1F4FC1);box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}"
+      "css": ".ds-field{display:block;font:500 14px/20px 'Inter', ui-sans-serif, system-ui, sans-serif;color:var(--color-ink-2,#334155)}.ds-field span{display:block;margin-bottom:4px}.ds-input{width:100%;padding:8px 12px;border:1px solid var(--color-rule-strong,#CBD5E1);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#0F172A);font:400 14px/20px 'Inter', ui-sans-serif, system-ui, sans-serif;caret-color:var(--color-action,#0F766E)}.ds-input::placeholder{color:var(--color-muted,#475569)}.ds-input:focus{outline:none;border-color:var(--color-focus,#0F766E);box-shadow:0 0 0 2px var(--color-focus,#0F766E)}"
     },
     {
       "name": "Navigation Band",
       "kind": "nav",
       "refersTo": "nav-band",
-      "description": "Sticky navy band with mark, tabs, version and Logout; same in both themes.",
-      "html": "<nav class=\"ds-band\"><a class=\"ds-band-brand\" href=\"#\"><svg width=\"30\" height=\"30\" viewBox=\"0 0 32 32\" aria-hidden=\"true\"><rect width=\"32\" height=\"32\" rx=\"7\" fill=\"#10285A\"/><rect x=\"0.75\" y=\"0.75\" width=\"30.5\" height=\"30.5\" rx=\"6.25\" fill=\"none\" stroke=\"#2A4479\" stroke-width=\"1.5\"/><path d=\"M23.4 10.6A8.6 8.6 0 1 0 24.6 16\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><path d=\"M14.2 16.2l2.6 2.6 6.4-7.2\" fill=\"none\" stroke=\"#FFCD00\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>GateCHA</a><a class=\"ds-band-tab is-active\" href=\"#\">Dashboard</a><a class=\"ds-band-tab\" href=\"#\">API Keys</a><a class=\"ds-band-tab\" href=\"#\">Settings</a><span class=\"ds-band-version\">v0.10.0</span><button class=\"ds-band-logout\">Logout</button></nav>",
-      "css": ".ds-band{display:flex;align-items:stretch;gap:4px;height:56px;padding:0 24px;background:var(--color-band,#10285A);color:var(--color-band-ink,#fff);border-bottom:1px solid var(--color-band-rule,#2A4479);font-family:'Overpass', ui-sans-serif, system-ui, sans-serif}.ds-band-brand{display:flex;align-items:center;gap:10px;margin-right:36px;color:inherit;text-decoration:none;font-weight:800;font-size:18px;letter-spacing:-.025em}.ds-band-tab{display:flex;align-items:center;padding:3px 16px 0;border-bottom:3px solid transparent;color:var(--color-band-muted,#C6D0E4);font-weight:600;font-size:14px;text-decoration:none;transition:color .15s}.ds-band-tab:hover{color:var(--color-band-ink,#fff)}.ds-band-tab.is-active{color:var(--color-band-ink,#fff);border-bottom-color:var(--color-band-ink,#fff)}.ds-band-version{margin-left:auto;align-self:center;font:12px 'Overpass Mono', ui-monospace, monospace;color:var(--color-band-muted,#C6D0E4)}.ds-band-logout{align-self:center;margin-left:16px;min-height:32px;padding:0 12px;border:1px solid var(--color-band-rule,#2A4479);border-radius:4px;background:transparent;color:var(--color-band-ink,#fff);font:600 14px 'Overpass', ui-sans-serif, system-ui, sans-serif;cursor:pointer}.ds-band-logout:hover{background:rgb(255 255 255 / .1)}.ds-band-logout:focus-visible{outline:none;box-shadow:0 0 0 2px #fff}"
+      "description": "Sticky light header band with the shield mark, two-colour wordmark, tabs, version and Logout; panel colour in dark.",
+      "html": "<nav class=\"ds-band\"><a class=\"ds-band-brand\" href=\"#\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 32 32\" aria-hidden=\"true\"><rect width=\"32\" height=\"32\" rx=\"7\" fill=\"#0F766E\"/><path d=\"M16 5.5 7.5 9.2v6.3c0 5.6 3.6 9.4 8.5 11.2 4.9-1.8 8.5-5.6 8.5-11.2V9.2L16 5.5z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.6\" stroke-linejoin=\"round\"/><path d=\"M12 16.2l2.9 2.9 5.3-6\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span>Gate<span class=\"cha\">CHA</span></span></a><a class=\"ds-band-tab is-active\" href=\"#\">Dashboard</a><a class=\"ds-band-tab\" href=\"#\">API Keys</a><a class=\"ds-band-tab\" href=\"#\">Settings</a><span class=\"ds-band-version\">v0.10.0</span><button class=\"ds-band-logout\">Logout</button></nav>",
+      "css": ".ds-band{display:flex;align-items:stretch;gap:4px;height:56px;padding:0 24px;background:var(--color-band,#fff);color:var(--color-band-ink,#0F172A);border-bottom:1px solid var(--color-band-rule,#E2E8F0);font-family:'Inter', ui-sans-serif, system-ui, sans-serif}.ds-band-brand{display:flex;align-items:center;gap:10px;margin-right:36px;color:inherit;text-decoration:none;font-size:18px;font-weight:700;letter-spacing:-0.025em}.ds-band-brand .cha{color:var(--color-action,#0F766E)}.ds-band-tab{display:flex;align-items:center;padding:3px 16px 0;border-bottom:3px solid transparent;color:var(--color-band-muted,#475569);font-size:14px;font-weight:600;text-decoration:none;transition:color .15s cubic-bezier(.4,0,.2,1)}.ds-band-tab:hover{color:var(--color-band-ink,#0F172A)}.ds-band-tab.is-active{color:var(--color-band-ink,#0F172A);border-bottom-color:var(--color-action,#0F766E)}.ds-band-tab:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#0F766E)}.ds-band-version{margin-left:auto;align-self:center;font:400 12px 'Overpass Mono', ui-monospace, monospace;color:var(--color-band-muted,#475569)}.ds-band-logout{align-self:center;margin-left:16px;min-height:32px;padding:0 12px;border:1px solid var(--color-band-rule,#E2E8F0);border-radius:4px;background:transparent;color:var(--color-band-ink,#0F172A);font:600 14px 'Inter', ui-sans-serif, system-ui, sans-serif;cursor:pointer}.ds-band-logout:hover{background:var(--color-sunken,#F1F5F9)}.ds-band-logout:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#0F766E)}"
     },
     {
       "name": "Status Chips",
@@ -805,7 +795,7 @@
       "refersTo": "status-failing",
       "description": "OK, No traffic, Failing (with today's failures), Disabled. Words always present.",
       "html": "<span class=\"ds-chip ds-chip-ok\"><i></i>OK</span> <span class=\"ds-chip ds-chip-idle\">No traffic</span> <span class=\"ds-chip ds-chip-failing\"><i></i>Failing — <b>31</b> failures today</span> <span class=\"ds-chip ds-chip-disabled\">Disabled</span>",
-      "css": ".ds-chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:2px 8px;border-radius:3px;font:700 12px/16px 'Overpass', ui-sans-serif, system-ui, sans-serif}.ds-chip i{width:7px;height:7px;border-radius:9999px;background:currentColor}.ds-chip-ok{color:var(--color-ok,#00754E)}.ds-chip-idle{color:var(--color-muted,#5B6478)}.ds-chip-failing{background:var(--color-warn,#E8A400);color:var(--color-warn-ink,#2A1E00)}.ds-chip-failing b{padding:0 4px;border-radius:4px;background:var(--color-panel,#fff);color:var(--color-fail,#C8001A);font:700 12px 'Overpass Mono', ui-monospace, monospace;font-variant-numeric:tabular-nums}.ds-chip-disabled{background:var(--color-disabled,#ECEDEF);color:var(--color-disabled-ink,#5E6166)}"
+      "css": ".ds-chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:2px 8px;border-radius:3px;font:600 12px/16px 'Inter', ui-sans-serif, system-ui, sans-serif}.ds-chip i{width:7px;height:7px;border-radius:9999px;background:currentColor}.ds-chip-ok{color:var(--color-ok,#15803D)}.ds-chip-idle{color:var(--color-muted,#475569)}.ds-chip-failing{background:var(--color-warn,#E8A400);color:var(--color-warn-ink,#2A1E00)}.ds-chip-failing b{padding:0 4px;border-radius:4px;background:var(--color-panel,#fff);color:var(--color-fail,#C8001A);font:700 12px 'Overpass Mono', ui-monospace, monospace;font-variant-numeric:tabular-nums}.ds-chip-disabled{background:var(--color-disabled,#ECEDEF);color:var(--color-disabled-ink,#5E6166)}"
     },
     {
       "name": "Attention Banner",
@@ -813,7 +803,7 @@
       "refersTo": "attention-banner",
       "description": "First element on the dashboard when a key is failing.",
       "html": "<section class=\"ds-attn\"><span class=\"ds-attn-disc\" aria-hidden=\"true\"></span><div><h2>1 key needs attention</h2><p><strong>Marketing site</strong> failed <strong class=\"n\">31</strong> of <strong class=\"n\">73</strong> verifications today (42%). Check the widget on that site and the domains allowed for the key.</p></div><a class=\"ds-attn-open\" href=\"#\">Open key</a></section>",
-      "css": ".ds-attn{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px 16px;padding:16px 20px;border:1px solid var(--color-warn-edge,#F1D88E);border-left:4px solid var(--color-warn,#E8A400);border-radius:6px;background:var(--color-warn-soft,#FFF7E0);font-family:'Overpass', ui-sans-serif, system-ui, sans-serif}.ds-attn-disc{width:36px;height:36px;border-radius:9999px;background:var(--color-warn,#E8A400)}.ds-attn h2{margin:0;font-size:17px;font-weight:800;color:var(--color-ink,#14213D)}.ds-attn p{margin:2px 0 0;font-size:14px;color:var(--color-ink-2,#3A4560)}.ds-attn strong{color:var(--color-ink,#14213D)}.ds-attn .n{font-family:'Overpass Mono', ui-monospace, monospace;font-variant-numeric:tabular-nums}.ds-attn-open{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid var(--color-rule-strong,#B9C1CD);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#14213D);font-weight:600;font-size:14px;text-decoration:none}.ds-attn-open:hover{background:var(--color-sunken,#F7F8FA)}.ds-attn-open:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#1F4FC1)}"
+      "css": ".ds-attn{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px 16px;padding:16px 20px;border:1px solid var(--color-warn-edge,#F1D88E);border-left:4px solid var(--color-warn,#E8A400);border-radius:6px;background:var(--color-warn-soft,#FFF7E0);font-family:'Inter', ui-sans-serif, system-ui, sans-serif}.ds-attn-disc{width:36px;height:36px;border-radius:9999px;background:var(--color-warn,#E8A400)}.ds-attn h2{margin:0;font-size:17px;font-weight:600;color:var(--color-ink,#0F172A)}.ds-attn p{margin:2px 0 0;font-size:14px;color:var(--color-ink-2,#334155)}.ds-attn strong{color:var(--color-ink,#0F172A)}.ds-attn .n{font-family:'Overpass Mono', ui-monospace, monospace;font-variant-numeric:tabular-nums}.ds-attn-open{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid var(--color-rule-strong,#CBD5E1);border-radius:6px;background:var(--color-panel,#fff);color:var(--color-ink,#0F172A);font-weight:600;font-size:14px;text-decoration:none}.ds-attn-open:hover{background:var(--color-sunken,#F1F5F9)}.ds-attn-open:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-focus,#0F766E)}"
     },
     {
       "name": "Panel with Funnel",
@@ -821,23 +811,23 @@
       "refersTo": "panel",
       "description": "Hairline panel with header strip; Today's verifications figures and meter.",
       "html": "<section class=\"ds-panel\"><header><h2>Today's verifications</h2><span>challenge issued, solved, checked by your backend</span></header><dl><div><dt>Challenges</dt><dd>264</dd></div><div><dt>Verified</dt><dd class=\"ok\">221</dd></div><div><dt>Failed</dt><dd class=\"fail\">36</dd></div></dl><div class=\"ds-meter\"><span class=\"ok\" style=\"width:86%\"></span><span class=\"fail\" style=\"width:14%\"></span></div></section>",
-      "css": ".ds-panel{border:1px solid var(--color-rule,#DDE2E8);border-radius:6px;background:var(--color-panel,#fff);font-family:'Overpass', ui-sans-serif, system-ui, sans-serif;color:var(--color-ink,#14213D)}.ds-panel header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 20px;border-bottom:1px solid var(--color-rule,#DDE2E8)}.ds-panel h2{margin:0;font-size:17px;font-weight:800}.ds-panel header span{font-size:13px;color:var(--color-muted,#5B6478)}.ds-panel dl{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0;padding:20px 20px 0}.ds-panel dt{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--color-muted,#5B6478)}.ds-panel dd{margin:6px 0 0;font:600 32px/40px 'Overpass Mono', ui-monospace, monospace;letter-spacing:-.025em;font-variant-numeric:tabular-nums}.ds-panel dd.ok{color:var(--color-ok,#00754E)}.ds-panel dd.fail{color:var(--color-fail,#C8001A)}.ds-meter{display:flex;height:14px;margin:20px;overflow:hidden;border-radius:3px;background:var(--color-sunken,#F7F8FA)}.ds-meter .ok{background:var(--color-ok,#00754E)}.ds-meter .fail{background:var(--color-fail,#C8001A)}"
+      "css": ".ds-panel{border:1px solid var(--color-rule,#E2E8F0);border-radius:6px;background:var(--color-panel,#fff);font-family:'Inter', ui-sans-serif, system-ui, sans-serif;color:var(--color-ink,#0F172A)}.ds-panel header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 20px;border-bottom:1px solid var(--color-rule,#E2E8F0)}.ds-panel h2{margin:0;font-size:17px;font-weight:600}.ds-panel header span{font-size:13px;color:var(--color-muted,#475569)}.ds-panel dl{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:0;padding:20px 20px 0}.ds-panel dt{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--color-muted,#475569)}.ds-panel dd{margin:6px 0 0;font:600 32px/40px 'Overpass Mono', ui-monospace, monospace;letter-spacing:-.025em;font-variant-numeric:tabular-nums}.ds-panel dd.ok{color:var(--color-ok,#15803D)}.ds-panel dd.fail{color:var(--color-fail,#C8001A)}.ds-meter{display:flex;height:14px;margin:20px;overflow:hidden;border-radius:3px;background:var(--color-sunken,#F1F5F9)}.ds-meter .ok{background:var(--color-ok,#15803D)}.ds-meter .fail{background:var(--color-fail,#C8001A)}"
     },
     {
       "name": "Keys Today Table",
       "kind": "custom",
       "refersTo": "panel",
       "description": "Keys grouped by status with a 7-day sparkline and today's counts.",
-      "html": "<table class=\"ds-keys\"><thead><tr><th>Key</th><th>7 days</th><th class=\"r\">Today</th><th class=\"r\">Failed</th></tr></thead><tbody><tr><th colspan=\"4\" class=\"grp\">Needs attention <span>· 1</span></th></tr><tr class=\"failing\"><td><b>Marketing site</b><small>example.org +2 more</small></td><td><svg width=\"88\" height=\"22\" viewBox=\"0 0 88 22\" role=\"img\" aria-label=\"7-day challenges for Marketing site\"><polyline fill=\"none\" stroke=\"var(--color-fail,#C8001A)\" stroke-width=\"1.5\" points=\"0,19 14.7,18 29.3,18 44,17 58.7,17 73.3,17 88,4\"/></svg></td><td class=\"r n\">74</td><td class=\"r n f\">31</td></tr><tr><th colspan=\"4\" class=\"grp\">Working <span>· 1</span></th></tr><tr><td><b>Shop</b><small>shop.example.org</small></td><td><svg width=\"88\" height=\"22\" viewBox=\"0 0 88 22\" role=\"img\" aria-label=\"7-day challenges for Shop\"><polyline fill=\"none\" stroke=\"var(--color-link,#1F4FC1)\" stroke-width=\"1.5\" points=\"0,16 14.7,8 29.3,14 44,10 58.7,9 73.3,12 88,9\"/></svg></td><td class=\"r n\">75</td><td class=\"r n m\">0</td></tr></tbody></table>",
-      "css": ".ds-keys{width:100%;border-collapse:collapse;background:var(--color-panel,#fff);font-family:'Overpass', ui-sans-serif, system-ui, sans-serif;color:var(--color-ink,#14213D)}.ds-keys thead th{padding:8px 12px 8px 20px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--color-muted,#5B6478)}.ds-keys .r{text-align:right}.ds-keys .grp{padding:8px 20px;border-top:1px solid var(--color-rule,#DDE2E8);background:var(--color-sunken,#F7F8FA);text-align:left;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--color-muted,#5B6478)}.ds-keys .grp span{font-family:'Overpass Mono', ui-monospace, monospace}.ds-keys td{padding:10px 12px 10px 20px;font-size:14px}.ds-keys td b{display:block}.ds-keys td small{display:block;font-size:12px;line-height:16px;color:var(--color-muted,#5B6478)}.ds-keys tr.failing{background:var(--color-warn-soft,#FFF7E0)}.ds-keys .n{font-family:'Overpass Mono', ui-monospace, monospace;font-variant-numeric:tabular-nums}.ds-keys .f{font-weight:700;color:var(--color-fail,#C8001A)}.ds-keys .m{color:var(--color-muted,#5B6478)}"
+      "html": "<table class=\"ds-keys\"><thead><tr><th>Key</th><th>7 days</th><th class=\"r\">Today</th><th class=\"r\">Failed</th></tr></thead><tbody><tr><th colspan=\"4\" class=\"grp\">Needs attention <span>· 1</span></th></tr><tr class=\"failing\"><td><b>Marketing site</b><small>example.org +2 more</small></td><td><svg width=\"88\" height=\"22\" viewBox=\"0 0 88 22\" role=\"img\" aria-label=\"7-day challenges for Marketing site\"><polyline fill=\"none\" stroke=\"var(--color-fail,#C8001A)\" stroke-width=\"1.5\" points=\"0,19 14.7,18 29.3,18 44,17 58.7,17 73.3,17 88,4\"/></svg></td><td class=\"r n\">74</td><td class=\"r n f\">31</td></tr><tr><th colspan=\"4\" class=\"grp\">Working <span>· 1</span></th></tr><tr><td><b>Shop</b><small>shop.example.org</small></td><td><svg width=\"88\" height=\"22\" viewBox=\"0 0 88 22\" role=\"img\" aria-label=\"7-day challenges for Shop\"><polyline fill=\"none\" stroke=\"var(--color-link,#0F766E)\" stroke-width=\"1.5\" points=\"0,16 14.7,8 29.3,14 44,10 58.7,9 73.3,12 88,9\"/></svg></td><td class=\"r n\">75</td><td class=\"r n m\">0</td></tr></tbody></table>",
+      "css": ".ds-keys{width:100%;border-collapse:collapse;background:var(--color-panel,#fff);font-family:'Inter', ui-sans-serif, system-ui, sans-serif;color:var(--color-ink,#0F172A)}.ds-keys thead th{padding:8px 12px 8px 20px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--color-muted,#475569)}.ds-keys .r{text-align:right}.ds-keys .grp{padding:8px 20px;border-top:1px solid var(--color-rule,#E2E8F0);background:var(--color-sunken,#F1F5F9);text-align:left;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--color-muted,#475569)}.ds-keys .grp span{font-family:'Overpass Mono', ui-monospace, monospace}.ds-keys td{padding:10px 12px 10px 20px;font-size:14px}.ds-keys td b{display:block}.ds-keys td small{display:block;font-size:12px;line-height:16px;color:var(--color-muted,#475569)}.ds-keys tr.failing{background:var(--color-warn-soft,#FFF7E0)}.ds-keys .n{font-family:'Overpass Mono', ui-monospace, monospace;font-variant-numeric:tabular-nums}.ds-keys .f{font-weight:700;color:var(--color-fail,#C8001A)}.ds-keys .m{color:var(--color-muted,#475569)}"
     }
   ],
   "narrative": {
     "northStar": "The Plain Console",
-    "overview": "The admin answers one question before anything else: does any of my sites have a problem right now? Every surface is built around that order. Failing keys are named first with their counts, then today's verification funnel, then every key grouped by what the admin has to do about it, then the 30-day history. When nothing fails the page says so in one line, and it says nothing about keys working until a verification has actually happened today.\n\nThe world is a navy header band over a porcelain ground (night ground in dark mode), Overpass for every word and Overpass Mono tabular figures for every count. Structure is drawn with 1px hairlines; there are no drop shadows anywhere. Colour is reserved for state: green verified, red failures, amber failing, grey disabled. The density is that of an operations table: 14px body, 10px row padding, panels inset 20px, and the numbers lead.\n\nThe 2026-10-23 transit metaphor was retired by the owner on 2026-10-24 and must not return in any form, nor be replaced by another borrowed metaphor.",
+    "overview": "The admin answers one question before anything else: does any of my sites have a problem right now? Every surface is built around that order. Failing keys are named first with their counts, then today's verification funnel, then every key grouped by what the admin has to do about it, then the 30-day history. When nothing fails the page says so in one line, and it says nothing about keys working until a verification has actually happened today.\n\nThe world is GateCHA's own, shared with gatecha.org: a light header band (white with a bottom hairline; panel colour in dark mode) carrying the teal shield mark and the two-colour wordmark, over the slate-grey ground the site uses (a night ground in dark mode). Inter sets every word and Overpass Mono tabular figures set every count. Structure is drawn with 1px hairlines; there are no drop shadows anywhere. The GateCHA teal is the one brand colour and carries actions, links and focus; green, amber, red and grey are reserved for state. The density is that of an operations table: 14px body, 10px row padding, panels inset 20px, and the numbers lead.\n\nBrand history: on 2026-10-24 the owner rejected the transit metro metaphor, then a navy band with a yellow \"G\" mark, and kept GateCHA's teal and shield. Neither rejected identity is to be re-proposed, nor replaced by another borrowed metaphor.",
     "keyCharacteristics": [
       "Attention first: failing keys open the page and sort first in every list.",
-      "Navy band in both themes, carrying the mark, the navigation, the version and Logout.",
+      "One brand identity with gatecha.org: teal shield mark, \"Gate\" + teal \"CHA\" wordmark, slate neutrals, Inter.",
       "Hairline panels on a tinted ground; no shadow, no gradient, no decorative colour.",
       "Counts in Overpass Mono with tabular figures, formatted `en-US`.",
       "Light and dark both designed, following the system theme through the same token names.",
@@ -845,58 +835,71 @@
     ],
     "rules": [
       {
+        "name": "The One Teal Rule",
+        "body": "Teal means \"you can act here or this is GateCHA\": actions, links, focus, the mark and the wordmark. It is never used for state, and green is never used for an action.",
+        "section": "colors"
+      },
+      {
         "name": "The State-Only Rule",
-        "section": "colors",
-        "body": "Green, amber, red and grey mean verified, failing, failed and disabled, and nothing else. They never decorate. The one standing exception is text selection, which borrows the amber."
+        "body": "Green, amber, red and grey mean verified, failing, failed and disabled, and nothing else. They never decorate. The one standing exception is text selection, which borrows the amber.",
+        "section": "colors"
       },
       {
         "name": "The Words-First Rule",
-        "section": "colors",
-        "body": "Colour backs a word, it never replaces one. Every status chip spells OK, No traffic, Failing or Disabled; every sparkline carries an aria-label; a disabled key's trend is dashed as well as grey."
+        "body": "Colour backs a word, it never replaces one. Every status chip spells OK, No traffic, Failing or Disabled; every sparkline carries an aria-label; a disabled key's trend is dashed as well as grey.",
+        "section": "colors"
       },
       {
         "name": "The Same Names Rule",
-        "section": "colors",
-        "body": "Dark mode redefines the same custom properties under `prefers-color-scheme: dark`. Components use semantic tokens only and never branch on the theme. Text pairs hold 4.5:1 on ground, panel and sunken in both themes; strokes and marks hold 3:1."
+        "body": "Dark mode redefines the same custom properties under `prefers-color-scheme: dark`. Components use semantic tokens only and never branch on the theme. Text pairs are meant to hold 4.5:1 on ground, panel and sunken in both themes; strokes and marks 3:1.",
+        "section": "colors"
+      },
+      {
+        "name": "The Light Weights Rule",
+        "body": "Bold (700) is for page titles and the wordmark only; panel headings, names, labels, chips and buttons are semibold (600). No extrabold or black anywhere.",
+        "section": "typography"
       },
       {
         "name": "The Tabular Figures Rule",
-        "section": "typography",
-        "body": "Every count is set in Overpass Mono with `tabular-nums` and formatted with `toLocaleString('en-US')`. No bare `toLocaleString()`, no proportional digits in a column."
+        "body": "Every count is set in Overpass Mono with `tabular-nums` and formatted with `toLocaleString('en-US')`. No bare `toLocaleString()`, no proportional digits in a column.",
+        "section": "typography"
       },
       {
         "name": "The UTC Rule",
-        "section": "typography",
-        "body": "\"Today\" is the current UTC day and every date is formatted in UTC (`en-US`, short month and day). The dashboard title says \"(UTC)\"."
+        "body": "\"Today\" is the current UTC day and every date is formatted in UTC (`en-US`, short month and day). The dashboard title says \"(UTC)\".",
+        "section": "typography"
       },
       {
         "name": "The Attention-First Rule",
-        "section": "layout",
-        "body": "Failing keys come first everywhere: named in the banner, first group in the keys panel, rank 0 in sorting (failing, OK, no traffic, disabled). A key is failing when today it has at least 5 failures and those are at least 20% of its verifications."
+        "body": "Failing keys come first everywhere: named in the banner, first group in the keys panel, rank 0 in sorting (failing, OK, no traffic, disabled). A key is failing when today it has at least 5 failures and those are at least 20% of its verifications.",
+        "section": "layout"
       },
       {
         "name": "The Honest Quiet Rule",
-        "section": "layout",
-        "body": "\"All keys are working today.\" appears only when today has verifications. With active keys but no verification yet, the line reads \"No verification yet today.\" in muted text on a plain panel."
+        "body": "\"All keys are working today.\" appears only when today has verifications. With active keys but no verification yet, the line reads \"No verification yet today.\" in muted text on a plain panel.",
+        "section": "layout"
       },
       {
         "name": "The Hairline Rule",
-        "section": "elevation",
-        "body": "Structure is drawn with 1px rules: panel borders in rule, row separators and chart gridlines in rule-soft, controls in rule-strong. No shadow cards."
+        "body": "Structure is drawn with 1px rules: panel borders and the band edge in rule, row separators and chart gridlines in rule-soft, controls in rule-strong. No shadow cards.",
+        "section": "elevation"
       }
     ],
     "dos": [
       "Do name failing keys first, with failed-of-verified counts, before any chart.",
       "Do use the four statuses OK, No traffic, Failing, Disabled from `lib/status.ts`, always as words, with colour behind them.",
       "Do set every count in Overpass Mono with `tabular-nums` and `toLocaleString('en-US')`.",
+      "Do set UI text in Inter at 400 to 700: bold for page titles and the wordmark, semibold for headings, names, labels and controls.",
       "Do draw structure with 1px hairlines (rule, rule-soft, rule-strong) on panel over ground.",
       "Do use semantic tokens only, so dark mode follows by redefining the same names.",
-      "Do keep the navy band and the mark identical in both themes; the mark in `BrandMark.vue` and `public/favicon.svg` is one drawing.",
+      "Do keep the shield mark one drawing across `BrandMark.vue`, `public/favicon.svg`, gatecha.org and the WordPress.org assets.",
       "Do say \"today\" in UTC and format dates in UTC."
     ],
     "donts": [
-      "Don't bring back the retired metaphor or any other borrowed metaphor: no numbering keys, no per-key colours, no themed status vocabulary.",
+      "Don't bring back the metro metaphor, the navy band or the yellow \"G\" mark, nor any other borrowed metaphor: no numbering keys, no per-key colours, no themed status vocabulary.",
+      "Don't use teal for state or green for an action.",
       "Don't use green, amber, red or grey for anything but state.",
+      "Don't use extrabold or black weights.",
       "Don't add drop shadows or shadowed cards.",
       "Don't say keys are working before any verification has happened today.",
       "Don't use flag emoji for countries; use the ISO code tag.",

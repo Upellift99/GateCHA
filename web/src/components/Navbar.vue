@@ -34,7 +34,7 @@ function logout() {
       <div class="flex h-14 items-stretch gap-6 sm:gap-10">
         <router-link to="/" class="flex items-center gap-2.5 font-bold text-lg tracking-tight" aria-label="GateCHA home">
           <BrandMark />
-          <span>Gate<span class="text-action">CHA</span></span>
+          <span>Gate<span class="text-link">CHA</span></span>
         </router-link>
         <div class="hidden sm:flex items-stretch gap-1">
           <router-link

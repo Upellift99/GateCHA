@@ -38,11 +38,11 @@ function token(name: string, fallback: string): string {
 
 function readColours() {
   return {
-    challenges: token('--color-link', '#1F4FC1'),
-    ok: token('--color-ok', '#00754E'),
+    challenges: token('--color-link', '#0F766E'),
+    ok: token('--color-ok', '#15803D'),
     fail: token('--color-fail', '#C8001A'),
-    muted: token('--color-muted', '#5B6478'),
-    rule: token('--color-rule-soft', '#EBEEF2'),
+    muted: token('--color-muted', '#475569'),
+    rule: token('--color-rule-soft', '#EEF2F6'),
   }
 }
 
