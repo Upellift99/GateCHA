@@ -119,7 +119,7 @@ const hisTotals = computed(() => ({
         <router-link to="/keys" class="inline-flex min-h-6 items-center text-sm text-muted hover:text-ink">&larr; Back to keys</router-link>
         <div class="mt-1">
           <div class="min-w-0">
-            <h1 class="text-2xl font-extrabold tracking-tight text-ink break-words">{{ key.name || key.key_id }}</h1>
+            <h1 class="text-2xl font-bold tracking-tight text-ink break-words">{{ key.name || key.key_id }}</h1>
             <p class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
               <span>{{ key.enabled ? 'Key enabled' : 'Key disabled' }}</span>
               <StatusChip :status="status" :failed-today="todayRow?.verifications_fail ?? 0" />
@@ -142,7 +142,7 @@ const hisTotals = computed(() => ({
 
     <!-- Key Info -->
     <div class="rounded-md border border-rule bg-panel p-6 mb-6">
-      <h2 class="text-[17px] font-extrabold text-ink mb-4">Key Details</h2>
+      <h2 class="text-[17px] font-semibold text-ink mb-4">Key Details</h2>
       <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <dt class="text-sm font-medium text-muted">Key ID</dt>
@@ -235,7 +235,7 @@ const hisTotals = computed(() => ({
 
     <!-- Integration Snippet -->
     <div class="rounded-md border border-rule bg-panel p-6 mb-6">
-      <h2 class="text-[17px] font-extrabold text-ink mb-4">Integration</h2>
+      <h2 class="text-[17px] font-semibold text-ink mb-4">Integration</h2>
       <div class="relative">
         <pre class="bg-code text-code-ink text-sm p-4 pr-12 rounded-md overflow-x-auto"><code>{{ widgetSnippet }}</code></pre>
         <CopyButton
@@ -265,9 +265,9 @@ const hisTotals = computed(() => ({
 
     <!-- Stats -->
     <div class="mb-6 rounded-md border border-rule bg-panel p-6">
-      <h2 class="text-[17px] font-extrabold text-ink mb-4">Statistics (30 days)</h2>
+      <h2 class="text-[17px] font-semibold text-ink mb-4">Statistics (30 days)</h2>
       <div class="mb-1 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-        <span class="text-muted">HIS <span class="rounded-[3px] border border-rule px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.08em] text-muted">Monitor</span>:</span>
+        <span class="text-muted">HIS <span class="rounded-[3px] border border-rule px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted">Monitor</span>:</span>
         <span class="text-ink"><span class="font-mono tabular-nums">{{ hisTotals.observations.toLocaleString('en-US') }}</span> observed</span>
         <span class="text-ink"><span class="font-mono tabular-nums">{{ hisTotals.suspected.toLocaleString('en-US') }}</span> bot-suspected</span>
       </div>

@@ -79,7 +79,7 @@ function formatDate(value: string | null): string {
 
 <template>
   <div class="rounded-md border border-rule bg-panel p-6 space-y-4">
-    <h2 class="text-[17px] font-extrabold text-ink">MCP Access</h2>
+    <h2 class="text-[17px] font-semibold text-ink">MCP Access</h2>
 
     <div v-if="error" role="alert" class="bg-fail-soft text-fail px-4 py-3 rounded text-sm">{{ error }}</div>
 
@@ -143,7 +143,7 @@ function formatDate(value: string | null): string {
 
     <table v-else-if="store.tokens.length" class="min-w-full divide-y divide-rule text-sm">
       <thead>
-        <tr class="text-left text-[11px] font-bold uppercase tracking-[0.09em] text-muted">
+        <tr class="text-left text-[11px] font-semibold uppercase tracking-[0.09em] text-muted">
           <th class="py-2">Name</th>
           <th class="py-2">Token</th>
           <th class="py-2">Access</th>

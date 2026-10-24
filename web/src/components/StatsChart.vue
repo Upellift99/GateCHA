@@ -119,7 +119,7 @@ const chartOptions = computed(() => ({
   plugins: {
     legend: {
       position: 'bottom' as const,
-      labels: { color: colours.value.muted, font: { family: 'Overpass', weight: 600 }, usePointStyle: true, pointStyle: 'circle' as const, boxWidth: 8, boxHeight: 8 },
+      labels: { color: colours.value.muted, font: { family: 'Inter', weight: 500 }, usePointStyle: true, pointStyle: 'circle' as const, boxWidth: 8, boxHeight: 8 },
     },
   },
   scales: {

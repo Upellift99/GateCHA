@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
-/* Overpass carries the UI; Overpass
-   Mono sets every count in tabular figures. Both ship with the app (no font
-   CDN: the admin stays tracking-free). Latin subset only. */
+/* Inter carries the UI, as on gatecha.org; Overpass Mono sets every count
+   in tabular figures. Both ship with the app (no font CDN: the admin stays
+   tracking-free). Latin subset only. */
 @font-face {
-  font-family: 'Overpass';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('../node_modules/@fontsource-variable/overpass/files/overpass-latin-wght-normal.woff2') format('woff2-variations');
+  src: url('./assets/fonts/inter-latin.woff2') format('woff2');
 }
 
 @font-face {
@@ -24,7 +24,7 @@
    and sunken in both themes; strokes and marks hold 3:1. `static` emits every
    variable even when no utility uses it: charts and sparklines read them inline. */
 @theme static {
-  --font-sans: 'Overpass', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'Overpass Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Surfaces and text: the slate neutrals gatecha.org uses */

@@ -63,17 +63,17 @@ const groups = computed(() =>
 <template>
   <section class="rounded-md border border-rule bg-panel" aria-labelledby="keys-today-title">
     <div class="flex items-baseline justify-between gap-4 border-b border-rule px-5 py-3">
-      <h2 id="keys-today-title" class="text-[17px] font-extrabold text-ink">Keys</h2>
+      <h2 id="keys-today-title" class="text-[17px] font-semibold text-ink">Keys</h2>
       <router-link to="/keys" class="inline-flex min-h-6 items-center text-sm font-semibold text-link hover:text-link-hover">Manage keys →</router-link>
     </div>
 
     <table v-if="rows.length" class="w-full border-collapse">
       <thead>
-        <tr class="text-left text-[11px] font-bold uppercase tracking-[0.09em] text-muted">
-          <th scope="col" class="py-2 pl-5 pr-3 font-bold">Key</th>
-          <th scope="col" class="hidden w-28 py-2 px-3 font-bold sm:table-cell">7 days</th>
-          <th scope="col" class="w-20 py-2 px-3 text-right font-bold">Today</th>
-          <th scope="col" class="w-20 py-2 pl-3 pr-5 text-right font-bold">Failed</th>
+        <tr class="text-left text-[11px] font-semibold uppercase tracking-[0.09em] text-muted">
+          <th scope="col" class="py-2 pl-5 pr-3 font-semibold">Key</th>
+          <th scope="col" class="hidden w-28 py-2 px-3 font-semibold sm:table-cell">7 days</th>
+          <th scope="col" class="w-20 py-2 px-3 text-right font-semibold">Today</th>
+          <th scope="col" class="w-20 py-2 pl-3 pr-5 text-right font-semibold">Failed</th>
         </tr>
       </thead>
       <tbody v-for="g in groups" :key="g.status">
@@ -81,7 +81,7 @@ const groups = computed(() =>
           <th
             scope="rowgroup"
             colspan="4"
-            class="border-t border-rule bg-sunken py-2 pl-5 pr-5 text-left text-[11px] font-bold uppercase tracking-[0.09em] text-muted"
+            class="border-t border-rule bg-sunken py-2 pl-5 pr-5 text-left text-[11px] font-semibold uppercase tracking-[0.09em] text-muted"
           >
             {{ g.title }}<span class="font-mono"> · {{ g.rows.length }}</span>
           </th>
@@ -94,7 +94,7 @@ const groups = computed(() =>
           <td class="max-w-0 w-full py-2.5 pl-5 pr-3">
             <router-link
               :to="`/keys/${row.key.id}`"
-              class="block truncate text-sm font-bold text-ink hover:text-link"
+              class="block truncate text-sm font-semibold text-ink hover:text-link"
               :class="{ 'text-muted': g.status === 'disabled' }"
               :title="row.key.name || row.key.key_id"
             >{{ row.key.name || row.key.key_id }}</router-link>
@@ -120,7 +120,7 @@ const groups = computed(() =>
           </td>
           <td
             class="py-2.5 pl-3 pr-5 text-right font-mono text-sm tabular-nums"
-            :class="g.status === 'failing' ? 'font-bold text-fail' : 'text-muted'"
+            :class="g.status === 'failing' ? 'font-semibold text-fail' : 'text-muted'"
           >
             {{ g.status === 'disabled' ? '—' : row.failedToday.toLocaleString('en-US') }}
           </td>

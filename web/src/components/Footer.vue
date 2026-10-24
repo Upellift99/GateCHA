@@ -34,8 +34,8 @@ watch(
           href="https://gatecha.org"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex min-h-6 items-center font-extrabold text-ink hover:text-link transition-colors"
-          >GateCHA</a
+          class="inline-flex min-h-6 items-center font-semibold text-ink hover:text-link transition-colors"
+          >Gate<span class="text-action">CHA</span></a
         >
         <a
           v-if="showVersion && isAuthenticated && version"

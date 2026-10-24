@@ -32,9 +32,9 @@ function logout() {
   <nav class="sticky top-0 z-40 bg-band text-band-ink border-b border-band-rule" aria-label="Main">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex h-14 items-stretch gap-6 sm:gap-10">
-        <router-link to="/" class="flex items-center gap-2.5 font-extrabold text-lg tracking-tight" aria-label="GateCHA home">
+        <router-link to="/" class="flex items-center gap-2.5 font-bold text-lg tracking-tight" aria-label="GateCHA home">
           <BrandMark />
-          GateCHA
+          <span>Gate<span class="text-action">CHA</span></span>
         </router-link>
         <div class="hidden sm:flex items-stretch gap-1">
           <router-link

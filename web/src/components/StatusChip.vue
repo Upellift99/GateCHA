@@ -8,7 +8,7 @@ defineProps<{ status: KeyStatus; failedToday?: number; compact?: boolean }>()
 
 <template>
   <span
-    class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-[3px] px-2 py-0.5 text-xs font-bold"
+    class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-[3px] px-2 py-0.5 text-xs font-semibold"
     :class="{
       'text-ok': status === 'ok',
       'bg-warn text-warn-ink': status === 'failing',

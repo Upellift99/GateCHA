@@ -163,7 +163,7 @@ onMounted(() => {
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-extrabold tracking-tight text-ink">API Keys</h1>
+      <h1 class="text-2xl font-bold tracking-tight text-ink">API Keys</h1>
       <router-link
         to="/keys/new"
         class="inline-flex min-h-10 items-center gap-2 rounded-md px-4 text-sm font-semibold bg-action text-action-ink hover:bg-action-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2"
@@ -224,7 +224,7 @@ onMounted(() => {
             <thead class="bg-sunken">
               <tr>
                 <th
-                  class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
+                  class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
                   :aria-sort="ariaSort('name')"
                   @click="toggleSort('name')"
                 >
@@ -234,7 +234,7 @@ onMounted(() => {
                   </button>
                 </th>
                 <th
-                  class="hidden sm:table-cell px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
+                  class="hidden sm:table-cell px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
                   :aria-sort="ariaSort('domain')"
                   @click="toggleSort('domain')"
                 >
@@ -244,7 +244,7 @@ onMounted(() => {
                   </button>
                 </th>
                 <th
-                  class="hidden sm:table-cell px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
+                  class="hidden sm:table-cell px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
                   :aria-sort="ariaSort('enabled')"
                   @click="toggleSort('enabled')"
                 >
@@ -254,7 +254,7 @@ onMounted(() => {
                   </button>
                 </th>
                 <th
-                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-bold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
+                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
                   :aria-sort="ariaSort('challenges')"
                   @click="toggleSort('challenges')"
                 >
@@ -264,7 +264,7 @@ onMounted(() => {
                   </button>
                 </th>
                 <th
-                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-bold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
+                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
                   :aria-sort="ariaSort('verified')"
                   @click="toggleSort('verified')"
                 >
@@ -274,7 +274,7 @@ onMounted(() => {
                   </button>
                 </th>
                 <th
-                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-bold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
+                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.09em] text-muted hover:text-ink select-none"
                   :aria-sort="ariaSort('failed')"
                   @click="toggleSort('failed')"
                 >
@@ -284,7 +284,7 @@ onMounted(() => {
                   </button>
                 </th>
                 <th
-                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-bold uppercase tracking-[0.09em] text-muted hover:text-ink select-none whitespace-nowrap"
+                  class="hidden md:table-cell px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.09em] text-muted hover:text-ink select-none whitespace-nowrap"
                   :aria-sort="ariaSort('lastUsed')"
                   @click="toggleSort('lastUsed')"
                 >
@@ -293,7 +293,7 @@ onMounted(() => {
                     <span v-if="sortColumn === 'lastUsed'" class="ml-1">{{ sortDirection === 'asc' ? '\u25B2' : '\u25BC' }}</span>
                   </button>
                 </th>
-                <th class="hidden sm:table-cell px-4 py-3 text-right text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Actions</th>
+                <th class="hidden sm:table-cell px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.09em] text-muted">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-rule">
@@ -305,7 +305,7 @@ onMounted(() => {
                 <td class="px-4 py-3">
                   <div>
                     <div class="min-w-0">
-                      <router-link :to="`/keys/${key.id}`" class="inline-flex min-h-6 items-center text-sm font-bold text-ink hover:text-link">{{ key.name || '-' }}</router-link>
+                      <router-link :to="`/keys/${key.id}`" class="inline-flex min-h-6 items-center text-sm font-semibold text-ink hover:text-link">{{ key.name || '-' }}</router-link>
                       <div class="flex items-center gap-1.5">
                         <span class="text-xs text-muted font-mono">{{ key.key_id }}</span>
                         <CopyButton :value="key.key_id" :label="`Copy ${key.key_id}`" />

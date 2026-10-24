@@ -59,7 +59,7 @@ onMounted(() => {
   <div>
     <div class="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 class="text-[32px] font-extrabold leading-9 tracking-tight text-ink">Dashboard</h1>
+        <h1 class="text-[32px] font-bold leading-9 tracking-tight text-ink">Dashboard</h1>
         <p class="mt-1 text-sm text-muted">Today, {{ todayLabel }} (UTC)</p>
       </div>
       <router-link
@@ -79,18 +79,18 @@ onMounted(() => {
           <!-- Today's funnel: puzzles handed out, then what the sites' backends checked -->
           <section class="rounded-md border border-rule bg-panel" aria-labelledby="today-title">
             <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-rule px-5 py-3">
-              <h2 id="today-title" class="text-[17px] font-extrabold text-ink">Today's verifications</h2>
+              <h2 id="today-title" class="text-[17px] font-semibold text-ink">Today's verifications</h2>
               <span class="text-[13px] text-muted">challenge issued → solved → checked by your backend</span>
             </div>
             <div class="p-5">
               <dl class="grid grid-cols-3 gap-4 sm:gap-5">
                 <div>
-                  <dt class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Challenges</dt>
+                  <dt class="text-[11px] font-semibold uppercase tracking-[0.09em] text-muted">Challenges</dt>
                   <dd class="mt-1.5 font-mono text-[26px] font-semibold leading-8 sm:text-[32px] sm:leading-10 tracking-tight tabular-nums text-ink">{{ issuedToday.toLocaleString('en-US') }}</dd>
                   <dd class="mt-1 hidden text-xs text-muted sm:block">widgets that asked for a puzzle</dd>
                 </div>
                 <div>
-                  <dt class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Verified</dt>
+                  <dt class="text-[11px] font-semibold uppercase tracking-[0.09em] text-muted">Verified</dt>
                   <dd class="mt-1.5 font-mono text-[26px] font-semibold leading-8 sm:text-[32px] sm:leading-10 tracking-tight tabular-nums text-ok">{{ verifiedToday.toLocaleString('en-US') }}</dd>
                   <dd class="mt-1 hidden text-xs text-muted sm:block">
                     <template v-if="checkedToday">{{ passPct }}% of verifications passed</template>
@@ -98,7 +98,7 @@ onMounted(() => {
                   </dd>
                 </div>
                 <div>
-                  <dt class="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">Failed</dt>
+                  <dt class="text-[11px] font-semibold uppercase tracking-[0.09em] text-muted">Failed</dt>
                   <dd class="mt-1.5 font-mono text-[26px] font-semibold leading-8 sm:text-[32px] sm:leading-10 tracking-tight tabular-nums" :class="failedToday ? 'text-fail' : 'text-ink'">{{ failedToday.toLocaleString('en-US') }}</dd>
                   <dd class="mt-1 hidden text-xs text-muted sm:block">
                     <template v-if="failing.length === 1 && failedOnFailing">{{ failedOnFailing.toLocaleString('en-US') }} on one key</template>
@@ -126,7 +126,7 @@ onMounted(() => {
         <aside class="min-w-0 space-y-6">
           <section class="rounded-md border border-rule bg-panel" aria-labelledby="month-title">
             <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-rule px-5 py-3">
-              <h2 id="month-title" class="text-[17px] font-extrabold text-ink">Last 30 days</h2>
+              <h2 id="month-title" class="text-[17px] font-semibold text-ink">Last 30 days</h2>
               <span class="text-[13px] text-muted"><span class="font-mono tabular-nums">{{ thirtyDay.issued.toLocaleString('en-US') }}</span> challenges · {{ thirtyDay.pct }}% verified</span>
             </div>
             <div class="px-5 pt-4 pb-4">
@@ -140,8 +140,8 @@ onMounted(() => {
                a per-key switch, so this panel cannot claim the whole instance. -->
           <section class="rounded-md border border-rule bg-panel" aria-labelledby="his-title">
             <div class="flex items-baseline justify-between gap-3 border-b border-rule px-5 py-3">
-              <h2 id="his-title" class="text-[17px] font-extrabold text-ink">Bot-suspected</h2>
-              <span class="font-mono font-bold tabular-nums text-ink">{{ hisSuspectedPct }}%</span>
+              <h2 id="his-title" class="text-[17px] font-semibold text-ink">Bot-suspected</h2>
+              <span class="font-mono font-semibold tabular-nums text-ink">{{ hisSuspectedPct }}%</span>
             </div>
             <p class="px-5 py-3 text-[13px] leading-5 text-muted">
               <span class="font-mono tabular-nums text-ink">{{ statsStore.overview.total_his_bot_suspected.toLocaleString('en-US') }}</span>

@@ -78,7 +78,7 @@ async function handleLogin() {
   <div class="flex justify-center pt-[10dvh] pb-16">
     <div class="w-full max-w-sm">
       <div class="mb-5">
-        <h1 class="text-2xl font-extrabold tracking-tight text-ink">Sign in</h1>
+        <h1 class="text-2xl font-bold tracking-tight text-ink">Sign in</h1>
         <p class="text-sm text-muted">to your GateCHA dashboard</p>
       </div>
       <div class="rounded-md border border-rule bg-panel p-6">

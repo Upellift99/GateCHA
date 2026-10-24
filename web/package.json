@@ -12,7 +12,6 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@fontsource-variable/overpass": "^5.3.0",
     "@fontsource-variable/overpass-mono": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "altcha": "^3.4.1",

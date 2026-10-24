@@ -82,7 +82,7 @@ function onBackdropClick(event: MouseEvent) {
           </svg>
         </span>
         <div class="min-w-0 flex-1">
-          <h3 :id="titleId" class="text-[17px] font-extrabold text-ink">{{ title }}</h3>
+          <h3 :id="titleId" class="text-[17px] font-semibold text-ink">{{ title }}</h3>
           <div class="mt-1 text-sm text-muted">
             <slot />
           </div>

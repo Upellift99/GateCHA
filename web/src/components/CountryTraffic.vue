@@ -50,7 +50,7 @@ function failPct(c: CountryStat): number {
 <template>
   <section class="rounded-md border border-rule bg-panel" aria-labelledby="country-title">
     <div class="border-b border-rule py-3" :class="inset">
-      <h2 id="country-title" class="text-[17px] font-extrabold text-ink">{{ title }}</h2>
+      <h2 id="country-title" class="text-[17px] font-semibold text-ink">{{ title }}</h2>
       <p class="text-xs text-muted">Country only, resolved offline; no IP stored</p>
     </div>
 
@@ -64,7 +64,7 @@ function failPct(c: CountryStat): number {
           <span class="min-w-0 truncate font-semibold" :class="c.country ? 'text-ink' : 'text-muted'">{{ countryName(c.country) }}</span>
           <span class="shrink-0 font-mono text-xs tabular-nums text-muted">
             <span class="text-sm text-ink">{{ c.total.toLocaleString('en-US') }}</span>
-            &ensp;<span :class="failPct(c) >= 50 ? 'font-bold text-fail' : ''">{{ failPct(c) }}% failed</span>
+            &ensp;<span :class="failPct(c) >= 50 ? 'font-semibold text-fail' : ''">{{ failPct(c) }}% failed</span>
           </span>
         </div>
         <div class="mt-1 flex h-1.5 overflow-hidden rounded-full bg-sunken" aria-hidden="true">

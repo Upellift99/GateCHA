@@ -24,7 +24,7 @@ const name = (k: APIKey) => k.name || k.key_id
       </svg>
     </span>
     <div class="min-w-0">
-      <h2 id="attention-title" class="text-[17px] font-extrabold text-ink">
+      <h2 id="attention-title" class="text-[17px] font-semibold text-ink">
         {{ failing.length === 1 ? '1 key needs attention' : `${failing.length} keys need attention` }}
       </h2>
       <p v-if="failing.length === 1" class="mt-0.5 text-sm text-ink-2">
@@ -35,7 +35,7 @@ const name = (k: APIKey) => k.name || k.key_id
       </p>
       <ul v-else class="mt-1 space-y-0.5 text-sm text-ink-2">
         <li v-for="f in failing" :key="f.key.id">
-          <router-link :to="`/keys/${f.key.id}`" class="font-bold text-ink hover:text-link">{{ name(f.key) }}</router-link>
+          <router-link :to="`/keys/${f.key.id}`" class="font-semibold text-ink hover:text-link">{{ name(f.key) }}</router-link>
           — <span class="font-mono tabular-nums">{{ f.failed.toLocaleString('en-US') }}</span> of
           <span class="font-mono tabular-nums">{{ f.verified.toLocaleString('en-US') }}</span> failed ({{ pct(f) }}%)
         </li>

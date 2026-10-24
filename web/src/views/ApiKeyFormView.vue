@@ -73,7 +73,7 @@ async function handleSubmit() {
 <template>
   <div class="max-w-xl">
     <router-link to="/keys" class="inline-flex min-h-6 items-center text-sm text-muted hover:text-ink">&larr; Back to keys</router-link>
-    <h1 class="text-2xl font-extrabold tracking-tight text-ink mt-1 mb-6">
+    <h1 class="text-2xl font-bold tracking-tight text-ink mt-1 mb-6">
       {{ isEdit ? 'Edit API Key' : 'Create API Key' }}
     </h1>
 
@@ -81,7 +81,7 @@ async function handleSubmit() {
          used to sit beside it as an equal, which read as "copy both"; GateCHA
          signs and checks challenges itself, so it is tucked away. -->
     <div v-if="createdKey" class="rounded-md border border-ok-edge bg-ok-soft p-6 mb-6">
-      <h2 ref="createdHeading" tabindex="-1" class="text-[17px] font-extrabold text-ok focus:outline-none">API key created</h2>
+      <h2 ref="createdHeading" tabindex="-1" class="text-[17px] font-semibold text-ok focus:outline-none">API key created</h2>
       <p class="mt-1 max-w-prose text-sm text-ok">
         Copy this key into your widget's challenge URL and your backend's
         <code class="font-mono">/api/v1/verify</code> call. It is the only value your site needs.

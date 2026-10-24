@@ -16,9 +16,9 @@ const signedInLayout = computed(() => route.matched.length > 0 && route.name !==
     <Navbar v-if="signedInLayout" />
     <!-- Signed out: the same band, carrying only the mark -->
     <header v-else-if="route.matched.length" class="bg-band text-band-ink border-b border-band-rule">
-      <div class="max-w-7xl mx-auto flex h-14 items-center gap-2.5 px-4 text-lg font-extrabold tracking-tight sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto flex h-14 items-center gap-2.5 px-4 text-lg font-bold tracking-tight sm:px-6 lg:px-8">
         <BrandMark />
-        GateCHA
+        <span>Gate<span class="text-action">CHA</span></span>
       </div>
     </header>
     <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">

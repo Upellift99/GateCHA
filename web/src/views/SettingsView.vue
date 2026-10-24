@@ -62,7 +62,7 @@ async function toggleCaptcha(checked: boolean) {
 
 <template>
   <div class="space-y-6">
-    <h1 class="text-2xl font-extrabold tracking-tight text-ink">Settings</h1>
+    <h1 class="text-2xl font-bold tracking-tight text-ink">Settings</h1>
 
     <!-- Two columns from lg up: the account cards are narrow by nature, the MCP
          panel carries a table and wants the room. Below lg they stack. -->
@@ -72,7 +72,7 @@ async function toggleCaptcha(checked: boolean) {
           @submit.prevent="handleSubmit"
           class="rounded-md border border-rule bg-panel p-6 space-y-4"
         >
-          <h2 class="text-[17px] font-extrabold text-ink">Change Password</h2>
+          <h2 class="text-[17px] font-semibold text-ink">Change Password</h2>
 
           <div v-if="error" role="alert" class="bg-fail-soft text-fail px-4 py-3 rounded text-sm">{{ error }}</div>
           <div v-if="success" class="bg-ok-soft text-ok px-4 py-3 rounded text-sm">{{ success }}</div>
@@ -120,7 +120,7 @@ async function toggleCaptcha(checked: boolean) {
         </form>
 
         <div class="rounded-md border border-rule bg-panel p-6 space-y-4">
-          <h2 class="text-[17px] font-extrabold text-ink">Security</h2>
+          <h2 class="text-[17px] font-semibold text-ink">Security</h2>
 
           <div v-if="settingsError" role="alert" class="bg-fail-soft text-fail px-4 py-3 rounded text-sm">
             {{ settingsError }}
