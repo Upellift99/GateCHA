@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/Upellift99/GateCHA/compare/v0.12.0...v0.12.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **api:** count /verify's per-IP limit per API key ([#244](https://github.com/Upellift99/GateCHA/issues/244)) ([dc74c98](https://github.com/Upellift99/GateCHA/commit/dc74c98828a2bba780406121343504fdb4c73ca2))
+
 ## [0.12.0](https://github.com/Upellift99/GateCHA/compare/v0.11.0...v0.12.0) (2026-10-24)
 
 
