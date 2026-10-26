@@ -14,9 +14,9 @@
   "dependencies": {
     "@fontsource-variable/overpass-mono": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
-    "altcha": "^3.4.1",
+    "altcha": "^3.5.0",
     "axios": "^1.20.0",
-    "chart.js": "^4.5.1",
+    "chart.js": "^4.6.1",
     "pinia": "^4.1.0",
     "tailwindcss": "^4.2.0",
     "vue": "^3.5.44",
@@ -24,7 +24,7 @@
     "vue-router": "^5.4.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.64.0",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^26.6.5",
     "@vitejs/plugin-vue": "^6.0.10",
     "@vitest/coverage-v8": "^5.0.5",
@@ -32,7 +32,7 @@
     "@vue/tsconfig": "^0.9.1",
     "happy-dom": "^21.0.4",
     "typescript": "~6.0.3",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vitest": "^5.0.0",
     "vue-tsc": "^3.3.13"
   }
