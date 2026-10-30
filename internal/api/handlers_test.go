@@ -421,6 +421,46 @@ func TestChangePassword_WrongCurrent(t *testing.T) {
 	}
 }
 
+// Regression test for #254: with GATECHA_ADMIN_USERNAME set to something other
+// than "admin", /me and /change-password must act on the logged-in user.
+func TestChangePassword_NonDefaultUsername(t *testing.T) {
+	db := testutil.SetupTestDB(t)
+	auth.EnsureAdminUser(db, "operator", "password123")
+	router := NewRouter(db, testSecretKey, RouterConfig{CORSAllowAll: true})
+	token, _, err := auth.GenerateJWT("operator", testSecretKey)
+	if err != nil {
+		t.Fatalf("failed to generate test token: %v", err)
+	}
+
+	req := httptest.NewRequest("GET", "/api/admin/me", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	var me map[string]string
+	json.NewDecoder(w.Body).Decode(&me)
+	if me["username"] != "operator" {
+		t.Errorf("expected /me to return operator, got %q", me["username"])
+	}
+
+	body, _ := json.Marshal(map[string]string{
+		"current_password": "password123",
+		"new_password":     "newpassword456",
+	})
+	req = httptest.NewRequest("POST", "/api/admin/change-password", bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	if ok, _ := auth.ValidateCredentials(db, "operator", "newpassword456"); !ok {
+		t.Error("expected new password to be stored for operator")
+	}
+}
+
 func TestChangePassword_InvalidBody(t *testing.T) {
 	router, _ := setupTestRouter(t)
 	token := getAdminToken(t)

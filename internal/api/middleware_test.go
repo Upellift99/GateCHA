@@ -165,9 +165,12 @@ func TestAuthenticateAdmin_Valid(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer "+token)
 	w := httptest.NewRecorder()
 
-	ok := authenticateAdmin(secret, w, req)
+	authed, ok := authenticateAdmin(secret, w, req)
 	if !ok {
 		t.Fatal("expected admin authentication to succeed")
+	}
+	if got := GetAdminUsernameFromContext(authed); got != "admin" {
+		t.Errorf("expected username admin in context, got %q", got)
 	}
 }
 
@@ -175,7 +178,7 @@ func TestAuthenticateAdmin_NoHeader(t *testing.T) {
 	req := httptest.NewRequest("GET", "/api/admin/me", nil)
 	w := httptest.NewRecorder()
 
-	ok := authenticateAdmin("secret", w, req)
+	_, ok := authenticateAdmin("secret", w, req)
 	if ok {
 		t.Fatal("expected admin authentication to fail without header")
 	}
@@ -189,7 +192,7 @@ func TestAuthenticateAdmin_InvalidToken(t *testing.T) {
 	req.Header.Set("Authorization", "Bearer invalid-token")
 	w := httptest.NewRecorder()
 
-	ok := authenticateAdmin("secret", w, req)
+	_, ok := authenticateAdmin("secret", w, req)
 	if ok {
 		t.Fatal("expected admin authentication to fail with invalid token")
 	}

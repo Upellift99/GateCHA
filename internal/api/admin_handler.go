@@ -148,7 +148,7 @@ func (h *AdminHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 // GET /api/admin/me
 func (h *AdminHandler) Me(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]string{"username": "admin"})
+	writeJSON(w, http.StatusOK, map[string]string{"username": GetAdminUsernameFromContext(r)})
 }
 
 // GET /api/admin/version
@@ -559,13 +559,14 @@ func (h *AdminHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := auth.ValidateCredentials(h.DB, "admin", req.CurrentPassword)
+	username := GetAdminUsernameFromContext(r)
+	ok, err := auth.ValidateCredentials(h.DB, username, req.CurrentPassword)
 	if err != nil || !ok {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid current password"})
 		return
 	}
 
-	if err := auth.ChangePassword(h.DB, "admin", req.NewPassword); err != nil {
+	if err := auth.ChangePassword(h.DB, username, req.NewPassword); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to change password"})
 		return
 	}

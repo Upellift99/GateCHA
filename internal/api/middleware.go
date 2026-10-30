@@ -18,7 +18,10 @@ const bearerPrefix = "Bearer "
 
 type contextKey string
 
-const apiKeyContextKey contextKey = "apiKey"
+const (
+	apiKeyContextKey        contextKey = "apiKey"
+	adminUsernameContextKey contextKey = "adminUsername"
+)
 
 func authenticateAPIKey(db *gorm.DB, w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
 	keyID := r.URL.Query().Get("apiKey")
@@ -75,29 +78,44 @@ func GetAPIKeyFromContext(r *http.Request) *models.APIKey {
 	return key
 }
 
-func authenticateAdmin(secretKey string, w http.ResponseWriter, r *http.Request) bool {
+// authenticateAdmin validates the bearer JWT and stores its subject (the admin
+// username the token was issued to at login) in the request context.
+func authenticateAdmin(secretKey string, w http.ResponseWriter, r *http.Request) (*http.Request, bool) {
 	authHeader := r.Header.Get("Authorization")
 	if !strings.HasPrefix(authHeader, bearerPrefix) {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "missing authorization"})
-		return false
+		return r, false
 	}
 	token := strings.TrimPrefix(authHeader, bearerPrefix)
-	if _, err := auth.ValidateJWT(token, secretKey); err != nil {
+	claims, err := auth.ValidateJWT(token, secretKey)
+	if err != nil {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid or expired token"})
-		return false
+		return r, false
 	}
-	return true
+	username, _ := claims["sub"].(string)
+	if username == "" {
+		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid or expired token"})
+		return r, false
+	}
+	ctx := context.WithValue(r.Context(), adminUsernameContextKey, username)
+	return r.WithContext(ctx), true
 }
 
 func AdminAuthMiddleware(secretKey string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if !authenticateAdmin(secretKey, w, r) {
+			req, ok := authenticateAdmin(secretKey, w, r)
+			if !ok {
 				return
 			}
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, req)
 		})
 	}
+}
+
+func GetAdminUsernameFromContext(r *http.Request) string {
+	username, _ := r.Context().Value(adminUsernameContextKey).(string)
+	return username
 }
 
 func CORSMiddleware(allowAll bool) func(http.Handler) http.Handler {
