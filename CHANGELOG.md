@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.2](https://github.com/Upellift99/GateCHA/compare/v0.13.1...v0.13.2) (2026-10-30)
+
+
+### Bug Fixes
+
+* **admin:** use the logged-in username for /me and change-password ([#255](https://github.com/Upellift99/GateCHA/issues/255)) ([eb998cb](https://github.com/Upellift99/GateCHA/commit/eb998cb572b377c1619fab33c85a1dadd77b5762)), closes [#254](https://github.com/Upellift99/GateCHA/issues/254)
+
 ## [0.13.1](https://github.com/Upellift99/GateCHA/compare/v0.13.0...v0.13.1) (2026-10-24)
 
 
