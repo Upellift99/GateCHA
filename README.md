@@ -435,8 +435,8 @@ The compose file pulls `latest-mysql`. Set `GATECHA_IMAGE` to run another image,
 | `GATECHA_DB_DRIVER` | `sqlite` | Database driver: `sqlite` always available; `mysql` requires the mysql build variant |
 | `GATECHA_DB_DSN` | `./data/gatecha.db` | Database DSN: file path for SQLite, connection string for MySQL (e.g. `user:pass@tcp(host:3306)/dbname?parseTime=true`) |
 | `GATECHA_SECRET_KEY` | *(auto-generated)* | JWT signing secret |
-| `GATECHA_ADMIN_USERNAME` | `admin` | Admin username |
-| `GATECHA_ADMIN_PASSWORD` | *(auto-generated)* | Admin password |
+| `GATECHA_ADMIN_USERNAME` | `admin` | Admin username. Read only on first startup, when the admin account is created: changing it later has no effect, keep logging in with the original name |
+| `GATECHA_ADMIN_PASSWORD` | *(auto-generated)* | Admin password. Read only on first startup too: change it afterwards from the dashboard |
 | `GATECHA_LOG_LEVEL` | `info` | Log level |
 | `GATECHA_LOG_CLIENT_IP` | `false` | Add the client IP to request logs. Off by default: rate limiting, adaptive difficulty and country stats read the IP in memory, and nothing logs it unless you turn this on for debugging |
 | `GATECHA_CLEANUP_INTERVAL` | `10` | Cleanup interval (minutes) |
