@@ -7,7 +7,7 @@
 
 **Self-hosted ALTCHA CAPTCHA management with API keys, multi-site support, and statistics.**
 
-🌐 **[Website](https://gatecha.org)** · 📖 **[Documentation](https://gatecha.org/docs)** · 🧩 **[WordPress plugin](https://github.com/Upellift99/GateCHA-WordPress)**
+🌐 **[Website](https://gatecha.org)** · 📖 **[Documentation](https://gatecha.org/docs)** · 🧩 **[WordPress plugin](https://github.com/gatecha-org/gatecha-wordpress)**
 
 > [!IMPORTANT]
 > **GateCHA has moved to the [`gatecha-org`](https://github.com/gatecha-org) organization.** Releases after v0.13.3 are published as `ghcr.io/gatecha-org/gatecha` only. `ghcr.io/upellift99/gatecha` stopped at v0.13.3 and receives no further updates: replace the image name in your `docker-compose.yml` or `docker run` command. Old `github.com/Upellift99/GateCHA` links redirect automatically.
