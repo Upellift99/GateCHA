@@ -1,7 +1,7 @@
 ### Stage 1: Build Vue.js frontend
 # The build stages run on the runner's native platform; the SPA is
 # platform-independent and Go cross-compiles below, so no emulation is needed.
-FROM --platform=$BUILDPLATFORM node:24-alpine AS frontend
+FROM --platform=$BUILDPLATFORM node:25-alpine AS frontend
 WORKDIR /build/web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
