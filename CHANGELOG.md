@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.4](https://github.com/gatecha-org/gatecha/compare/v0.13.3...v0.13.4) (2026-11-08)
+
+
+### Bug Fixes
+
+* move module path and image to the gatecha-org organization ([#267](https://github.com/gatecha-org/gatecha/issues/267)) ([6acad01](https://github.com/gatecha-org/gatecha/commit/6acad0148e3fdc3f66291c29db43dc358a16a2d3))
+
 ## [0.13.3](https://github.com/Upellift99/GateCHA/compare/v0.13.2...v0.13.3) (2026-11-08)
 
 
