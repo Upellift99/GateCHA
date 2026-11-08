@@ -9,6 +9,9 @@
 
 🌐 **[Website](https://gatecha.org)** · 📖 **[Documentation](https://gatecha.org/docs)** · 🧩 **[WordPress plugin](https://github.com/Upellift99/GateCHA-WordPress)**
 
+> [!IMPORTANT]
+> **GateCHA is moving to the [`gatecha-org`](https://github.com/gatecha-org) organization.** v0.13.3 is the last release published as `ghcr.io/upellift99/gatecha`. Later releases are published as `ghcr.io/gatecha-org/gatecha` only: the old image stays available but receives no further updates, so replace the image name in your `docker-compose.yml` or `docker run` command. The repository itself moves to `github.com/gatecha-org/gatecha`, and old links redirect automatically.
+
 GateCHA is a free, open-source alternative to [ALTCHA Sentinel](https://altcha.org/docs/sentinel/), ALTCHA's commercial self-hosted server. It wraps the [ALTCHA](https://altcha.org/) proof-of-work CAPTCHA protocol with a management layer: API key management, per-site configuration, replay protection, and a dashboard with statistics. GateCHA is not affiliated with ALTCHA.
 
 ## Features
