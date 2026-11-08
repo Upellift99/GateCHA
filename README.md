@@ -1,16 +1,16 @@
 # GateCHA
 
-[![Go](https://github.com/Upellift99/GateCHA/actions/workflows/test.yml/badge.svg)](https://github.com/Upellift99/GateCHA/actions/workflows/test.yml)
-[![Docker](https://github.com/Upellift99/GateCHA/actions/workflows/docker.yml/badge.svg)](https://github.com/Upellift99/GateCHA/actions/workflows/docker.yml)
+[![Go](https://github.com/gatecha-org/gatecha/actions/workflows/test.yml/badge.svg)](https://github.com/gatecha-org/gatecha/actions/workflows/test.yml)
+[![Docker](https://github.com/gatecha-org/gatecha/actions/workflows/docker.yml/badge.svg)](https://github.com/gatecha-org/gatecha/actions/workflows/docker.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/Upellift99/GateCHA)](https://goreportcard.com/report/github.com/Upellift99/GateCHA)
+[![Go Report Card](https://goreportcard.com/badge/github.com/gatecha-org/gatecha)](https://goreportcard.com/report/github.com/gatecha-org/gatecha)
 
 **Self-hosted ALTCHA CAPTCHA management with API keys, multi-site support, and statistics.**
 
 🌐 **[Website](https://gatecha.org)** · 📖 **[Documentation](https://gatecha.org/docs)** · 🧩 **[WordPress plugin](https://github.com/Upellift99/GateCHA-WordPress)**
 
 > [!IMPORTANT]
-> **GateCHA is moving to the [`gatecha-org`](https://github.com/gatecha-org) organization.** v0.13.3 is the last release published as `ghcr.io/upellift99/gatecha`. Later releases are published as `ghcr.io/gatecha-org/gatecha` only: the old image stays available but receives no further updates, so replace the image name in your `docker-compose.yml` or `docker run` command. The repository itself moves to `github.com/gatecha-org/gatecha`, and old links redirect automatically.
+> **GateCHA has moved to the [`gatecha-org`](https://github.com/gatecha-org) organization.** Releases after v0.13.3 are published as `ghcr.io/gatecha-org/gatecha` only. `ghcr.io/upellift99/gatecha` stopped at v0.13.3 and receives no further updates: replace the image name in your `docker-compose.yml` or `docker run` command. Old `github.com/Upellift99/GateCHA` links redirect automatically.
 
 GateCHA is a free, open-source alternative to [ALTCHA Sentinel](https://altcha.org/docs/sentinel/), ALTCHA's commercial self-hosted server. It wraps the [ALTCHA](https://altcha.org/) proof-of-work CAPTCHA protocol with a management layer: API key management, per-site configuration, replay protection, and a dashboard with statistics. GateCHA is not affiliated with ALTCHA.
 
@@ -32,7 +32,7 @@ GateCHA is a free, open-source alternative to [ALTCHA Sentinel](https://altcha.o
 
 ```bash
 mkdir -p /opt/docker/GateCHA && cd /opt/docker/GateCHA
-wget https://raw.githubusercontent.com/Upellift99/GateCHA/refs/heads/main/docker-compose.yml
+wget https://raw.githubusercontent.com/gatecha-org/gatecha/refs/heads/main/docker-compose.yml
 docker compose up -d
 ```
 
@@ -44,7 +44,7 @@ Open `http://localhost:8080` and log in with `admin` / `changeme`.
 docker run -d -p 8080:8080 \
   -v gatecha_data:/app/data \
   -e GATECHA_ADMIN_PASSWORD=your-password \
-  ghcr.io/upellift99/gatecha:latest
+  ghcr.io/gatecha-org/gatecha:latest
 ```
 
 ### Image tags
@@ -67,14 +67,14 @@ built with [MySQL support](#mysql-support). All images are published for
 
 GateCHA ships as a single self-contained binary with the web dashboard embedded,
 so there are no extra files or runtime dependencies. Grab the archive for your
-platform from the [latest release](https://github.com/Upellift99/GateCHA/releases/latest)
+platform from the [latest release](https://github.com/gatecha-org/gatecha/releases/latest)
 (`linux`/`darwin`/`windows`, `amd64`/`arm64`):
 
 ```bash
 # Example: Linux x86_64. Check the releases page for the current version
 VERSION=0.3.0
 curl -fsSL -o gatecha.tar.gz \
-  "https://github.com/Upellift99/GateCHA/releases/download/v${VERSION}/gatecha_${VERSION}_linux_amd64.tar.gz"
+  "https://github.com/gatecha-org/gatecha/releases/download/v${VERSION}/gatecha_${VERSION}_linux_amd64.tar.gz"
 tar -xzf gatecha.tar.gz
 GATECHA_ADMIN_PASSWORD=your-password ./gatecha
 ```
@@ -85,7 +85,7 @@ Open `http://localhost:8080`. See [Configuration](#configuration) for all option
 
 ```bash
 # Prerequisites: Go 1.26+, Node.js 20+
-git clone https://github.com/Upellift99/GateCHA.git
+git clone https://github.com/gatecha-org/gatecha.git
 cd GateCHA
 make build        # SQLite only (default)
 make build-mysql  # with MySQL support
@@ -415,7 +415,7 @@ The default build is SQLite-only for a lightweight single-binary deployment. MyS
 make build-mysql
 ```
 
-**Docker image with MySQL support:** use the prebuilt `ghcr.io/upellift99/gatecha:latest-mysql`
+**Docker image with MySQL support:** use the prebuilt `ghcr.io/gatecha-org/gatecha:latest-mysql`
 (see [Image tags](#image-tags)), or build it yourself:
 ```bash
 docker build --build-arg BUILD_TAGS=mysql -t gatecha:mysql .

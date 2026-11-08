@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/models"
 )
 
 // TestRunMigrations_RestoresForeignKeys verifies RunMigrations re-enables

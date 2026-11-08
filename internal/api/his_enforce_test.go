@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/his"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/his"
+	"github.com/gatecha-org/gatecha/internal/models"
 )
 
 // noEvidenceSignals is the shape that dominated the histogram in #149: the

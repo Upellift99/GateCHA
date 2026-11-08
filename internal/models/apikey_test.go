@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/models"
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/models"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 func TestGenerateKeyID(t *testing.T) {

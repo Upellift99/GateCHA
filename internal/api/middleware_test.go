@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/auth"
-	"github.com/Upellift99/GateCHA/internal/models"
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/auth"
+	"github.com/gatecha-org/gatecha/internal/models"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 func TestAuthenticateAPIKey_QueryParam(t *testing.T) {

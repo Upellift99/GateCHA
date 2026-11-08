@@ -3,8 +3,8 @@ package testutil
 import (
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/database"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/database"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

@@ -3,7 +3,7 @@ variable "TAG" {
 }
 
 variable "REGISTRY" {
-  default = "ghcr.io/upellift99"
+  default = "ghcr.io/gatecha-org"
 }
 
 variable "VERSION" {

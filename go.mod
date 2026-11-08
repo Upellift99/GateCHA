@@ -1,4 +1,4 @@
-module github.com/Upellift99/GateCHA
+module github.com/gatecha-org/gatecha
 
 go 1.26.0
 

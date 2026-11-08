@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Upellift99/GateCHA/internal/altcha"
-	"github.com/Upellift99/GateCHA/internal/auth"
-	"github.com/Upellift99/GateCHA/internal/his"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/altcha"
+	"github.com/gatecha-org/gatecha/internal/auth"
+	"github.com/gatecha-org/gatecha/internal/his"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"github.com/go-chi/chi/v5"
 	"gorm.io/gorm"
 )

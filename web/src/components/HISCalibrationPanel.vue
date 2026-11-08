@@ -185,7 +185,7 @@ function barClass(loValue: number, threshold: number): string {
           integration steps are in
           <a
             class="text-link hover:text-link-hover underline"
-            href="https://github.com/Upellift99/GateCHA#4-optional-collect-interaction-signals-his"
+            href="https://github.com/gatecha-org/gatecha#4-optional-collect-interaction-signals-his"
             target="_blank"
             rel="noopener"
             >README step 4</a

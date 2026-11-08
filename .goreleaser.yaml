@@ -43,8 +43,8 @@ changelog:
 
 release:
   github:
-    owner: Upellift99
-    name: GateCHA
+    owner: gatecha-org
+    name: gatecha
   # release-please already created the Release + notes for this tag; only
   # upload the binaries, don't recreate or overwrite the body.
   mode: keep-existing

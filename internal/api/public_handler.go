@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/Upellift99/GateCHA/internal/dashboard"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/dashboard"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"gorm.io/gorm"
 )
 

@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{ showVersion?: boolean }>(), {
 const authStore = useAuthStore()
 const { isAuthenticated, version } = storeToRefs(authStore)
 
-const RELEASES_URL = 'https://github.com/Upellift99/GateCHA/releases'
+const RELEASES_URL = 'https://github.com/gatecha-org/gatecha/releases'
 
 // Watch rather than onMounted: this Footer lives in App.vue outside <router-view>,
 // so it mounts once on the login page and never remounts. onMounted alone meant the

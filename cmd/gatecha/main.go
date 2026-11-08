@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Upellift99/GateCHA/internal/api"
-	"github.com/Upellift99/GateCHA/internal/auth"
-	"github.com/Upellift99/GateCHA/internal/config"
-	"github.com/Upellift99/GateCHA/internal/database"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/api"
+	"github.com/gatecha-org/gatecha/internal/auth"
+	"github.com/gatecha-org/gatecha/internal/config"
+	"github.com/gatecha-org/gatecha/internal/database"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"gorm.io/gorm"
 )
 
