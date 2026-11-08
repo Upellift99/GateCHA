@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.3](https://github.com/Upellift99/GateCHA/compare/v0.13.2...v0.13.3) (2026-11-08)
+
+
+### Bug Fixes
+
+* **docs:** announce the move to the gatecha-org organization ([#259](https://github.com/Upellift99/GateCHA/issues/259)) ([8680aa7](https://github.com/Upellift99/GateCHA/commit/8680aa78bce4a0f72ffdf75ab6d42c4afb3ec9d7))
+
 ## [0.13.2](https://github.com/Upellift99/GateCHA/compare/v0.13.1...v0.13.2) (2026-10-30)
 
 
