@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/models"
 )
 
 var testModels = []any{

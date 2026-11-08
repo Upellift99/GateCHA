@@ -86,7 +86,7 @@ export function warnIfNoProtectedForm(): void {
   console.warn(
     `[GateCHA HIS] Collector loaded, but ${cause}, so no interaction signals will be ` +
       `attached on submit. ${fix}. ` +
-      'See https://github.com/Upellift99/GateCHA#4-optional-collect-interaction-signals-his',
+      'See https://github.com/gatecha-org/gatecha#4-optional-collect-interaction-signals-his',
   )
 }
 

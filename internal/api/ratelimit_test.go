@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Upellift99/GateCHA/internal/models"
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/models"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 // fakeClock returns a controllable time source for deterministic limiter tests.

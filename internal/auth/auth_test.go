@@ -3,7 +3,7 @@ package auth
 import (
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 func TestEnsureAdminUser(t *testing.T) {

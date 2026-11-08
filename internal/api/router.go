@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/Upellift99/GateCHA/internal/dashboard"
+	"github.com/gatecha-org/gatecha/internal/dashboard"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"gorm.io/gorm"

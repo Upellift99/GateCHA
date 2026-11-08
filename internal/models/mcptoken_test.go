@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Upellift99/GateCHA/internal/models"
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/models"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 func TestCreateMCPTokenReturnsSecretOnce(t *testing.T) {

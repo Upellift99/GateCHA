@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

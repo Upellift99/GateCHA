@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Upellift99/GateCHA/internal/auth"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/auth"
+	"github.com/gatecha-org/gatecha/internal/models"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"gorm.io/gorm"
 )

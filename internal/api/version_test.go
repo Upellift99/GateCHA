@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/auth"
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/auth"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 func TestVersionEndpoint_DefaultsToDev(t *testing.T) {

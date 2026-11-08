@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Upellift99/GateCHA/internal/altcha"
-	"github.com/Upellift99/GateCHA/internal/geo"
-	"github.com/Upellift99/GateCHA/internal/his"
-	"github.com/Upellift99/GateCHA/internal/models"
 	lib "github.com/altcha-org/altcha-lib-go"
+	"github.com/gatecha-org/gatecha/internal/altcha"
+	"github.com/gatecha-org/gatecha/internal/geo"
+	"github.com/gatecha-org/gatecha/internal/his"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"gorm.io/gorm"
 )
 

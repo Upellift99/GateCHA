@@ -42,7 +42,7 @@ describe('Footer', () => {
     auth.version = '0.2.1'
     const wrapper = mount(Footer)
     const link = wrapper.findAll('a').find((a) => a.text() === '0.2.1')!
-    expect(link.attributes('href')).toBe('https://github.com/Upellift99/GateCHA/releases')
+    expect(link.attributes('href')).toBe('https://github.com/gatecha-org/gatecha/releases')
     expect(link.attributes('target')).toBe('_blank')
     expect(link.attributes('rel')).toContain('noopener')
   })

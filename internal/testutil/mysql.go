@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/database"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/database"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"gorm.io/gorm"
 )
 

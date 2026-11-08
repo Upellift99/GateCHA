@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/his"
-	"github.com/Upellift99/GateCHA/internal/models"
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/his"
+	"github.com/gatecha-org/gatecha/internal/models"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 func TestRecordHISMonitor_SamplingOptIn(t *testing.T) {

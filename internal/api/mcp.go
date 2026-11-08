@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"gorm.io/gorm"
 )

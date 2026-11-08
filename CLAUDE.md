@@ -40,7 +40,7 @@ npm --prefix web run test:e2e   # Browser smoke test of the login captcha agains
 
 ## Key Conventions
 
-- Go module: `github.com/Upellift99/GateCHA`
+- Go module: `github.com/gatecha-org/gatecha`
 - API key prefix: `gk_` (e.g., `gk_a1b2c3d4e5f67890abcdef12`)
 - Public API: `/api/v1/challenge`, `/api/v1/verify` (API key auth via `?apiKey=`)
 - Admin API: `/api/admin/*` (JWT auth via `Authorization: Bearer`)

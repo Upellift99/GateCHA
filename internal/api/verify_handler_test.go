@@ -9,9 +9,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Upellift99/GateCHA/internal/altcha"
-	"github.com/Upellift99/GateCHA/internal/models"
-	"github.com/Upellift99/GateCHA/internal/testutil"
+	"github.com/gatecha-org/gatecha/internal/altcha"
+	"github.com/gatecha-org/gatecha/internal/models"
+	"github.com/gatecha-org/gatecha/internal/testutil"
 )
 
 func verifyRequestWithKey(key *models.APIKey, body []byte) *http.Request {

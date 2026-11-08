@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/Upellift99/GateCHA/internal/altcha"
-	"github.com/Upellift99/GateCHA/internal/models"
+	"github.com/gatecha-org/gatecha/internal/altcha"
+	"github.com/gatecha-org/gatecha/internal/models"
 	"gorm.io/gorm"
 )
 
