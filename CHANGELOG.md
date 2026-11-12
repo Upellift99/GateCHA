@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.5](https://github.com/gatecha-org/gatecha/compare/v0.13.4...v0.13.5) (2026-11-12)
+
+
+### Bug Fixes
+
+* **security:** rebuild on Go 1.27.4 (GO-2026-6859) ([#271](https://github.com/gatecha-org/gatecha/issues/271)) ([2b3c222](https://github.com/gatecha-org/gatecha/commit/2b3c2221c43d7019b53bbec7c5b394476eb3f615))
+
 ## [0.13.4](https://github.com/gatecha-org/gatecha/compare/v0.13.3...v0.13.4) (2026-11-08)
 
 
